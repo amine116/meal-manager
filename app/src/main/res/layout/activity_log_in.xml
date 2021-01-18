@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ActivityLogIn"
+    android:orientation="vertical"
+    android:background="@color/white"
+    android:padding="16sp">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:src="@drawable/log_in_logo"
+        android:contentDescription="@string/log_in_logo"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="20sp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/shape_rect_pure_green"
+                android:padding="3sp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:padding="5sp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="25sp"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center">
+
+                        <TextView
+                            android:layout_width="0sp"
+                            android:layout_weight="50"
+                            android:textColor="@color/pure_black"
+                            android:textStyle="bold"
+                            android:gravity="center"
+                            android:layout_height="wrap_content"
+                            android:text="@string/are_you_manager" />
+
+                        <TextView
+                            android:id="@+id/goToManagerLogIn"
+                            android:layout_width="0sp"
+                            android:layout_weight="50"
+                            android:layout_height="50sp"
+                            android:background="@drawable/shape_rect_pure_red"
+                            android:text="@string/log_in_here"
+                            android:textColor="@color/white"
+                            android:gravity="center"
+                            android:textStyle="bold"/>
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="25sp"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:background="@color/pure_green"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="25sp"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center">
+
+                        <TextView
+                            android:layout_width="0sp"
+                            android:layout_weight="50"
+                            android:layout_height="wrap_content"
+                            android:text="@string/are_you_member"
+                            android:textColor="@color/pure_black"
+                            android:textStyle="bold"
+                            android:gravity="center"/>
+
+                        <TextView
+                            android:id="@+id/goToMemberLogIn"
+                            android:layout_width="0sp"
+                            android:layout_weight="50"
+                            android:background="@drawable/shape_rect_pure_red"
+                            android:layout_height="50sp"
+                            android:gravity="center"
+                            android:text="@string/click_here"
+                            android:textColor="@color/white"
+                            android:textStyle="bold"/>
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="25sp"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:background="@color/pure_green"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="25sp"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center">
+
+                        <TextView
+                            android:layout_width="0sp"
+                            android:layout_weight="50"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/pure_black"
+                            android:textStyle="bold"
+                            android:gravity="center"
+                            android:text="@string/new_here_n_if_you_are_not_manager_nyou_don_t_need_account" />
+
+                        <TextView
+                            android:id="@+id/createAccount"
+                            android:layout_width="0sp"
+                            android:layout_weight="50"
+                            android:background="@drawable/shape_rect_pure_red"
+                            android:gravity="center"
+                            android:layout_height="50sp"
+                            android:text="@string/create_new_account"
+                            android:textColor="@color/white"
+                            android:textStyle="bold"/>
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="25sp"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="50sp"/>
+
+            <TextView
+                android:id="@+id/forgotPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/forgot_password"
+                android:gravity="center"
+                android:textColor="#0b6ca1"
+                android:textStyle="bold"/>
+
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

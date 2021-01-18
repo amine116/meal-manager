@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MaintainTodaysMeal"
+    android:orientation="vertical"
+    android:padding="10sp"
+    android:gravity="center"
+    android:background="#f1f1f1">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0sp"
+        android:layout_weight="5"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:background="#565e58">
+
+        <TextView
+            android:id="@+id/maintainRegularLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Regular Meal Status"
+            android:textSize="20sp"
+            android:textColor="#00ffdd"/>
+
+
+    </LinearLayout>
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0sp"
+        android:layout_weight="45">
+
+        <LinearLayout
+            android:id="@+id/maintainRegularLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+
+
+
+        </LinearLayout>
+
+
+    </ScrollView>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0sp"
+        android:layout_weight="5"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:background="#3e423f">
+
+        <TextView
+            android:id="@+id/maintainTodayLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Today Meal Status"
+            android:textSize="20sp"
+            android:textColor="#00ffdd"/>
+
+
+    </LinearLayout>
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0sp"
+        android:layout_weight="45">
+
+        <LinearLayout
+            android:id="@+id/maintainTodayLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+
+        </LinearLayout>
+
+
+    </ScrollView>
+
+
+</LinearLayout>

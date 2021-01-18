@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_weight="80"
+        android:layout_height="0sp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/nameLayout"
+            android:layout_width="match_parent"
+            android:layout_height="0sp"
+            android:orientation="horizontal"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/txtName"
+                android:layout_width="0sp"
+                android:layout_height="match_parent"
+                android:layout_weight="30"
+                android:gravity="center"
+                android:text="Name: "/>
+
+            <EditText
+                android:id="@+id/edtName"
+                android:hint="Enter Name"
+                android:layout_width="0sp"
+                android:layout_height="match_parent"
+                android:layout_weight="40"/>
+
+            <ImageView
+                android:layout_width="0sp"
+                android:layout_height="match_parent"
+                android:layout_weight="20"
+                android:textAllCaps="false"
+                android:id="@+id/btnLayoutCalc1"
+                android:src="@drawable/calcimagee"/>
+
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/addPaymentLayout"
+            android:layout_width="match_parent"
+            android:layout_height="0sp"
+            android:orientation="horizontal"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/txtAddPayment"
+                android:layout_width="0sp"
+                android:layout_height="match_parent"
+                android:layout_weight="30"
+                android:gravity="center"
+                android:text="Payment: "/>
+
+            <EditText
+                android:id="@+id/edtAddPayment"
+                android:layout_width="0sp"
+                android:hint="Enter"
+                android:inputType="number"
+                android:layout_height="match_parent"
+                android:layout_weight="40"/>
+
+            <ImageView
+                android:layout_width="0sp"
+                android:layout_height="match_parent"
+                android:layout_weight="20"
+                android:textAllCaps="false"
+                android:id="@+id/btnLayoutCalc2"
+                android:src="@drawable/calcimagee"/>
+
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/addMealLayout"
+            android:layout_width="match_parent"
+            android:layout_height="0sp"
+            android:orientation="horizontal"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/txtAddMeal"
+                android:layout_width="0sp"
+                android:layout_height="match_parent"
+                android:layout_weight="30"
+                android:text="Meal: "
+                android:gravity="center"/>
+
+            <EditText
+                android:id="@+id/edtAddMeal"
+                android:layout_width="0sp"
+                android:inputType="number"
+                android:hint="Enter"
+                android:layout_height="match_parent"
+                android:layout_weight="40"/>
+
+            <ImageView
+                android:layout_width="0sp"
+                android:layout_height="match_parent"
+                android:layout_weight="20"
+                android:textAllCaps="false"
+                android:id="@+id/btnLayoutCalc3"
+                android:src="@drawable/calcimagee"/>
+
+
+        </LinearLayout>
+
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/buttonsLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0sp"
+        android:orientation="horizontal"
+        android:layout_weight="20">
+
+        <Button
+            android:id="@+id/saveTheMember"
+            android:layout_width="0sp"
+            android:layout_height="match_parent"
+            android:layout_weight="50"
+            android:text="Save"/>
+
+        <Button
+            android:id="@+id/cancelSavingTheMember"
+            android:layout_width="0sp"
+            android:layout_height="match_parent"
+            android:layout_weight="50"
+            android:text="Cancel"/>
+
+    </LinearLayout>
+
+</LinearLayout>

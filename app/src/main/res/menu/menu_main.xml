@@ -1,0 +1,65 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.amine.mealmanager.MainActivity">
+    <item
+        android:id="@+id/lastTimeOfChangingMeal"
+        android:orderInCategory="100"
+        android:title="@string/set_last_time_of_changing_meals"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/updateMPDPP"
+        android:orderInCategory="100"
+        android:title="@string/update_mpdph"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/makeAnnouncement"
+        android:orderInCategory="100"
+        android:title="@string/make_announcement"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/manageTodayMeal"
+        android:orderInCategory="100"
+        android:title="@string/manage_today_s_meal"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/changePassword"
+        android:orderInCategory="100"
+        android:title="@string/change_member_password"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/memberPasswords"
+        android:orderInCategory="100"
+        android:title="@string/see_member_password"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/menu_editInfo"
+        android:orderInCategory="100"
+        android:title="@string/edit_member_info"
+        app:showAsAction="withText"/>
+
+    <item
+        android:id="@+id/btnInstructions"
+        android:orderInCategory="100"
+        app:showAsAction="never"
+        android:title="@string/short_instruction"/>
+
+    <item
+        android:id="@+id/btnLogOut"
+        android:orderInCategory="100"
+        app:showAsAction="never"
+        android:title="@string/log_out"/>
+
+    <item
+        android:id="@+id/itemAbout"
+        android:orderInCategory="100"
+        app:showAsAction="never"
+        android:title="@string/about"/>
+
+</menu>

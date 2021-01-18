@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="5sp"
+    android:orientation="vertical"
+    android:background="@color/white">
+
+    <LinearLayout
+        android:id="@+id/updateLabelLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/updateNameLabel"
+            android:layout_width="match_parent"
+            android:gravity="center"
+            android:textColor="@color/announcement"
+            android:layout_height="match_parent"
+            android:textSize="15sp"/>
+
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="5dp"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="500sp">
+
+        <LinearLayout
+            android:id="@+id/updateDataLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+
+        </LinearLayout>
+
+
+    </ScrollView>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="5dp"/>
+
+    <LinearLayout
+        android:id="@+id/checkboxLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@drawable/rectangular_shape_black_25">
+
+        <CheckBox
+            android:id="@+id/rbBreakFirstDecide"
+            android:layout_width="0sp"
+            android:layout_weight="40"
+            android:text="@string/breakfast"
+            android:layout_height="wrap_content"/>
+
+        <CheckBox
+            android:id="@+id/rbLunchDecide"
+            android:layout_width="0sp"
+            android:layout_weight="30"
+            android:text="@string/lunch"
+            android:layout_height="wrap_content"/>
+
+        <CheckBox
+            android:id="@+id/rbDinnerDecide"
+            android:layout_width="0sp"
+            android:layout_weight="30"
+            android:text="@string/dinner"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="5dp"/>
+
+    <LinearLayout
+        android:id="@+id/btnExtraMoneyLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@drawable/rectangular_shape_black_25">
+
+        <CheckBox
+            android:id="@+id/checkUpdateExtraMoney"
+            android:layout_width="0sp"
+            android:layout_height="match_parent"
+            android:layout_weight="60"
+            android:text="@string/extra_money" />
+
+        <EditText
+            android:id="@+id/edtUpdateExtraMoney"
+            android:layout_width="0sp"
+            android:inputType="number"
+            android:layout_height="wrap_content"
+            android:layout_weight="40"
+            android:gravity="center"
+            android:hint="@string/enter"
+            android:autofillHints="" />
+
+        <ImageView
+            android:layout_width="30sp"
+            android:layout_height="match_parent"
+            android:textAllCaps="false"
+            android:id="@+id/btnUpdateMealCalc"
+            android:src="@drawable/calcimagee"
+            android:contentDescription="@string/calculator" />
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="5dp"/>
+
+    <LinearLayout
+        android:id="@+id/customDateLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@drawable/rectangular_shape_black_25">
+
+        <TextView
+            android:id="@+id/checkCustomDate"
+            android:layout_width="0sp"
+            android:layout_weight="30"
+            android:text="@string/date"
+            android:textStyle="bold"
+            android:textColor="#000000"
+            android:gravity="center"
+            android:layout_height="match_parent"/>
+
+        <EditText
+            android:id="@+id/edtCustomDate"
+            android:layout_width="0sp"
+            android:layout_weight="30"
+            android:gravity="center"
+            android:hint="@string/_09_05_2020"
+            android:layout_height="match_parent"
+            android:autofillHints=""
+            android:inputType="date" />
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="5dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:layout_width="0sp"
+            style="@style/Theme.AppCompat.DayNight"
+            android:layout_height="wrap_content"
+            android:layout_weight="50"
+            android:id="@+id/btnSaveUpdate"
+            android:text="@string/save"/>
+
+        <Button
+            android:layout_width="0sp"
+            style="@style/Theme.AppCompat.DayNight"
+            android:layout_height="wrap_content"
+            android:layout_weight="50"
+            android:id="@+id/btnCancelUpdate"
+            android:text="@string/cancel"/>
+
+
+    </LinearLayout>
+
+</LinearLayout>

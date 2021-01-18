@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="16sp">
+
+  <EditText
+      android:id="@+id/edtEnterAnnouncement"
+      android:layout_width="match_parent"
+      android:layout_height="0sp"
+      android:layout_weight="60"
+      android:hint="@string/enter_your_announcement"
+      android:autofillHints=""
+      android:inputType="textMultiLine"
+      android:gravity="center"/>
+
+  <LinearLayout
+      android:id="@+id/announcementButtonsLayout"
+      android:layout_width="match_parent"
+      android:layout_height="0sp"
+      android:layout_weight="40"
+      android:orientation="horizontal"
+      android:gravity="center">
+
+    <Button
+        android:id="@+id/btnMakeAnnouncement"
+        android:layout_width="0sp"
+        android:layout_height="wrap_content"
+        android:layout_weight="50"
+        style="@style/CardView"
+        android:text="@string/make"/>
+
+    <Button
+        android:id="@+id/btnCancelAnnouncement"
+        android:layout_width="0sp"
+        android:layout_height="wrap_content"
+        android:layout_weight="50"
+        style="@style/CardView"
+        android:text="@string/cancel"/>
+
+  </LinearLayout>
+
+</LinearLayout>

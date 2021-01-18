@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ManagerLoginActivity"
+    android:padding="16sp">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:src="@drawable/log_in_logo"
+        android:contentDescription="@string/log_in_logo"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="30sp"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView"
+                android:gravity="center"
+                android:visibility="gone"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="5sp"
+                android:id="@+id/chooseUserNameLayout"
+                android:background="@drawable/shape_rect_pure_green">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/white"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="0sp"
+                        android:layout_height="50sp"
+                        android:layout_weight="30"
+                        android:src="@drawable/icon_human_shape"
+                        android:contentDescription="@string/human_shape" />
+
+
+                    <EditText
+                        android:id="@+id/edtChooseUserName"
+                        android:layout_width="0sp"
+                        android:layout_weight="70"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:background="@color/white"
+                        android:hint="@string/choose_username"
+                        android:autofillHints=""
+                        android:inputType="text" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="20sp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="5sp"
+                android:id="@+id/choosePassLayout"
+                android:background="@drawable/shape_rect_pure_green">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:background="@color/white">
+
+                    <ImageView
+                        android:layout_width="0sp"
+                        android:layout_height="50sp"
+                        android:layout_weight="30"
+                        android:src="@drawable/icon_lock_shape"
+                        android:contentDescription="@string/human_shape" />
+
+                    <EditText
+                        android:id="@+id/edtChoosePassword"
+                        android:layout_width="0sp"
+                        android:layout_weight="70"
+                        android:inputType="textPassword"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:hint="@string/choose_password"
+                        android:autofillHints=""
+                        android:background="@color/white"/>
+
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="20sp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:background="@drawable/shape_rect_pure_green"
+                android:padding="5sp"
+                android:id="@+id/confirmPassLayout"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:background="@color/white">
+
+                    <ImageView
+                        android:layout_width="0sp"
+                        android:layout_height="50sp"
+                        android:layout_weight="30"
+                        android:src="@drawable/icon_lock_shape"
+                        android:contentDescription="@string/human_shape" />
+
+                    <EditText
+                        android:id="@+id/edtConfirmPassword"
+                        android:layout_width="0sp"
+                        android:layout_weight="70"
+                        android:inputType="textPassword"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:background="@color/white"
+                        android:hint="@string/confirm_password"
+                        android:autofillHints="" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="20sp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/phoneRootLayout"
+                android:visibility="gone"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50sp"
+                    android:background="@drawable/shape_rect_pure_green"
+                    android:padding="5sp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@color/white"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0sp"
+                            android:gravity="center"
+                            android:layout_weight="30"
+                            android:layout_height="match_parent"
+                            android:text="@string/country_code_label"/>
+
+
+                        <EditText
+                            android:id="@+id/edtCountryCode"
+                            android:layout_width="0sp"
+                            android:layout_weight="30"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:background="@color/white"
+                            android:inputType="phone"
+                            android:hint="@string/country_code"
+                            android:autofillHints="" />
+
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="20sp"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/shape_rect_pure_green"
+                    android:padding="5sp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@color/white"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="0sp"
+                            android:layout_height="50sp"
+                            android:layout_weight="30"
+                            android:src="@drawable/icon_phone_shape"
+                            android:contentDescription="@string/human_shape" />
+
+                        <EditText
+                            android:id="@+id/edtGivePhoneNumber"
+                            android:layout_width="0sp"
+                            android:layout_weight="70"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:background="@color/white"
+                            android:inputType="phone"
+                            android:hint="@string/enter_phone_number"
+                            android:autofillHints="" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="20sp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/shape_rect_pure_green"
+                android:padding="5sp"
+                android:visibility="gone"
+                android:id="@+id/verificationCodeLayout">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/white"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="0sp"
+                        android:layout_height="50sp"
+                        android:layout_weight="30"
+                        android:src="@drawable/icon_lock_shape"
+                        android:contentDescription="@string/human_shape" />
+
+                    <EditText
+                        android:id="@+id/edtVerifyNumber"
+                        android:layout_width="0sp"
+                        android:layout_weight="70"
+                        android:inputType="number"
+                        android:background="@color/white"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:hint="@string/enter_code"
+                        android:autofillHints="" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="20sp"/>
+
+            <Button
+                android:id="@+id/continue1"
+                android:textAllCaps="false"
+                android:background="@drawable/shape_rect_pure_red"
+                android:textColor="@color/white"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/continue_"/>
+
+            <Button
+                android:id="@+id/continue2"
+                android:textAllCaps="false"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/shape_rect_pure_red"
+                android:textColor="@color/white"
+                android:text="@string/continue_"
+                android:visibility="gone"/>
+
+            <Button
+                android:id="@+id/btnSubmitCode"
+                android:textAllCaps="false"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/shape_rect_pure_red"
+                android:textColor="@color/white"
+                android:text="@string/submit"
+                android:visibility="gone"/>
+
+            <ProgressBar
+                android:id="@+id/mCreateProgress"
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"/>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+
+</LinearLayout>

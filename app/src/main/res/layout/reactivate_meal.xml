@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:baselineAligned="false">
+
+        <LinearLayout
+            android:layout_width="0sp"
+            android:layout_height="match_parent"
+            android:layout_weight="30"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/reactivateUserName"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:textSize="20sp"
+                android:textColor="@android:color/holo_orange_dark"/>
+
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="0sp"
+            android:layout_height="match_parent"
+            android:layout_weight="70"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0sp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="40"
+                    android:text="@string/breakfast"
+                    android:gravity="center"/>
+
+                <Button
+                    android:id="@+id/brMinus"
+                    android:layout_width="0sp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="20"
+                    android:text="@string/minus"/>
+
+                <TextView
+                    android:id="@+id/brTxt"
+                    android:layout_width="0sp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="20"
+                    android:text="@string/_0"
+                    android:gravity="center"/>
+
+                <Button
+                    android:id="@+id/brPlus"
+                    android:layout_width="0sp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="20"
+                    android:text="@string/plus"/>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0sp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="40"
+                    android:text="@string/lunch"
+                    android:gravity="center"/>
+
+                <Button
+                    android:id="@+id/lMinus"
+                    android:layout_width="0sp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="20"
+                    android:text="@string/minus"/>
+
+                <TextView
+                    android:id="@+id/lTxt"
+                    android:layout_width="0sp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="20"
+                    android:text="@string/_0"
+                    android:gravity="center"/>
+
+                <Button
+                    android:id="@+id/lPlus"
+                    android:layout_width="0sp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="20"
+                    android:text="@string/plus"/>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0sp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="40"
+                    android:text="@string/dinner"
+                    android:gravity="center"/>
+
+                <Button
+                    android:id="@+id/dMinus"
+                    android:layout_width="0sp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="20"
+                    android:text="@string/minus"/>
+
+                <TextView
+                    android:id="@+id/dTxt"
+                    android:layout_width="0sp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="20"
+                    android:text="@string/_0"
+                    android:gravity="center"/>
+
+                <Button
+                    android:id="@+id/dPlus"
+                    android:layout_width="0sp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="20"
+                    android:text="@string/plus"/>
+
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+
+        <Button
+            android:id="@+id/reactivateMeal"
+            android:layout_width="0sp"
+            style="@style/Theme.AppCompat.DayNight"
+            android:layout_height="match_parent"
+            android:layout_weight="50"
+            android:text="@string/reactivate"/>
+
+        <Button
+            android:id="@+id/cancelReactivation"
+            android:layout_width="0sp"
+            style="@style/Theme.AppCompat.DayNight"
+            android:layout_height="match_parent"
+            android:layout_weight="50"
+            android:text="@string/cancel"/>
+
+        <Button
+            android:id="@+id/reactivate_moveUnderCalc"
+            android:layout_width="0sp"
+            style="@style/Theme.AppCompat.DayNight"
+            android:layout_height="match_parent"
+            android:layout_weight="50"
+            android:visibility="gone"
+            android:text="@string/move_under_calculation"/>
+
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/2099020914/Income_and_Expenditure_Manager.iml" filepath="$PROJECT_DIR$/.idea/modules/2099020914/Income_and_Expenditure_Manager.iml" group="Income_and_Expenditure_Manager" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app.iml" filepath="$PROJECT_DIR$/.idea/modules/app.iml" group="Income and Expenditure Manager/app" />
+    </modules>
+  </component>
+</project>

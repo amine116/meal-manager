@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".DiscussionActivity"
+    android:orientation="vertical"
+    android:padding="16sp"
+    android:gravity="center">
+
+    <LinearLayout
+        android:id="@+id/discussionModeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="50sp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:background="@drawable/custom_rectangle_discussion_mode">
+
+        <TextView
+            android:id="@+id/txtPublicMessage"
+            android:layout_width="0sp"
+            android:layout_height="match_parent"
+            android:layout_weight="30"
+            android:gravity="center"
+            android:text="@string/market_note_member"/>
+
+        <TextView
+            android:id="@+id/txtNote"
+            android:layout_width="0sp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:layout_weight="35"
+            android:text="@string/general_note"/>
+
+        <TextView
+            android:id="@+id/txtMarketList"
+            android:layout_width="0sp"
+            android:layout_height="match_parent"
+            android:layout_weight="35"
+            android:gravity="center"
+            android:text="@string/market_note_manager"/>
+
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/discussionCreateLayout"
+        android:layout_width="match_parent"
+        android:layout_height="50sp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:background="@drawable/custom_rectangle">
+
+
+        <Button
+            android:id="@+id/btnAddNew"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@drawable/custom_rectangle_buttons"
+            style="@style/CardView"/>
+
+        <TextView
+            android:layout_width="30sp"
+            android:layout_height="match_parent"
+            android:background="#c5f07a"/>
+
+
+        <Button
+            android:id="@+id/btnEdit"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="@string/edit"
+            style="@style/CardView"
+            android:background="@drawable/custom_rectangle_buttons"
+            android:visibility="gone"/>
+
+        <Button
+            android:id="@+id/btnSave"
+            android:layout_width="0sp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/save"
+            android:background="@drawable/custom_rectangle_buttons"
+            style="@style/CardView"
+            android:visibility="gone"/>
+
+
+
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0sp"
+        android:layout_weight="45"
+
+        android:padding="10sp">
+
+
+        <LinearLayout
+            android:id="@+id/discussionList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+
+
+        </LinearLayout>
+
+
+
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0sp"
+        android:layout_weight="30"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:background="@drawable/custom_rectangl_discussion_writing_layout">
+
+        <ScrollView
+            android:id="@+id/writingLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="10sp">
+
+                <EditText
+                    android:id="@+id/discussionEnterYourName"
+                    android:layout_width="match_parent"
+                    android:layout_height="50sp"
+                    android:background="@drawable/custom_rectangle_edittext"
+                    android:textSize="20sp"
+                    android:gravity="center"
+                    android:hint="@string/enter_your_name"
+                    android:autofillHints=""
+                    android:inputType="text"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="5dp"
+                    android:background="#f5dcbf"/>
+
+
+                <EditText
+                    android:id="@+id/discussionEnterYourTextHere"
+                    android:layout_width="match_parent"
+                    android:layout_height="200sp"
+                    android:background="@drawable/custom_rectangle_edittext"
+                    android:textSize="20sp"
+                    android:gravity="center"
+                    android:hint="@string/enter_your_text_here"
+                    android:autofillHints=""
+                    android:inputType="textMultiLine"/>
+
+            </LinearLayout>
+
+        </ScrollView>
+
+
+        <ScrollView
+            android:id="@+id/discussionTextScroll"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/discussionYourTextHere"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:gravity="center_horizontal"/>
+
+
+        </ScrollView>
+
+
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/publish"
+        android:layout_width="match_parent"
+        android:layout_height="0sp"
+        android:layout_weight="5"
+        android:textSize="15sp"
+        android:visibility="gone"
+        android:background="@drawable/custom_rectangle_discussion_mode"
+        android:text="@string/publish"/>
+
+
+
+
+</LinearLayout>

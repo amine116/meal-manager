@@ -1,0 +1,191 @@
+<resources>
+    <string name="app_name">Meal Manager</string>
+    <string name="action_settings">Settings</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+    <string name="about_calculator">Note:
+        1. It will calculate fraction numbers and\n
+        after calculating, cast out the digits\n
+        after decimal point(2.6 X 3.2 = 8).</string>
+    <string name="title_activity_discussion">DiscussionActivity</string>
+    <string name="title_activity_maintain_todays_meal">MaintainTodaysMeal</string>
+    <string name="title_activity_update_data_dialog">UpdateDataDialog</string>
+    <string name="my_about">
+        Aminul Islam\n
+        B.Sc Honors in Mathematics\n
+        Shahjalal University of Science and Technology, Sylhet.\n
+        Email: iaminul237@gmail.com\n
+        Facebook: facebook.com/Aminul.islam116\n
+    </string>
+    <string name="add_member">Add Member</string>
+    <string name="update_meal">Update Meal</string>
+    <string name="update_payment">Update Payment</string>
+    <string name="discussion">Discussion</string>
+    <string name="erase">Erase</string>
+    <string name="announcement">Announcement:</string>
+    <string name="over_view">Over View</string>
+    <string name="details">Details</string>
+    <string name="cook_s_bills">Cook\'s Bills</string>
+    <string name="market_history">Bazaar History</string>
+    <string name="names">Names</string>
+    <string name="paid">Paid</string>
+    <string name="add_payment">Add Payment</string>
+    <string name="meal">Meal</string>
+    <string name="due">Due</string>
+    <string name="over_head">Over Head</string>
+    <string name="name">Name</string>
+    <string name="total_amount">Total Amount</string>
+    <string name="plus">+</string>
+    <string name="cancel">Cancel</string>
+    <string name="do_you_want_to_log_out">Do you want to Log out?</string>
+    <string name="enter_your_announcement">Enter your Announcement</string>
+    <string name="make">Make</string>
+    <string name="market_note_member">Bazaar Note</string>
+    <string name="general_note">Public Message</string>
+    <string name="market_note_manager">Bazaar Routine</string>
+    <string name="save">Save</string>
+    <string name="edit">Edit</string>
+    <string name="publish">Publish</string>
+    <string name="enter_your_name">Enter Your Name</string>
+    <string name="calculator">Calculator</string>
+    <string name="enter_your_text_here">Enter Your text Here</string>
+    <string name="add_item">Add Item</string>
+    <string name="your_name">Your Name</string>
+    <string name="your_name_l">Your Name:</string>
+    <string name="enter">Enter</string>
+    <string name="show_items">Show Items</string>
+    <string name="short_instruction">Brief Instruction</string>
+    <string name="about">About</string>
+    <string name="log_out">Log Out</string>
+    <string name="see_member_password">See Member Password</string>
+    <string name="change_member_password">Change Member Password</string>
+    <string name="manage_today_s_meal">Manage Today\'s Meal</string>
+    <string name="update_mpdph">Update MPDPH</string>
+    <string name="set_last_time_of_changing_meals">Set Last Time Of Changing Meals</string>
+    <string name="make_announcement">Make Announcement</string>
+    <string name="instruction_announcement">
+        নতুন কোন সিদ্ধান্ত নিলে কিংবা কোন বেলার মিল বন্ধ থাকলে অথবা নতুন করে চালু হবার পর "\Make Announcement"\ অপশনে গিয়ে অ্যানাউন্স করে সবাইকে জানিয়ে দিতে পারেন।</string>
+    <string name="instruction_todays_meal">
+        শুধু মাত্র আজকের মিল চেইঞ্জ করার জন্য "\Manage Today's Meal"\ অপশনটি ব্যাবহার করুন। (দীর্ঘ সময়ের জন্য মিল বন্ধ করতে  কিংবা নতুন করে মিল চালু করতে ম্যানেজারের সাথে যোগাযোগ করুন।)</string>
+    <string name="instruction_reactivate_meal">
+        আপনি যদি ম্যানেজার হয়ে থাকেন, তাহলে যারা মিল বন্ধ করেছে তাদের মিল পুনরায় চালু করতে "\Over View"\ তে গিয়ে ব্লার হওয়া কালারে থাকা তাদের নামের উপর কিছুক্ষন ক্লিক করে ধরে রাখুন। তাহলে চালু করার অপশন পেয়ে যাবেন।</string>
+    <string name="instruction_discussion">
+        কার কবে বাজার করতে হবে তা দেখতে (কিংবা ম্যানেজার হলে বাজারের লিস্ট টাঙিয়ে দিতে) অথবা আজকের বাজারের লিস্ট দেখতে (কিংবা ম্যানেজার হলে বাজারের আইটেম লিখে দিতে) Discussion বাটনে ক্লিক করুন। সেখানে গিয়ে Market Lists(Manager) এ ক্লিক করুন।</string>
+    <string name="instruction_public_message">
+        যদি আপনি সবাইকে বা ম্যানেজারকে কিছু জানাতে চান তাহলে Discussion বাটনে ক্লিক করুন। এবার Public Messages এ ক্লিক করে যত ইচ্ছা message পাবলিশ করতে পারেন। মেসেজটি সবাই দেখতে পাবে।</string>
+
+    <string name="instruction_market_note">
+        আপনি বাজার করে প্রতিটি পণ্য এবং তার মূল্যের তালিকা করতে  Discussion বাটনে ক্লিক করুন। এবার  Market Note এ ক্লিক করে আপনার বাজার আইটেম গুলো অ্যাড করে দিতে (অথবা সরাসরি ম্যানেজারকে জানাতে) হবে।ম্যানেজার সেই লিস্ট দেখে মূল বাজারকারীদের তাইলিকা Market History তে গিয়ে "+" বাটনে ক্লিক করে  বাজারকারীর নাম এবং মোট কত অ্যামাউন্টের বাজার করেছেন তা তুলে দিতে হবে।(অন্যথায় এ বাজারের অংক ক্যালকুলেশনে আসবে না)</string>
+    <string name="instruction_update_mpdph">
+        Update MPDPH(Meal per day per head) এই অপশনটিতে ক্লিক করে কয়েকটি রেগুলার আপডেটেবল ইনফরমেশন কে সেট করে নিতে হবে। প্রতি মেম্বারের প্রতি বেলায় কয়টি করে মিল চলবে, কোন বেলার মিল চলবে/অফ থাকবে, এখান থেকে একবার সেট করে নিলে রেগুলার আর চেইঞ্জ করতে হবে না।</string>
+    <string name="instruction_update_meal">
+        এখান থেকে ম্যানেজার প্রতিদিন মেম্বারদের মিল আপডেট করবেন। যদি কোন মেম্বার Manage Today\'s Meal অপশন থেকে আজকের মিল অফ করে থাকে তাহলে ম্যানেজার সেই মেম্বারের নামের উপরে সেই বেলার মিলের অপশনে রিপিটেডলি কালার চেইঞ্জ লক্ষ করবেন। এবং সেখানে ক্লিক করলে সেই বেলায় এবং নামে ক্লিক করলে প্রত্যেক বেলায় কত মিল হবে তা দেখতে পাবেন। এখান থেকে ম্যানেজার মেম্বারদের মিল চেইঞ্জ অ্যাপ্রুভ না করলে কারো চেইঞ্জ অ্যাপ্লাই হবে না।</string>
+    <string name="instruction_rules_of_meal_calculation">
+        ১। প্রত্যেক অ্যাক্টিভ মেম্বার যে কয়টি মিল গ্রহন করেছেন তাকে মিল রেট (আজ পর্যন্ত) দিয়ে গুন করে তার খরচ বের করা হয়।\n
+        ২। যদি কোন মেম্বার কয়েকদিনের জন্য মিল বন্ধ রাখে তাহলে ম্যানেজার Update MPDPH
+        এ গিয়ে তার Meal is On থেকে টিক চিহ্ন উঠিয়ে দিবেন। তাহলে তার আজ পর্যন্ত যে হিসেব
+        আছে তা স্টপ হয়ে যাবে। এবং তার হিসেব পরবর্তিতে আর পরিবর্তন হবে না। তবে সবাই তার
+        হিসেব Over View তে ব্লারড কালারে দেখতে পাবেন।কিন্তু মেম্বার যদি মনে করেন
+        অলরেডি অনেক কিছু বাজার করা হয়ে গেছে তাহলে বর্তমান বাজার শেষ হওয়া পর্যন্ত তার Meal is On
+        অপশনের টিক চিহ্ন না উঠিয়ে শুধু সব বেলার মিল 0(শুন্য) করে দিবেন। এক্ষেত্রে তার হিসেব বর্তমান মিলরেট
+        অনুযায়ি পরিবর্তন হবে কিন্তু মিলের পরিমান বাড়বে না।\n
+        ৩। মিল বন্ধ করা কোন মেম্বার যদি পুনরায় তার মিল চালু করে তাহলে তার হিসেব সম্পূর্ন নতুন
+        ভাবে শুরু হবে। কিন্তু Over View তে সবাই পূর্বের এবং বর্তমান সেশন এক সাথে দেখবেন।
+        যে কারনে হয়তো মিল সংখ্যা এবং মিল রেট গুন করলে রেজাল্ট আপাত দৃষ্টিতে অমিল মনে হবে।
+        কিন্তু বিভ্রান্ত হওয়ার কিছু নেই। তিনি প্রথম যখন মিল অফ করেছিলেন তখন যে মিল রেট ছিলো
+        পুর্বের হিসেবটা সেই মিল রেট অনুযায়ি হবে। যে কারনে বর্তমান এবং পুর্বের হিসেব একত্রে দেখানোর
+        কারনে হিসেবে আপাত দৃষ্টিতে অমিল মনে হতে পারে। কিন্তু Details অপশনে গিয়ে পুর্বের
+        এবং বর্তমান হিসেব যখন আলাদা ভাবে দেখবেন তখন এটা বোঝা সহজ হবে।</string>
+    <string name="instruction_move_to_cur_calc">
+        কোন মেম্বার এর মিল বন্ধ থাকার পর যদি ম্যানেজার মনে করেন তার মিল-ক্যালকুলেশন বর্তমান  মিল-রেট অনুযায়ী হওয়া উচিৎ,
+        তাহলে বন্ধ হওয়া মেম্বারের উপর ক্লিক করে ধরে রাখলে তিন টি অপশনের মাঝে একটি পাবেন এমন Move under calculation।
+        এখানে ক্লিক করে মেম্বার কে আপনি বর্তমান মিল-রেট অন্যযায়ি আপডেট করতে পারবেন।
+
+        কিন্তু একটা বিষয় অবশ্যই লক্ষ রাখতে হবে যে, বর্তমান মিল রেটে মুভ করলে বাকী সব মেম্বারদের হিসেবও অ্যাফেক্টেড হবে, এবং মিলরেট অনুযায়ি
+        আপডেট হবে।
+    </string>
+    <string name="instruction_edit">
+        কোন মেম্বারের মিল/পেমেন্ট ভুলভাবে ইনপুট দিলে option menu —> edit member info তে গিয়ে এডিট করে ঠিক করতে পারবেন।
+    </string>
+
+    <string name="see_announcement_history">See Announcement History</string>
+    <string name="are_you_manager">Are you a manager?</string>
+    <string name="log_in_here">Log in</string>
+    <string name="are_you_member">Are you a member?</string>
+    <string name="click_here">Log in</string>
+    <string name="new_here_n_if_you_are_not_manager_nyou_don_t_need_account">
+        New here?\n(Manager Only)
+    </string>
+    <string name="create_new_account">Create account</string>
+    <string name="forgot_password">Recover password</string>
+    <string name="image">Image</string>
+    <string name="my_image">My Image</string>
+
+    <string name="video_tutorial_link_base"> https://www.youtube.com/watch?v=hPedGanFQZ8 </string>
+
+    <string name="video_tutorial_link">
+        <a href="https://www.youtube.com/watch?v=hPedGanFQZ8">
+            Video Tutorial</a>
+    </string>
+
+    <string name="video_tutorial">Video Tutorial</string>
+    <string name="instructions">Instructions</string>
+    <string name="copy_link">Copy Link</string>
+    <string name="rules_of_meal_calculation">Rules Of Meal Calculation</string>
+    <string name="manage_today_meal">Manage Today Meal</string>
+    <string name="reactivate_meal">Reactivate Meal</string>
+    <string name="market_lists">Market Lists</string>
+    <string name="public_message">Public Message</string>
+    <string name="choose_username">Choose Username</string>
+    <string name="choose_password">Choose Password</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="enter_code">Enter Code</string>
+    <string name="continue_">Continue</string>
+    <string name="submit">Submit</string>
+    <string name="enter_username">Enter Username</string>
+    <string name="country_code_label">Country Code:</string>
+    <string name="country_code_hint">Country code</string>
+    <string name="phone_label">Phone:</string>
+    <string name="enter_phone">Enter Phone</string>
+    <string name="confirm_phone">Confirm Phone:</string>
+    <string name="confirm_phone_hint">Confirm Phone</string>
+    <string name="enter_verification_code">Enter verification code</string>
+    <string name="reset">Reset</string>
+    <string name="breakfast">Breakfast:</string>
+    <string name="minus">-</string>
+    <string name="_0">0</string>
+    <string name="lunch">Lunch:</string>
+    <string name="dinner">Dinner:</string>
+    <string name="reactivate">Reactivate</string>
+    <string name="move_under_calculation">Move Under Calculation</string>
+    <string name="edit_member_info">Edit Member Info</string>
+    <string name="edit_instruction">Edit Data</string>
+    <string name="write_move">Type Here</string>
+    <string name="extra_money">Extra Money(such as from previous meal)</string>
+    <string name="date">Date:</string>
+    <string name="_09_05_2020">09_05_2020</string>
+    <string name="edit_market_cost">Click here to edit market cost</string>
+    <string name="cost_info">Cost Info</string>
+    <string name="write_details">Write Details</string>
+    <string name="total">Total</string>
+    <string name="history">History</string>
+    <string name="enter_payment">Enter Payment</string>
+    <string name="previous_password">Previous Password:</string>
+    <string name="new_password">New Password:</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="log_in">Log in</string>
+    <string name="human_shape">Human Shape</string>
+    <string name="manager_s_username">Manager\'s username</string>
+    <string name="country_code">Country Code</string>
+    <string name="phone">Phone:</string>
+    <string name="enter_phone_number">Enter Phone Number</string>
+    <string name="log_in_logo">Log In Logo</string>
+    <string name="meal_details">Meal History</string>
+    <string name="payment_history">Payment History</string>
+
+
+</resources>

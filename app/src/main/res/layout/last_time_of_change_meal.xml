@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#ff3399"
+    android:padding="5sp">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0sp"
+                android:layout_weight="30"
+                android:orientation="horizontal"
+                android:background="#dd99ff">
+
+                <TextView
+                    android:layout_width="0sp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="30"
+                    android:textStyle="bold"
+                    android:textSize="20sp"
+                    android:textColor="#000000"
+                    android:text="Breakfast: "/>
+
+                <TimePicker
+                    android:layout_width="0sp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="70"
+                    android:timePickerMode="spinner"
+                    android:id="@+id/setBreakfastTime"/>
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0sp"
+                android:layout_weight="30"
+                android:orientation="horizontal"
+                android:background="#b3fff0">
+
+                <TextView
+                    android:layout_width="0sp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="30"
+                    android:text="Lunch: "
+                    android:textColor="#000000"
+                    android:textStyle="bold"
+                    android:textSize="20sp"/>
+
+                <TimePicker
+                    android:layout_width="0sp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="70"
+                    android:timePickerMode="spinner"
+                    android:id="@+id/setLunchTime"/>
+
+            </LinearLayout>
+
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0sp"
+                android:layout_weight="30"
+                android:orientation="horizontal"
+                android:background="#b3e6ff"
+                android:gravity="center_horizontal">
+
+                <TextView
+                    android:layout_width="0sp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="30"
+                    android:textStyle="bold"
+                    android:textSize="20sp"
+                    android:textColor="#000000"
+                    android:text="Dinner: "/>
+
+                <TimePicker
+                    android:layout_width="0sp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="70"
+                    android:timePickerMode="spinner"
+                    android:id="@+id/setDinnerTime"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0sp"
+                android:orientation="horizontal"
+                android:layout_weight="10"
+                android:background="#ffd9b3">
+
+
+                <Button
+                    android:id="@+id/lastTimeSave"
+                    android:layout_width="0sp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="50"
+                    android:text="Save"/>
+
+                <Button
+                    android:id="@+id/lastTimeCancel"
+                    android:layout_width="0sp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="50"
+                    android:text="Cancel"/>
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+
+</LinearLayout>

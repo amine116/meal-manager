@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#6200EE</color>
+    <color name="colorPrimaryDark">#3700B3</color>
+    <color name="colorAccent">#03DAC5</color>
+    <color name="white">#ffffff</color>
+    <color name="black_70">#4d4d4d</color>
+    <color name="black_25">#bfbfbf</color>
+    <color name="modeLayout">#ffffff</color>
+    <color name="today_meal_layout">#000000</color>
+    <color name="announcement">#999966</color>
+    <color name="actionbar_color">#6600ff</color>
+    <color name="red">#910606</color>
+    <color name="label">#3b3e42</color>
+    <color name="meal_details">#2c302d</color>
+    <color name="statistics">#3b3e42</color>
+    <color name="payment_details">#3b3e42</color>
+    <color name="black_50">#999966</color>
+    <color name="pure_black">#000000</color>
+    <color name="magenta">#E6125A</color>
+    <color name="overview_black">#2c302d</color>
+
+
+    <!-->
+    TODO Colors for new UI
+    -->
+    <!-- Pure Colors -->
+    <color name="pure_red">#FF0000</color>
+    <color name="pure_green">#008000</color>
+    <color name="pure_yellow">#FFFF00</color>
+    <color name="light_green">#90ee90</color>
+    
+    <!-- Combinations -->
+    <color name="color_announcement">@color/pure_green</color>
+    <color name="color_today_mealOverView">@color/pure_red</color>
+    <color name="color_mode">@color/pure_green</color>
+    <color name="color_label">@color/pure_red</color>
+    <color name="color_member_info">@color/pure_green</color>
+
+</resources>

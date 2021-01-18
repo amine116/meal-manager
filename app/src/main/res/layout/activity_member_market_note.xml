@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ActivityMemberMarketNote"
+    android:padding="16sp"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50sp"
+        android:orientation="horizontal"
+        android:background="@drawable/custom_rectangle_discussion_mode">
+
+        <Button
+            android:layout_width="0sp"
+            android:layout_height="match_parent"
+            android:layout_weight="40"
+            android:id="@+id/marketNote_btnSave"
+            android:layout_gravity="start"
+            android:textAllCaps="false"
+            style="@style/Theme.AppCompat.DayNight"
+            android:text="@string/save" />
+
+
+        <Button
+            android:layout_width="0sp"
+            android:layout_height="match_parent"
+            android:layout_weight="40"
+            style="@style/Theme.AppCompat.DayNight"
+            android:id="@+id/marketNote_btnAddItem"
+            android:layout_gravity="end"
+            android:textAllCaps="false"
+            android:text="@string/add_item" />
+
+
+        <Button
+            android:layout_width="0sp"
+            android:layout_height="match_parent"
+            android:layout_weight="40"
+            style="@style/Theme.AppCompat.DayNight"
+            android:id="@+id/marketNote_btnShowItems"
+            android:visibility="gone"
+            android:layout_gravity="end"
+            android:text="@string/show_items"
+            android:textAllCaps="false"/>
+
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="10dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50sp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:id="@+id/marketNote_edtNameLayout"
+        android:background="@drawable/custom_rectangle_discussion_mode">
+
+        <TextView
+            android:layout_width="0sp"
+            android:layout_height="match_parent"
+            android:layout_weight="30"
+            android:gravity="center"
+            android:background="@drawable/custom_rectangle_discussion_mode"
+            android:text="@string/your_name_l"
+            android:autofillHints=""/>
+
+        <TextView
+            android:layout_width="10sp"
+            android:layout_height="match_parent"
+            android:background="#ffffff"/>
+
+        <EditText
+            android:layout_width="0sp"
+            android:layout_height="match_parent"
+            android:layout_weight="60"
+            android:gravity="center"
+            android:background="@drawable/custom_rectangle_discussion_mode"
+            android:id="@+id/marketNote_edtName"
+            android:inputType="text"
+            android:hint="@string/enter"
+            android:autofillHints=""/>
+
+
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="10dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50sp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:background="@drawable/custom_rectangle_discussion_mode">
+
+        <Spinner
+            android:layout_width="0sp"
+            android:layout_height="match_parent"
+            android:layout_weight="35"
+            android:gravity="center"
+            android:id="@+id/marketNote_nameSpin"/>
+
+        <Spinner
+            android:layout_width="0sp"
+            android:layout_weight="35"
+            android:gravity="center"
+            android:layout_height="match_parent"
+            android:id="@+id/marketNote_dateSpin"/>
+
+
+        <ImageView
+            android:layout_width="50sp"
+            android:id="@+id/marketNote_imgCalc"
+            android:layout_height="match_parent"
+            android:background="@drawable/custom_rectangle_discussion_mode"
+            android:src="@drawable/calcimagee"
+            android:contentDescription="@string/calculator" />
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="10dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="50sp"
+        android:gravity="end"
+        android:textSize="20sp"
+        android:id="@+id/marketNote_txtTotal"
+        android:background="@drawable/custom_rectangle_discussion_mode"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="10dp"/>
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/marketNote_progress"
+        android:visibility="gone"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/marketNote_scrollItems"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/marketNote_itemListLayout1"
+            android:orientation="vertical">
+
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/marketNote_itemsScroll"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:baselineAligned="false">
+
+            <LinearLayout
+                android:layout_width="0sp"
+                android:layout_weight="10"
+                android:layout_height="wrap_content"
+                android:id="@+id/marketNote_sLayout"
+                android:orientation="vertical">
+
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="0sp"
+                android:layout_weight="2"
+                android:layout_height="match_parent"/>
+
+            <LinearLayout
+                android:layout_width="0sp"
+                android:layout_weight="88"
+                android:layout_height="wrap_content"
+                android:id="@+id/marketNote_itemListLayout"
+                android:orientation="vertical">
+
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+
+    </ScrollView>
+
+
+</LinearLayout>

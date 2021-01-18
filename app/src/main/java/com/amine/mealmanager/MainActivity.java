@@ -1236,16 +1236,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 det.setText(m);
             }
 
-            final int finalI = i;
-            ll.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(MainActivity.this, EditInterfaceActivity.class);
-                    intent.putExtra("TYPE", "MEAL");
-                    intent.putExtra("INDEX", finalI);
-                    startActivity(intent);
-                }
-            });
+            if(IS_MANAGER){
+                final int finalI = i;
+                ll.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(MainActivity.this, EditInterfaceActivity.class);
+                        intent.putExtra("TYPE", "MEAL");
+                        intent.putExtra("INDEX", finalI);
+                        startActivity(intent);
+                    }
+                });
+            }
         }
 
         for(int i = 0; i < stoppedBoarders.size(); i++){
@@ -1363,16 +1365,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 det.setText(m);
             }
 
-            final int finalI = i;
-            ll.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(MainActivity.this, EditInterfaceActivity.class);
-                    intent.putExtra("TYPE", "PAYMENT");
-                    intent.putExtra("INDEX", finalI);
-                    startActivity(intent);
-                }
-            });
+            if(IS_MANAGER){
+                final int finalI = i;
+                ll.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(MainActivity.this, EditInterfaceActivity.class);
+                        intent.putExtra("TYPE", "PAYMENT");
+                        intent.putExtra("INDEX", finalI);
+                        startActivity(intent);
+                    }
+                });
+            }
         }
 
         for(int i = 0; i < stoppedBoarders.size(); i++){

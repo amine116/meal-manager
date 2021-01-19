@@ -113,14 +113,14 @@
 
     <string name="see_announcement_history">See Announcement History</string>
     <string name="are_you_manager">Are you a manager?</string>
-    <string name="log_in_here">Log in</string>
+    <string name="log_in_here">Yes</string>
     <string name="are_you_member">Are you a member?</string>
-    <string name="click_here">Log in</string>
+    <string name="click_here">Yes</string>
     <string name="new_here_n_if_you_are_not_manager_nyou_don_t_need_account">
         New here?\n(Manager Only)
     </string>
-    <string name="create_new_account">Create account</string>
-    <string name="forgot_password">Recover password</string>
+    <string name="create_new_account">Create Account</string>
+    <string name="forgot_password">Recover Password</string>
     <string name="image">Image</string>
     <string name="my_image">My Image</string>
 

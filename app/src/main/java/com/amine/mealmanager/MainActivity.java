@@ -12,6 +12,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -43,6 +44,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -56,6 +58,8 @@ import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Scanner;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, ValueEventListener{
@@ -86,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static String lastUpdate = "", nameOfManager = "";
     private static final String INFO_FILE = "Info.txt";
     private FirebaseAuth fAuth;
+    private int testInt = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,27 +145,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return -1;
     }
 
-    private void getLastUpdateTime(){
-
-        rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(snapshot.child("lastUpdate").exists()){
-                    lastUpdate = "Last meal update: " + snapshot.child("lastUpdate").getValue(String.class);
-                }
-                else{
-                    lastUpdate = "Last meal update: N/A";
-                }
-                txtLastUpdate.setText(lastUpdate);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-    }
-
     private void checkAndSetSecurity(){
 
         if(fAuth.getCurrentUser() == null){
@@ -183,7 +167,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
-            }else{
+            }
+            else{
                 setLogInPage();
                 IS_MANAGER = false;
                 LOGGED_OUT = true;
@@ -264,8 +249,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
             txtOverView.setTextColor(Color.CYAN);
             txtOverView.setPaintFlags(txtOverView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-
-            getLastUpdateTime();
 
         }
 
@@ -547,6 +530,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onDataChange(@NonNull DataSnapshot snapshot) {
+        makeViewsInvisible();
         if(snapshot.child("Discussion").child("notifications").child("text").exists()){
             String text =
                     snapshot.child("Discussion").child("notifications").child("text").getValue(String.class);
@@ -589,13 +573,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 makeViewsVisible();
                 setStatistics();
                 recalculate();
-
                 if(overViewClicked) setDataToAppFrame();
                 else if(detailsClicked) setDetailsToFrame();
                 else if(cooksBillClicked) setCooksBillsToFrame();
                 else if(marketHistoryClicked) setMarketHistoryToFrame();
                 countOfTodaysMeal();
                 setAnnouncementToFront();
+                txtLastUpdate.setText(lastUpdate);
             }
         });
 
@@ -1302,11 +1286,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         width = 0;
 
         for(int i = 0; i < boarders.size(); i++){
-            if(boarders.get(i).getMealD().size() > width)
+            if(boarders.get(i).getPaymentD().size() > width)
                 width = boarders.get(i).getPaymentD().size();
         }
         for(int i = 0; i < stoppedBoarders.size(); i++){
-            if(stoppedBoarders.get(i).getMealD().size() > width)
+            if(stoppedBoarders.get(i).getPaymentD().size() > width)
                 width = stoppedBoarders.get(i).getPaymentD().size();
         }
         width += 2;
@@ -1427,12 +1411,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
 
-
-
-
     }
 
     private interface CallBack{
+        void onCallback();
+    }
+    private interface Wait{
         void onCallback();
     }
 
@@ -2111,7 +2095,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                         }
                         mealStatusThreadAlive = false;
-                        getLastUpdateTime();
                         dismiss();
                     }
 
@@ -3863,7 +3846,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             .getValue(Boolean.class);
                     isDinnerOn = snapshot.child("Meal Period").child("Dinner")
                             .getValue(Boolean.class);
-                }else{
+                }
+                else{
                     isBreakfastOn = false;
                     isLunchOn = false;
                     isDinnerOn = false;
@@ -3906,7 +3890,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                 }
 
-                callBack.onCallback();
+                if(snapshot.child("lastUpdate").exists()){
+                    lastUpdate = "Last meal update: " + snapshot.child("lastUpdate").getValue(String.class);
+                }
+                else{
+                    lastUpdate = "Last meal update: N/A";
+                }
+
+                sortDetailMealAndPayment(new Wait() {
+                    @Override
+                    public void onCallback() {
+
+                        callBack.onCallback();
+                    }
+                });
             }
 
             @Override
@@ -3915,6 +3912,53 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
+    }
+
+    private void sortDetailMealAndPayment(Wait wait){
+
+        for(int i = 0; i < boarders.size(); i++){
+            Collections.sort(boarders.get(i).getMealD(), new Comparator<MealOrPaymentDetails>() {
+                @Override
+                public int compare(MealOrPaymentDetails o1, MealOrPaymentDetails o2) {
+
+                    return getIntegerOfDates(o1.getDate()) - getIntegerOfDates(o2.getDate());
+                }
+            });
+
+            Collections.sort(boarders.get(i).getPaymentD(), new Comparator<MealOrPaymentDetails>() {
+                @Override
+                public int compare(MealOrPaymentDetails o1, MealOrPaymentDetails o2) {
+
+                    return getIntegerOfDates(o1.getDate()) - getIntegerOfDates(o2.getDate());
+                }
+            });
+        }
+
+        for(int i = 0; i < stoppedBoarders.size(); i++){
+            Collections.sort(stoppedBoarders.get(i).getMealD(), new Comparator<MealOrPaymentDetails>() {
+                @Override
+                public int compare(MealOrPaymentDetails o1, MealOrPaymentDetails o2) {
+
+                    return getIntegerOfDates(o1.getDate()) - getIntegerOfDates(o2.getDate());
+                }
+            });
+            Collections.sort(stoppedBoarders.get(i).getPaymentD(), new Comparator<MealOrPaymentDetails>() {
+                @Override
+                public int compare(MealOrPaymentDetails o1, MealOrPaymentDetails o2) {
+
+                    return getIntegerOfDates(o1.getDate()) - getIntegerOfDates(o2.getDate());
+                }
+            });
+        }
+
+        wait.onCallback();
+    }
+
+    private int getIntegerOfDates(String date){
+        int day = Integer.parseInt(date.substring(0, 2)),
+                month = Integer.parseInt(date.substring(3, 5)),
+                year = Integer.parseInt(date.substring(6));
+        return (day + (month*30) + (year*12*30));
     }
 
     private static String getMonth(String month){

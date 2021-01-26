@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -111,6 +112,7 @@ public class RecoverPassword extends AppCompatActivity implements View.OnClickLi
             phoneNumber = cntrcd + cnfrmphn;
             findViewById(R.id.phoneVerificationLayout).setVisibility(View.GONE);
             findViewById(R.id.recProgress).setVisibility(View.VISIBLE);
+            textView.setText("");
             verifyPhone();
         }
 
@@ -198,8 +200,6 @@ public class RecoverPassword extends AppCompatActivity implements View.OnClickLi
 
     private void verifyPhone(){
         if(phoneNumber != null){
-            String s = "We have sent you a verification code to \n" + dummyPhone;
-            textView.setText(s);
 
             PhoneAuthOptions options =
                     PhoneAuthOptions.newBuilder(fAuth)
@@ -211,11 +211,14 @@ public class RecoverPassword extends AppCompatActivity implements View.OnClickLi
                                 public void onVerificationCompleted(
                                         @NonNull PhoneAuthCredential phoneAuthCredential) {
                                     verificationCode = phoneAuthCredential.getSmsCode();
+                                    Log.i("test", "Completed");
                                     if(verificationCode != null){
                                         Toast.makeText(RecoverPassword.this, "Verified",
                                                 Toast.LENGTH_LONG).show();
                                         textView.setVisibility(View.GONE);
-                                        findViewById(R.id.otpVerificationLayout).setVisibility(View.VISIBLE);
+                                        findViewById(R.id.recProgress).setVisibility(View.GONE);
+                                        findViewById(R.id.otpVerificationLayout).setVisibility(View.GONE);
+                                        findViewById(R.id.resetPassLayout).setVisibility(View.VISIBLE);
                                         verifyCode();
                                     }else{
                                         findViewById(R.id.otpVerificationLayout).setVisibility(View.VISIBLE);
@@ -228,7 +231,8 @@ public class RecoverPassword extends AppCompatActivity implements View.OnClickLi
                                 public void onVerificationFailed(@NonNull FirebaseException e) {
                                     Toast.makeText(RecoverPassword.this, e.getMessage(),
                                             Toast.LENGTH_LONG).show();
-                                    //Log.i("failed", e.getMessage());
+                                    textView.setText(e.getMessage());
+                                    findViewById(R.id.otpVerificationLayout).setVisibility(View.GONE);
                                 }
 
                                 @Override
@@ -237,6 +241,13 @@ public class RecoverPassword extends AppCompatActivity implements View.OnClickLi
                                                                forceResendingToken) {
                                     super.onCodeSent(s, forceResendingToken);
                                     verificationID = s;
+                                    String codeSentMessage =
+                                            "We have sent you a verification code to \n" + dummyPhone + "" +
+                                                    "\nEnter the code bellow";
+                                    textView.setText(codeSentMessage);
+
+                                    findViewById(R.id.recProgress).setVisibility(View.GONE);
+                                    findViewById(R.id.otpVerificationLayout).setVisibility(View.VISIBLE);
                                 }
                             })
                             .build();

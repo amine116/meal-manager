@@ -409,7 +409,7 @@ public class DiscussionActivity extends AppCompatActivity implements View.OnClic
                                 linearLayouts[j].setBackground(finalDrawable);
                             }
                         }
-                        edit.setVisibility(View.VISIBLE);
+                        edit.setVisibility(View.GONE);
                         selectedLayout = finalI;
                         publish.setVisibility(View.GONE);
                         findViewById(R.id.writingLayout).setVisibility(View.GONE);

@@ -67,14 +67,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private LinearLayout rootLayout;
     public static ArrayList<Boarder> boarders, stoppedBoarders;
     public static ArrayList<MarketerHistory> marketerHistories;
-    private ArrayList<CooksBill> cooksBills;
+    public static ArrayList<CooksBill> cooksBills;
     private static ArrayList<TodayMealStatus> todayMealStatuses, mealStatuses;
-    private File rootFolder, evidence;
+    private File rootFolder, evidence, loggedInPersonFile;
     private TextView txtTotalPaid, txtTotalMeal, txtMealRate, txtTotalCost,
             txtOverView, txtDetails, txtMarketHistory, marketerNameLabel, marketDateLabel, marketAmountLabel,
             nameLabel, paidLabel, mealLabel, dueLabel, overHeadLabel, txtLastUpdate, txtCooksBill,
             txtReminderMoney;
-    private static final int MAX_BOARDER = 100;
+    public static final int MAX_BOARDER = 100;
     private final EditText[] edtCooksBill = new EditText[MAX_BOARDER];
 
     private Button btnAddMarket, addBoarder;
@@ -84,13 +84,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             marketHistoryClicked = false;
     public static double totalMeal = 0.0, totalPaid = 0.0, mealRate = 0.0, totalCost = 0.0,
             extraMoney = 0, stoppedMeal = 0.0, stoppedCost = 0.0;
-    private final DecimalFormat df =  new DecimalFormat("0.#");
+    private static final DecimalFormat df =  new DecimalFormat("0.#");
     public static DatabaseReference rootRef, lastUpdateRef, lastChangingTimeRef, marketHistoryRef,
             mealPeriodRef, mealStatusRef, postRef, todayMealStatusRef, cookBillRef, membersRef;
-    private static String lastUpdate = "", nameOfManager = "";
-    private static final String INFO_FILE = "Info.txt";
+    private static String lastUpdate = "", nameOfManager = "", nameOfLoggedInPerson = "";
+    private static final String INFO_FILE = "Info.txt", MEMBER_NAME_FILE = "Member Name.txt";
     private FirebaseAuth fAuth;
-    private int testInt = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,6 +105,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             findViewById(R.id.main_progress).setVisibility(View.VISIBLE);
             initialize();
             setViewToFrame();
+
         }
     }
 
@@ -157,6 +157,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         IS_MANAGER = false;
                         rootRef = FirebaseDatabase.getInstance().getReference().child(nameOfManager);
                         rootRef.addValueEventListener(this);
+
+                        if(loggedInPersonFile.exists()){
+                            Scanner scanner1 = new Scanner(loggedInPersonFile);
+                            if(scanner1.hasNextLine()){
+                                nameOfLoggedInPerson = scanner1.nextLine();
+                            }
+                        }
+
                         setReferences();
 
                     }else{
@@ -164,6 +172,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         IS_MANAGER = false;
                         LOGGED_OUT = true;
                     }
+
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
@@ -573,10 +582,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 makeViewsVisible();
                 setStatistics();
                 recalculate();
-                if(overViewClicked) setDataToAppFrame();
-                else if(detailsClicked) setDetailsToFrame();
-                else if(cooksBillClicked) setCooksBillsToFrame();
-                else if(marketHistoryClicked) setMarketHistoryToFrame();
+                if(overViewClicked) {
+                    //setDataToAppFrame();
+                    Intent i = new Intent(MainActivity.this, ActivityOverView.class);
+                    startActivity(i);
+                }
+                else if(detailsClicked){
+                    //setDetailsToFrame();
+                    Intent i = new Intent(MainActivity.this, DetailsActivity.class);
+                    startActivity(i);
+                }
+                else if(cooksBillClicked){
+                    //setCooksBillsToFrame();
+                    Intent i = new Intent(MainActivity.this, CookBillActivity.class);
+                    startActivity(i);
+                }
+                else if(marketHistoryClicked){
+                    //setMarketHistoryToFrame();
+                    Intent i = new Intent(MainActivity.this, BazaarActivity.class);
+                    startActivity(i);
+                }
                 countOfTodaysMeal();
                 setAnnouncementToFront();
                 txtLastUpdate.setText(lastUpdate);
@@ -588,6 +613,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onCancelled(@NonNull DatabaseError error) {
 
+    }
+
+    private class SelectNamesForLogIn extends Dialog implements View.OnClickListener {
+
+        public SelectNamesForLogIn(@NonNull Context context) {
+            super(context);
+        }
+
+        @Override
+        public void onClick(View v) {
+
+        }
     }
 
     public class MakeAnnouncement extends Dialog implements View.OnClickListener{
@@ -678,6 +715,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         rootFolder = getCacheDir();
         evidence = new File(rootFolder, INFO_FILE);
+        loggedInPersonFile = new File(rootFolder, MEMBER_NAME_FILE);
 
         addBoarder = findViewById(R.id.addBoarder);
         addBoarder.setOnClickListener(MainActivity.this);
@@ -711,6 +749,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             } catch (IOException e) {
                 Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        }
+        if(!loggedInPersonFile.exists()){
+            try {
+                if(!loggedInPersonFile.createNewFile()){
+                    Toast.makeText(MainActivity.this, "", Toast.LENGTH_LONG).show();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
 
@@ -767,7 +814,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             setMarketHistoryToFrame();
         }
         if(v.getId() == R.id.btnAddMarket){
-            AddMarketHistoryDialog addMarketHistoryDialog = new AddMarketHistoryDialog(MainActivity.this);
+            AddMarketHistoryDialog addMarketHistoryDialog = new
+                    AddMarketHistoryDialog(MainActivity.this);
             addMarketHistoryDialog.show();
 
             WindowManager.LayoutParams layoutParams =

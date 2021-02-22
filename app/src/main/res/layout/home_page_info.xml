@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="16sp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="50sp"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/main_homeLayout">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@color/pure_red"
+            android:padding="5sp">
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@color/white">
+
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/txtProfileName"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height=".5dp"
+                    android:background="@color/black_25"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/txtProfileConsumedMeal"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height=".5dp"
+                    android:background="@color/black_25"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/txtProfilePaid"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height=".5dp"
+                    android:background="@color/black_25"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/txtProfileCost"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height=".5dp"
+                    android:background="@color/black_25"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/txtProfileDueOrOverHead"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height=".5dp"
+                    android:background="@color/black_25"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/txtProfileCookBill"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height=".5dp"
+                    android:background="@color/black_25"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/txtProfileTotalDueOrOverHead"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height=".5dp"
+                    android:background="@color/black_25"/>
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:background="@color/black_25"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="2sp"
+                android:background="@color/pure_red">
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:background="@color/white">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/txtHomeTotalMember"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height=".5dp"
+                        android:background="@color/black_25"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/txtHomeTotalPaid"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height=".5dp"
+                        android:background="@color/black_25"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/txtHomeTotalCost"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height=".5dp"
+                        android:background="@color/black_25"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/txtHomeCurrentMealRate"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height=".5dp"
+                        android:background="@color/black_25"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/txtHomeTotalReminderMoney"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height=".5dp"
+                        android:background="@color/black_25"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/txtHomeTotalMeal"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height=".5dp"
+                        android:background="@color/black_25"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/txtHomeExtraMoney"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height=".5dp"
+                        android:background="@color/black_25"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/txtHomeLastMealUpdate"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height=".5dp"
+                        android:background="@color/black_25"/>
+
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+    </ScrollView>
+
+</LinearLayout>

@@ -8,14 +8,17 @@
     <application
         android:name=".MyNotificationChannels"
         android:allowBackup="true"
-        android:largeHeap="true"
         android:icon="@mipmap/meal_manager_icons"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:roundIcon="@mipmap/meal_manager_icons_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".PersonWiseEditCostActivity">
-        </activity>
+        <activity android:name=".BazaarActivity"></activity>
+        <activity android:name=".CookBillActivity" />
+        <activity android:name=".DetailsActivity" />
+        <activity android:name=".ActivityOverView" />
+        <activity android:name=".PersonWiseEditCostActivity" />
         <activity android:name=".EditCostActivity" />
         <activity android:name=".EditInterfaceActivity" />
         <activity android:name=".EditInfo" />

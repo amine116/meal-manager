@@ -186,6 +186,8 @@
     <string name="log_in_logo">Log In Logo</string>
     <string name="meal_details">Meal History</string>
     <string name="payment_history">Payment History</string>
+    <string name="update_bill_info">Update Bill Info</string>
+    <string name="add_bazaar">Add Bazaar</string>
 
 
 </resources>

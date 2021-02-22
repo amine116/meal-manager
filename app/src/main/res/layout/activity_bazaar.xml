@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="10dp"
+    tools:context=".BazaarActivity">
+
+    <ScrollView
+        android:id="@+id/infoScroll"
+        android:layout_width="match_parent"
+        android:layout_height="0sp"
+        android:layout_weight="90">
+
+        <LinearLayout
+            android:id="@+id/rootLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center">
+
+
+
+        </LinearLayout>
+
+
+    </ScrollView>
+
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="0sp"
+        android:id="@+id/btnAddBazaar"
+        android:text="@string/add_bazaar"
+        android:background="@drawable/custom_rectangle_buttons"
+        android:layout_weight="10"/>
+
+
+</LinearLayout>

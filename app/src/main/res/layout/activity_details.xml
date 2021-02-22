@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="10dp"
+    android:background="@color/light_green"
+    tools:context=".DetailsActivity">
+
+
+    <ScrollView
+        android:id="@+id/infoScroll"
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/detailsLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center">
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="30sp"
+                android:gravity="center"
+                android:background="@color/light_green"
+                android:text="@string/meal_details"/>
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="0sp"
+                android:layout_weight="30">
+
+                <LinearLayout
+                    android:id="@+id/mealD"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+
+                </LinearLayout>
+
+            </HorizontalScrollView>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="30sp"
+                android:gravity="center"
+                android:background="@color/light_green"
+                android:text="@string/payment_history"/>
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="0sp"
+                android:layout_weight="30">
+
+                <LinearLayout
+                    android:id="@+id/paymentD"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+
+                </LinearLayout>
+
+            </HorizontalScrollView>
+
+
+        </LinearLayout>
+
+
+    </ScrollView>
+
+
+</LinearLayout>

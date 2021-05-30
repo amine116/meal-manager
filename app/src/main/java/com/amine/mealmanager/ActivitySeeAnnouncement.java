@@ -1,5 +1,6 @@
 package com.amine.mealmanager;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -13,7 +14,8 @@ public class ActivitySeeAnnouncement extends AppCompatActivity implements View.O
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_see_announcement);
-
+        ActionBar a = getSupportActionBar();
+        if(a != null) a.setTitle("  Announcement");
         initialize();
 
     }

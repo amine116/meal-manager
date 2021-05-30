@@ -1,6 +1,7 @@
 package com.amine.mealmanager;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Dialog;
@@ -19,6 +20,7 @@ import android.text.style.AlignmentSpan;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,7 +45,12 @@ import static com.amine.mealmanager.MainActivity.IS_MANAGER;
 import static com.amine.mealmanager.MainActivity.isBreakfastOn;
 import static com.amine.mealmanager.MainActivity.isDinnerOn;
 import static com.amine.mealmanager.MainActivity.isLunchOn;
+import static com.amine.mealmanager.MainActivity.paybacks;
+import static com.amine.mealmanager.MainActivity.readFromDatabase;
 import static com.amine.mealmanager.MainActivity.rootRef;
+import static com.amine.mealmanager.PaybackActivity.getMeal;
+import static com.amine.mealmanager.PaybackActivity.getOverHead;
+import static com.amine.mealmanager.PaybackActivity.getPaid;
 
 public class ActivityOverView extends AppCompatActivity {
 
@@ -55,6 +62,8 @@ public class ActivityOverView extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_over_view);
+        ActionBar a = getSupportActionBar();
+        if(a != null) a.setTitle("    Overview");
         initialize();
     }
 
@@ -67,129 +76,46 @@ public class ActivityOverView extends AppCompatActivity {
 
     private void setDataToAppFrame(){
         rootLayout.removeAllViews();
-        if(boarders.size() == 0 && stoppedBoarders.size() == 0){
-            rootLayout.setVisibility(View.VISIBLE);
 
-            findViewById(R.id.announceLayout).setVisibility(View.GONE);
-            findViewById(R.id.mealOverViewLayout).setVisibility(View.GONE);
-            findViewById(R.id.modeLayout).setVisibility(View.GONE);
-            findViewById(R.id.labelLayout).setVisibility(View.GONE);
-
-            TextView txtWelcomeText = new TextView(ActivityOverView.this),
-                    txtInstructions = new TextView(this);
-            rootLayout.addView(txtWelcomeText);
-            String hadith = "\"Give food to the hungry,\n" +
-                    "pay a visit to the sick and release (set free) \n" +
-                    "the one in captivity (by paying his ransom)\".\n",
-
-                    referenceText =
-                            "----------------------------------------------------------------- Muhammad(ﷺ)\n" +
-                                    "Sahih Al Bukhari 1.\n" +
-                                    "Chapter 71.\n" +
-                                    "Hadith: 5373\n\n\n",
-
-                    welcomeText = "Welcome to the new session of eating \uD83D\uDE0E.\n",
-                    addMemberText = "Add members ",
-                    lastText = "to get your meal start. You can see Instructions for better understanding!",
-                    s, s1, s2,
-
-                    mainText = hadith + referenceText + welcomeText + addMemberText + lastText;
-
-            Spannable spannable = new SpannableString(mainText);
-
-            // TODO
-            //  HADITH
-            spannable.setSpan(new RelativeSizeSpan(1f), 0,
-                    hadith.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-            spannable.setSpan(new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER), 0,
-                    hadith.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-            // TODO
-            //  Reference
-            s = hadith + referenceText;
-            spannable.setSpan(new AlignmentSpan.Standard(Layout.Alignment.ALIGN_OPPOSITE),
-                    hadith.length(), s.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-            spannable.setSpan(new RelativeSizeSpan(1f),
-                    hadith.length(), s.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-            // TODO
-            //  welcome text
-            s1 = hadith + referenceText;
-            s = hadith + referenceText + welcomeText;
-            spannable.setSpan(new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER),
-                    s1.length(),
-                    s.length(),
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-            spannable.setSpan(new RelativeSizeSpan(1.5f),
-                    s1.length(),
-                    s.length(),
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-            // TODO
-            //  add member
-            s1 = hadith + referenceText + welcomeText;
-            s = hadith + referenceText + welcomeText + addMemberText;
-            spannable.setSpan(new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER),
-                    s1.length(),
-                    s.length(),
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-            spannable.setSpan(new RelativeSizeSpan(1.5f),
-                    s1.length(),
-                    s.length(),
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-
-            spannable.setSpan(new ForegroundColorSpan(Color.RED),
-                    s1.length(),
-                    s.length(),
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-
-            // TODO
-            //  welcome text
-            s1 = hadith + referenceText + welcomeText + addMemberText;
-            s = hadith + referenceText + welcomeText + addMemberText + lastText;
-            spannable.setSpan(new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER),
-                    s1.length(),
-                    s.length(),
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-            spannable.setSpan(new RelativeSizeSpan(1.5f),
-                    s1.length(),
-                    s.length(),
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-
-            txtWelcomeText.setText(spannable, TextView.BufferType.SPANNABLE);
-
-
-            rootLayout.addView(txtInstructions);
-            s2 = "\nSee Instructions";
-            txtInstructions.setText(s2);
-            txtInstructions.setTextColor(Color.BLACK);
-            txtInstructions.setTypeface(null, Typeface.BOLD);
-            txtInstructions.setLayoutParams(new LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, 150));
-            txtInstructions.setGravity(Gravity.CENTER);
-            txtInstructions.setTextSize(20);
-            txtInstructions.setPaintFlags(txtInstructions.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-            txtInstructions.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(ActivityOverView.this, ActivityInstructions.class);
-                    startActivity(intent);
-                }
-            });
-
-
-
+        Resources res = getResources();
+        Drawable drawable = null;
+        try {
+            drawable = Drawable.createFromXml(res,
+                    res.getXml(R.xml.rectangular_shape_main_activity_data));
         }
-        else{
+        catch (IOException | XmlPullParserException e) {
+            e.printStackTrace();
+        }
 
+        for(int i = 0; i < boarders.size(); i++){
+            LinearLayout ll = new LinearLayout(ActivityOverView.this),
+                    fake = new LinearLayout(ActivityOverView.this),
+                    fakeH1 = new LinearLayout(ActivityOverView.this),
+                    fakeH2 = new LinearLayout(ActivityOverView.this),
+                    fakeH3 = new LinearLayout(ActivityOverView.this),
+                    fakeH4 = new LinearLayout(ActivityOverView.this);
+            LinearLayout.LayoutParams paramsFakeH = new LinearLayout.LayoutParams(10, 150);
+            fakeH1.setLayoutParams(paramsFakeH);
+            fakeH2.setLayoutParams(paramsFakeH);
+            fakeH3.setLayoutParams(paramsFakeH);
+            fakeH4.setLayoutParams(paramsFakeH);
+
+            fakeH1.setBackgroundColor(Color.WHITE);
+            fakeH2.setBackgroundColor(Color.WHITE);
+            fakeH3.setBackgroundColor(Color.WHITE);
+            fakeH4.setBackgroundColor(Color.WHITE);
+
+            if(drawable != null){
+                ll.setBackground(drawable);
+            }
+
+            Payback p = paybacks.get(boarders.get(i).getName());
+
+            double over = getOverHead(boarders.get(i), stoppedBoarders);
+            if(p != null){
+                over -= p.getAmount();
+            }
+            /*
             Resources res = getResources();
             Drawable drawable = null;
             try {
@@ -222,6 +148,7 @@ public class ActivityOverView extends AppCompatActivity {
                     ll.setBackground(drawable);
                 }
 
+                Payback p = paybacks.get(boarders.get(i).getName());
 
                 int pos = -1;
                 double d1, ov1, d2, ov2, d = 0, ov = 0;
@@ -231,7 +158,7 @@ public class ActivityOverView extends AppCompatActivity {
                         d2 = stoppedBoarders.get(j).getDue();
                         ov1 = boarders.get(i).getOverHead();
                         ov2 = stoppedBoarders.get(j).getOverHead();
-                        d = d1 + d2;
+                        d = d1 +  d2;
                         ov = ov1 + ov2;
                         if(d > ov){
                             d -= ov;
@@ -240,6 +167,7 @@ public class ActivityOverView extends AppCompatActivity {
                             ov -= d;
                             d = 0;
                         }
+
                         pos = j;
                         break;
                     }
@@ -252,7 +180,8 @@ public class ActivityOverView extends AppCompatActivity {
                 name.setText(s);
                 name.setGravity(Gravity.CENTER);
                 name.setTypeface(Typeface.DEFAULT_BOLD);
-                name.setTextColor(Color.rgb(245, 247, 246));
+                name.setTextColor(Color.DKGRAY);
+                //.rgb(245, 247, 246)
                 //name.setTextSize(17);
 
                 TextView paid = new TextView(this);
@@ -262,7 +191,7 @@ public class ActivityOverView extends AppCompatActivity {
                 paid.setGravity(Gravity.CENTER);
                 paid.setTypeface(Typeface.DEFAULT_BOLD);
                 //paid.setTextSize(17);
-                paid.setTextColor(Color.rgb(245, 247, 246));
+                paid.setTextColor(Color.DKGRAY);
 
                 TextView meal = new TextView(this);
                 if(pos == -1) s = df.format(boarders.get(i).getMeals()) + "";
@@ -271,23 +200,42 @@ public class ActivityOverView extends AppCompatActivity {
                 meal.setGravity(Gravity.CENTER);
                 meal.setTypeface(Typeface.DEFAULT_BOLD);
                 //meal.setTextSize(17);
-                meal.setTextColor(Color.rgb(245, 247, 246));
+                meal.setTextColor(Color.DKGRAY);
 
                 TextView due = new TextView(this);
-                if(pos == -1) s = df.format(boarders.get(i).getDue());
-                else s = df.format(d);
+                double t = 0;
+                if(pos == -1) {
+                    if(p != null) t = boarders.get(i).getOverHead() - p.getAmount();
+                    if(t < 0) s = df.format(boarders.get(i).getDue() + Math.abs(t));
+                    else s = df.format(boarders.get(i).getDue());
+                }
+                else {
+                    if(p != null) t = ov - p.getAmount();
+                    if(t < 0) s = df.format(d + Math.abs(t));
+                    else s = df.format(d);
+                }
                 due.setText(s);
                 due.setGravity(Gravity.CENTER);
                 due.setTypeface(Typeface.DEFAULT_BOLD);
                 //due.setTextSize(17);
-                due.setTextColor(Color.rgb(245, 247, 246));
+                due.setTextColor(Color.DKGRAY);
 
                 TextView overHead = new TextView(this);
-                if(pos == -1) s = df.format(boarders.get(i).getOverHead());
-                else s = df.format(ov);
+                if(pos == -1) {
+                    t = boarders.get(i).getOverHead();
+                    if(p != null) t = boarders.get(i).getOverHead() - p.getAmount();
+                    if(t > 0) s = df.format(t);
+                    else s = "0";
+                }
+                else {
+                    t = ov;
+                    if(p != null) t = ov - p.getAmount();
+                    if(t > 0) df.format(t);
+                    else s = "0";
+                }
                 overHead.setText(s);
                 overHead.setGravity(Gravity.CENTER);
-                overHead.setTextColor(Color.rgb(245, 247, 246));
+                overHead.setTextColor(Color.DKGRAY);
                 //overHead.setTextSize(18);
                 overHead.setTypeface(Typeface.DEFAULT_BOLD);
 
@@ -376,6 +324,7 @@ public class ActivityOverView extends AppCompatActivity {
 
 
                     String s;
+                    Payback p = paybacks.get(stoppedBoarders.get(i).getName());
 
                     final TextView name = new TextView(this);
                     s = index + ". " + stoppedBoarders.get(i).getName();
@@ -399,7 +348,12 @@ public class ActivityOverView extends AppCompatActivity {
                     meal.setTextColor(Color.rgb(245, 247, 246));
 
                     TextView due = new TextView(this);
-                    s = df.format(stoppedBoarders.get(i).getDue()) + "";
+                    double ov = stoppedBoarders.get(i).getOverHead();
+                    if(p != null){
+                        ov -= p.getAmount();
+                    }
+                    if(ov < 0) s = df.format(stoppedBoarders.get(i).getDue() + Math.abs(ov)) + "";
+                    else s = df.format(stoppedBoarders.get(i).getDue()) + "";
                     due.setText(s);
                     due.setGravity(Gravity.CENTER);
                     due.setTextColor(Color.rgb(250, 245, 150));
@@ -407,7 +361,8 @@ public class ActivityOverView extends AppCompatActivity {
                     due.setTextColor(Color.rgb(245, 247, 246));
 
                     TextView overHead = new TextView(this);
-                    s = df.format(stoppedBoarders.get(i).getOverHead()) + "";
+                    if(ov > 0) s = df.format(ov) + "";
+                    else s = "0";
                     overHead.setText(s);
                     overHead.setGravity(Gravity.CENTER);
                     overHead.setTextColor(Color.rgb(245, 247, 246));
@@ -592,7 +547,8 @@ public class ActivityOverView extends AppCompatActivity {
                                             if(total == 0){
                                                 Toast.makeText(ActivityOverView.this, "Can't Reactivate" +
                                                         " with 0 meal", Toast.LENGTH_LONG).show();
-                                            }else{
+                                            }
+                                            else{
                                                 final String nm = stoppedBoarders.get(finalI).getName();
                                                 final ArrayList<MealOrPaymentDetails> temp = new ArrayList<>();
                                                 temp.add(new MealOrPaymentDetails(
@@ -615,6 +571,14 @@ public class ActivityOverView extends AppCompatActivity {
                                                         TodayMealStatus t = new TodayMealStatus(nm, b, l,
                                                                 d, total);
                                                         r2.setValue(t);
+
+                                                        readFromDatabase(new MainActivity.CallBack() {
+                                                            @Override
+                                                            public void onCallback() {
+                                                                setDataToAppFrame();
+                                                            }
+                                                        });
+
                                                         dismiss();
                                                     }
 
@@ -662,8 +626,446 @@ public class ActivityOverView extends AppCompatActivity {
             rootLayout.addView(ll);
             ll.setLayoutParams(params);
             ll.setBackgroundColor(Color.BLACK);
+             */
 
+            String s;
+
+            TextView name = new TextView(this);
+            s = (i + 1) + ". " + boarders.get(i).getName();
+            name.setText(s);
+            name.setGravity(Gravity.CENTER);
+            name.setTypeface(Typeface.DEFAULT_BOLD);
+            name.setTextColor(Color.DKGRAY);
+            //.rgb(245, 247, 246)
+            //name.setTextSize(17);
+
+            TextView paid = new TextView(this);
+            s = df.format(getPaid(boarders.get(i), stoppedBoarders));
+            paid.setText(s);
+            paid.setGravity(Gravity.CENTER);
+            paid.setTypeface(Typeface.DEFAULT_BOLD);
+            //paid.setTextSize(17);
+            paid.setTextColor(Color.DKGRAY);
+
+            TextView meal = new TextView(this);
+            s = df.format(getMeal(boarders.get(i), stoppedBoarders));
+            meal.setText(s);
+            meal.setGravity(Gravity.CENTER);
+            meal.setTypeface(Typeface.DEFAULT_BOLD);
+            //meal.setTextSize(17);
+            meal.setTextColor(Color.DKGRAY);
+
+            TextView due = new TextView(this);
+            if(over < 0){
+                s = df.format(Math.abs(over));
+            }
+            else{
+                s = "0";
+            }
+            due.setText(s);
+            due.setGravity(Gravity.CENTER);
+            due.setTypeface(Typeface.DEFAULT_BOLD);
+            //due.setTextSize(17);
+            due.setTextColor(Color.DKGRAY);
+
+            TextView overHead = new TextView(this);
+            if(over > 0){
+                s = df.format(over);
+            }
+            else s = "0";
+            overHead.setText(s);
+            overHead.setGravity(Gravity.CENTER);
+            overHead.setTextColor(Color.DKGRAY);
+            //overHead.setTextSize(18);
+            overHead.setTypeface(Typeface.DEFAULT_BOLD);
+
+            ll.setOrientation(LinearLayout.HORIZONTAL);
+
+            ll.addView(name);
+            ll.addView(fakeH1);
+            ll.addView(paid);
+            ll.addView(fakeH2);
+            ll.addView(meal);
+            ll.addView(fakeH3);
+            ll.addView(due);
+            ll.addView(fakeH4);
+            ll.addView(overHead);
+
+            LinearLayout.LayoutParams params30 = new LinearLayout.LayoutParams(
+                    0,
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    35
+            );
+            LinearLayout.LayoutParams params15 = new LinearLayout.LayoutParams(
+                    0,
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    17
+            );
+            LinearLayout.LayoutParams params20 = new LinearLayout.LayoutParams(
+                    0,
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    25
+            );
+            name.setLayoutParams(params30);
+            paid.setLayoutParams(params15);
+            meal.setLayoutParams(params15);
+            due.setLayoutParams(params15);
+            overHead.setLayoutParams(params20);
+
+            rootLayout.addView(ll);
+            if(i != boarders.size() - 1) rootLayout.addView(fake);
+
+            LinearLayout.LayoutParams paramsLl = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, 150),
+                    paramsFake = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 10);
+            ll.setLayoutParams(paramsLl);
+
+            fake.setLayoutParams(paramsFake);
+            fake.setBackgroundColor(Color.WHITE);
         }
+
+        try {
+            drawable = Drawable.createFromXml(res,
+                    res.getXml(R.xml.rectangular_shape_main_activity_data2));
+        }
+        catch (IOException | XmlPullParserException e) {
+            e.printStackTrace();
+        }
+
+        int index = boarders.size() + 1;
+        for(int i = 0; i < stoppedBoarders.size(); i++){
+
+            boolean isExist = false;
+
+            for(int j = 0; j < boarders.size(); j++){
+                if(boarders.get(j).getName().equals(stoppedBoarders.get(i).getName())){
+                    isExist = true;
+                    break;
+                }
+            }
+
+            if(!isExist){
+                LinearLayout ll = new LinearLayout(ActivityOverView.this),
+                        fake = new LinearLayout(ActivityOverView.this),
+                        fakeH1 = new LinearLayout(ActivityOverView.this),
+                        fakeH2 = new LinearLayout(ActivityOverView.this),
+                        fakeH3 = new LinearLayout(ActivityOverView.this),
+                        fakeH4 = new LinearLayout(ActivityOverView.this);
+                LinearLayout.LayoutParams paramsFakeH = new LinearLayout.LayoutParams(10, 150);
+                fakeH1.setLayoutParams(paramsFakeH);
+                fakeH2.setLayoutParams(paramsFakeH);
+                fakeH3.setLayoutParams(paramsFakeH);
+                fakeH4.setLayoutParams(paramsFakeH);
+
+                fakeH1.setBackgroundColor(Color.WHITE);
+                fakeH2.setBackgroundColor(Color.WHITE);
+                fakeH3.setBackgroundColor(Color.WHITE);
+                fakeH4.setBackgroundColor(Color.WHITE);
+
+
+                String s;
+                Payback p = paybacks.get(stoppedBoarders.get(i).getName());
+
+                final TextView name = new TextView(this);
+                s = index + ". " + stoppedBoarders.get(i).getName();
+                name.setText(s);
+                name.setGravity(Gravity.CENTER);
+                name.setTextColor(Color.rgb(245, 247, 246));
+                name.setTextSize(17);
+
+                TextView paid = new TextView(this);
+                s = df.format(stoppedBoarders.get(i).getPaidMoney());
+                paid.setText(s);
+                paid.setGravity(Gravity.CENTER);
+                paid.setTextSize(17);
+                paid.setTextColor(Color.rgb(245, 247, 246));
+
+                TextView meal = new TextView(this);
+                s = df.format(stoppedBoarders.get(i).getMeals());
+                meal.setText(s);
+                meal.setGravity(Gravity.CENTER);
+                meal.setTextSize(17);
+                meal.setTextColor(Color.rgb(245, 247, 246));
+
+                TextView due = new TextView(this);
+                double ov = stoppedBoarders.get(i).getOverHead() - stoppedBoarders.get(i).getDue();
+                if(p != null){
+                    ov -= p.getAmount();
+                }
+                if(ov < 0) s = df.format(Math.abs(ov));
+                else s = "0";
+                due.setText(s);
+                due.setGravity(Gravity.CENTER);
+                due.setTextColor(Color.rgb(250, 245, 150));
+                due.setTextSize(17);
+                due.setTextColor(Color.rgb(245, 247, 246));
+
+                TextView overHead = new TextView(this);
+                if(ov > 0) s = df.format(ov);
+                else s = "0";
+                overHead.setText(s);
+                overHead.setGravity(Gravity.CENTER);
+                overHead.setTextColor(Color.rgb(245, 247, 246));
+                overHead.setTextSize(18);
+
+                ll.setOrientation(LinearLayout.HORIZONTAL);
+
+                ll.addView(name);
+                ll.addView(fakeH1);
+                ll.addView(paid);
+                ll.addView(fakeH2);
+                ll.addView(meal);
+                ll.addView(fakeH3);
+                ll.addView(due);
+                ll.addView(fakeH4);
+                ll.addView(overHead);
+
+                LinearLayout.LayoutParams params30 = new LinearLayout.LayoutParams(
+                        0,
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        35
+                );
+                LinearLayout.LayoutParams params15 = new LinearLayout.LayoutParams(
+                        0,
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        17
+                );
+                LinearLayout.LayoutParams params20 = new LinearLayout.LayoutParams(
+                        0,
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        25
+                );
+                name.setLayoutParams(params30);
+                paid.setLayoutParams(params15);
+                meal.setLayoutParams(params15);
+                due.setLayoutParams(params15);
+                overHead.setLayoutParams(params20);
+
+                rootLayout.addView(ll);
+                rootLayout.addView(fake);
+
+                LinearLayout.LayoutParams paramsLl = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT, 150),
+                        paramsFake = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                                10);
+                ll.setLayoutParams(paramsLl);
+                if(drawable != null){
+                    ll.setBackground(drawable);
+                }
+
+                fake.setLayoutParams(paramsFake);
+                fake.setBackgroundColor(Color.WHITE);
+
+                final int finalI = i;
+                ll.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Toast.makeText(ActivityOverView.this, stoppedBoarders.get(finalI).getName() +
+                                " Has deactivated his/her meal", Toast.LENGTH_LONG).show();
+                    }
+                });
+
+
+                if(IS_MANAGER){
+                    ll.setOnLongClickListener(new View.OnLongClickListener() {
+                        @Override
+                        public boolean onLongClick(View v) {
+
+                            class ActivateHisMeal extends Dialog implements View.OnClickListener{
+
+                                TextView br, ln, dn;
+
+                                public ActivateHisMeal(@NonNull Context context) {
+                                    super(context);
+                                }
+
+                                @Override
+                                protected void onCreate(Bundle savedInstanceState) {
+                                    super.onCreate(savedInstanceState);
+                                    setContentView(R.layout.reactivate_meal);
+                                    initialize();
+                                }
+
+                                private void initialize(){
+                                    TextView textView = findViewById(R.id.reactivateUserName);
+                                    br = findViewById(R.id.brTxt);
+                                    ln = findViewById(R.id.lTxt);
+                                    dn = findViewById(R.id.dTxt);
+                                    textView.setText(stoppedBoarders.get(finalI).getName());
+
+                                    findViewById(R.id.reactivate_moveUnderCalc).setVisibility(View.VISIBLE);
+
+
+                                    findViewById(R.id.reactivateMeal).setOnClickListener(this);
+                                    findViewById(R.id.cancelReactivation).setOnClickListener(this);
+                                    findViewById(R.id.reactivate_moveUnderCalc).setOnClickListener(this);
+                                    findViewById(R.id.brMinus).setOnClickListener(this);
+                                    findViewById(R.id.brPlus).setOnClickListener(this);
+                                    findViewById(R.id.lMinus).setOnClickListener(this);
+                                    findViewById(R.id.lPlus).setOnClickListener(this);
+                                    findViewById(R.id.dMinus).setOnClickListener(this);
+                                    findViewById(R.id.dPlus).setOnClickListener(this);
+
+
+                                }
+
+                                @Override
+                                public void onClick(View v) {
+                                    int id = v.getId();
+
+                                    if(id == R.id.brMinus){
+                                        if(isBreakfastOn) {
+                                            double prev = Double.parseDouble(br.getText().toString());
+                                            if (prev > 0) prev -= 0.5;
+                                            String fin = df.format(prev) + "";
+                                            br.setText(fin);
+                                        }else{
+                                            Toast.makeText(ActivityOverView.this,
+                                                    "Breakfast meal off!", Toast.LENGTH_LONG).show();
+                                        }
+                                    }
+                                    else if(id == R.id.brPlus){
+                                        if(isBreakfastOn){
+                                            double prev = Double.parseDouble(br.getText().toString());
+                                            prev += 0.5;
+                                            String fin = df.format(prev) + "";
+                                            br.setText(fin);
+                                        }else{
+                                            Toast.makeText(ActivityOverView.this,
+                                                    "Breakfast meal off!", Toast.LENGTH_LONG).show();
+                                        }
+                                    }
+                                    else if(id == R.id.lMinus){
+                                        if(isLunchOn){
+                                            double prev = Double.parseDouble(ln.getText().toString());
+                                            if(prev > 0) prev -= 0.5;
+                                            String fin = df.format(prev) + "";
+                                            ln.setText(fin);
+                                        }else{
+                                            Toast.makeText(ActivityOverView.this,
+                                                    "Lunch meal off!", Toast.LENGTH_LONG).show();
+                                        }
+                                    }
+                                    else if(id == R.id.lPlus){
+                                        if(isLunchOn){
+                                            double prev = Double.parseDouble(ln.getText().toString());
+                                            prev += 0.5;
+                                            String fin = df.format(prev) + "";
+                                            ln.setText(fin);
+                                        }else{
+                                            Toast.makeText(ActivityOverView.this,
+                                                    "Lunch meal off!", Toast.LENGTH_LONG).show();
+                                        }
+                                    }
+                                    else if(id == R.id.dMinus){
+                                        if(isDinnerOn){
+                                            double prev = Double.parseDouble(dn.getText().toString());
+                                            if(prev > 0) prev -= 0.5;
+                                            String fin = df.format(prev) + "";
+                                            dn.setText(fin);
+                                        }else{
+                                            Toast.makeText(ActivityOverView.this,
+                                                    "Dinner meal off!", Toast.LENGTH_LONG).show();
+                                        }
+                                    }
+                                    else if(id == R.id.dPlus){
+                                        if(isDinnerOn){
+                                            double prev = Double.parseDouble(dn.getText().toString());
+                                            prev += 0.5;
+                                            String fin = df.format(prev) + "";
+                                            dn.setText(fin);
+                                        }else{
+                                            Toast.makeText(ActivityOverView.this,
+                                                    "Dinner meal off!", Toast.LENGTH_LONG).show();
+                                        }
+                                    }
+                                    else if(id == R.id.reactivateMeal){
+                                        final double b = Double.parseDouble(br.getText().toString()),
+                                                l = Double.parseDouble(ln.getText().toString()),
+                                                d = Double.parseDouble(dn.getText().toString()),
+                                                total = b + l + d;
+                                        if(total == 0){
+                                            Toast.makeText(ActivityOverView.this, "Can't Reactivate" +
+                                                    " with 0 meal", Toast.LENGTH_LONG).show();
+                                        }
+                                        else{
+                                            final String nm = stoppedBoarders.get(finalI).getName();
+                                            final ArrayList<MealOrPaymentDetails> temp = new ArrayList<>();
+                                            temp.add(new MealOrPaymentDetails(
+                                                    MainActivity.getTodayDate(), "0"));
+
+                                            final DatabaseReference r = rootRef.child("members").child(nm),
+                                                    r2 = rootRef.child("Meal Status").child(nm),
+                                                    r3 = rootRef.child("those who stopped meal/members")
+                                                            .child(nm);
+
+                                            r3.addListenerForSingleValueEvent(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                    Boarder boarder = snapshot.getValue(Boarder.class);
+                                                    Boarder boarder1 = new Boarder(nm,
+                                                            boarder.getMemberPassword(),
+                                                            0, 0, 0,
+                                                            0, temp, temp, true);
+                                                    r.setValue(boarder1);
+                                                    TodayMealStatus t = new TodayMealStatus(nm, b, l,
+                                                            d, total);
+                                                    r2.setValue(t);
+
+                                                    readFromDatabase(new MainActivity.CallBack() {
+                                                        @Override
+                                                        public void onCallback() {
+                                                            setDataToAppFrame();
+                                                        }
+                                                    });
+
+                                                    dismiss();
+                                                }
+
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError error) {
+
+                                                }
+                                            });
+                                        }
+                                    }
+                                    else if(id == R.id.cancelReactivation){
+                                        dismiss();
+                                    }
+                                    else if(id == R.id.reactivate_moveUnderCalc){
+                                        final double b = Double.parseDouble(br.getText().toString()),
+                                                l = Double.parseDouble(ln.getText().toString()),
+                                                d = Double.parseDouble(dn.getText().toString()),
+                                                total = b + l + d;
+
+                                        PermToMoveUnderCurCalc p = new PermToMoveUnderCurCalc(
+                                                ActivityOverView.this, stoppedBoarders.get(finalI),
+                                                df.format(b), df.format(l), df.format(d), df.format(total));
+                                        p.show();
+                                        dismiss();
+                                    }
+                                }
+                            }
+
+                            ActivateHisMeal activateHisMeal = new ActivateHisMeal(ActivityOverView.this);
+                            activateHisMeal.show();
+                            return true;
+                        }
+                    });
+                }
+
+
+
+                index++;
+            }
+        }
+
+        LinearLayout ll = new LinearLayout(ActivityOverView.this);
+        LinearLayout.LayoutParams params =
+                new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 10);
+        rootLayout.addView(ll);
+        ll.setLayoutParams(params);
+        ll.setBackgroundColor(Color.BLACK);
     }
 
     private class PermToMoveUnderCurCalc extends Dialog implements View.OnClickListener{
@@ -696,7 +1098,7 @@ public class ActivityOverView extends AppCompatActivity {
 
 
             txtConsent.setVisibility(View.VISIBLE);
-            edtConsentText.setVisibility(View.VISIBLE);
+            findViewById(R.id.permission_writeMoveLayout).setVisibility(View.VISIBLE);
 
             String first = "Moving members under current calculation will",
                     tobeChange = " AFFECT ALL MEMBER's",
@@ -757,6 +1159,13 @@ public class ActivityOverView extends AppCompatActivity {
                 MainActivity.getMembersRef().child(boarder.getName()).setValue(boarder);
                 rootRef.child("those who stopped meal").child("members").
                         child(boarder.getName()).removeValue();
+
+                readFromDatabase(new MainActivity.CallBack() {
+                    @Override
+                    public void onCallback() {
+                        setDataToAppFrame();
+                    }
+                });
 
                 dismiss();
             }

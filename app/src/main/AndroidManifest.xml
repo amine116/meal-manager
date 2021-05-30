@@ -14,7 +14,11 @@
         android:roundIcon="@mipmap/meal_manager_icons_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".BazaarActivity"></activity>
+        <activity android:name=".PaybackActivity"></activity>
+        <activity android:name=".DetailMealCalcActivity" />
+        <activity android:name=".NotificationActivity" />
+        <activity android:name=".ProfileDetailsActivity" />
+        <activity android:name=".BazaarActivity" />
         <activity android:name=".CookBillActivity" />
         <activity android:name=".DetailsActivity" />
         <activity android:name=".ActivityOverView" />
@@ -22,7 +26,6 @@
         <activity android:name=".EditCostActivity" />
         <activity android:name=".EditInterfaceActivity" />
         <activity android:name=".EditInfo" />
-        <activity android:name=".Animate" />
         <activity android:name=".ActivityAnnouncementHistory" />
 
         <meta-data

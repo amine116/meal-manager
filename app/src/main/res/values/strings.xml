@@ -188,6 +188,35 @@
     <string name="payment_history">Payment History</string>
     <string name="update_bill_info">Update Bill Info</string>
     <string name="add_bazaar">Add Bazaar</string>
+    <string name="menu">Menu</string>
+    <string name="home">Home</string>
+    <string name="notification_icon">Notification Icon</string>
+    <string name="_1">1</string>
+    <string name="_11">11</string>
+    <string name="profile_picture">Profile Picture</string>
+    <string name="personal_info">Personal Info</string>
+    <string name="select_your_name">Select your name</string>
+    <string name="change_profile_name">Change Profile Name</string>
+    <string name="arrow">Arrow</string>
+    <string name="notifications">Notifications</string>
+    <string name="see_more">See more</string>
+    <string name="unseen_notifications">Unseen Notifications</string>
+    <string name="seen_notifications">Seen Notifications</string>
+    <string name="regular_meal_status">Regular Meal Status</string>
+    <string name="today_meal_status">Today Meal Status</string>
+    <string name="meal_info">Meal Info</string>
+    <string name="detail_calculations">Detail calculations</string>
+    <string name="explanations_of_calculation_of_meal_rate">Explanations of calculation of \'Meal Rate\'</string>
+    <string name="payback">Refund</string>
+    <string name="enter_amount">Enter amount</string>
+    <string name="refund">Refund</string>
+    <string name="pay_cook">Pay cook</string>
+    <string name="name_with_colon">Name:</string>
+    <string name="payment_with_colon">Payment:</string>
+    <string name="meal_with_colon">Meal:</string>
+    <string name="bazaar_history">Bazaar History</string>
+    <string name="closing_history">Closing history</string>
+    <string name="ok">Ok</string>
 
 
 </resources>

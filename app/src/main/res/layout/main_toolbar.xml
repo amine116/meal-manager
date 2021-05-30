@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="12sp"
+    android:orientation="horizontal"
+    android:background="@color/white"
+    android:gravity="center_vertical">
+
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/img_navigation_menu"
+        android:layout_marginStart="16sp"
+        android:src="@drawable/ic_menu_navigation"
+        android:contentDescription="@string/menu" />
+
+    <View
+        android:layout_width="20sp"
+        android:layout_height="30sp"
+        android:id="@+id/gap"
+        android:layout_toEndOf="@id/img_navigation_menu"
+        android:background="@color/white"/>
+
+    <TextView
+        android:id="@+id/txtAppName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:layout_toEndOf="@+id/gap"
+        android:text="@string/home"
+        android:textColor="#636363"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <View
+        android:layout_width="20sp"
+        android:layout_height="30sp"
+        android:id="@+id/gap1"
+        android:layout_toEndOf="@id/txtAppName"
+        android:background="@color/white"/>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/gap1"
+        android:padding="1sp"
+        android:id="@+id/imgAnnouncement"
+        android:src="@drawable/ic_announcement"
+        android:contentDescription="@string/image" />
+
+    <View
+        android:layout_width="20sp"
+        android:layout_height="30sp"
+        android:id="@+id/gap2"
+        android:layout_toEndOf="@id/imgAnnouncement"
+        android:background="@color/white"/>
+
+    <ImageView
+        android:id="@+id/imgRefresh"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/gap2"
+        android:contentDescription="@string/menu"
+        android:src="@drawable/ic_refresh" />
+
+    <ImageView
+        android:id="@+id/menu_more"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:contentDescription="@string/menu"
+        android:src="@drawable/ic_menue_more" />
+
+</RelativeLayout>

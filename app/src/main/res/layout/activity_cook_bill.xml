@@ -8,34 +8,125 @@
     android:background="@color/light_green"
     tools:context=".CookBillActivity">
 
-
-    <ScrollView
-        android:id="@+id/infoScroll"
-        android:background="@color/white"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0sp"
-        android:layout_weight="90">
+        android:orientation="horizontal"
+        android:background="@drawable/rectangular_shape_cook_bill"
+        android:layout_height="30sp">
+
+        <TextView
+            android:layout_width="0sp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/names"/>
+
+        <TextView
+            android:layout_width="0sp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/paid"/>
+
+        <TextView
+            android:layout_width="0sp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/enter_amount"/>
+
+        <TextView
+            android:layout_width="0sp"
+            android:layout_height="match_parent"
+            android:layout_weight=".5"
+            android:gravity="center"
+            android:visibility="invisible"
+            android:text="@string/names"/>
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:background="@color/black_25"/>
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        android:id="@+id/progress_cookBill"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:id="@+id/billInfoLayout"
+        android:layout_height="match_parent">
+
+        <ScrollView
+            android:id="@+id/infoScroll"
+            android:background="@color/white"
+            android:layout_width="match_parent"
+            android:layout_height="0sp"
+            android:layout_weight="80">
+
+            <LinearLayout
+                android:id="@+id/rootLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center">
+
+
+
+            </LinearLayout>
+
+
+        </ScrollView>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="0sp"
+            android:id="@+id/btnUpdateCookBill"
+            android:textAllCaps="false"
+            android:text="@string/update_bill_info"
+            android:background="@drawable/shape_button_black_50"
+            android:layout_weight="10"/>
 
         <LinearLayout
-            android:id="@+id/rootLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center">
+            android:layout_height="0sp"
+            android:layout_weight="10">
 
+            <TextView
+                android:layout_width="0sp"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:layout_weight="1"
+                android:textStyle="bold"
+                android:text="@string/total"
+                android:id="@+id/txtCookBillTotalPaid" />
 
+            <TextView
+                android:layout_width="0sp"
+                android:layout_weight="1"
+                android:text="@string/paid"
+                android:gravity="center"
+                android:id="@+id/txtCookBillPaid"
+                android:textStyle="bold"
+                android:layout_height="match_parent"/>
+
+            <Button
+                android:id="@+id/btnPayCook"
+                android:layout_width="0sp"
+                android:layout_weight="1"
+                android:textAllCaps="false"
+                android:layout_height="wrap_content"
+                android:background="@drawable/shape_button"
+                android:text="@string/pay_cook" />
 
         </LinearLayout>
 
-
-    </ScrollView>
-
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="0sp"
-        android:id="@+id/btnUpdateCookBill"
-        android:text="@string/update_bill_info"
-        android:background="@drawable/custom_rectangle_buttons"
-        android:layout_weight="10"/>
+    </LinearLayout>
 
 </LinearLayout>

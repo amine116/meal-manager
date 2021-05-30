@@ -11,13 +11,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:padding="2dp"
+        android:background="@color/light_green"
         android:gravity="center">
 
         <TextView
             android:id="@+id/updateNameLabel"
             android:layout_width="match_parent"
             android:gravity="center"
-            android:textColor="@color/announcement"
+            android:background="@color/white"
+            android:textColor="@color/pure_red"
             android:layout_height="match_parent"
             android:textSize="15sp"/>
 
@@ -28,21 +31,29 @@
         android:layout_width="match_parent"
         android:layout_height="5dp"/>
 
-    <ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="500sp">
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
-        <LinearLayout
-            android:id="@+id/updateDataLayout"
-            android:layout_width="match_parent"
+        <Button
+            android:layout_width="0sp"
+            style="@style/Theme.AppCompat.DayNight"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_weight="50"
+            android:id="@+id/btnSaveUpdate"
+            android:text="@string/save"/>
+
+        <Button
+            android:layout_width="0sp"
+            style="@style/Theme.AppCompat.DayNight"
+            android:layout_height="wrap_content"
+            android:layout_weight="50"
+            android:id="@+id/btnCancelUpdate"
+            android:text="@string/cancel"/>
 
 
-        </LinearLayout>
-
-
-    </ScrollView>
+    </LinearLayout>
 
     <TextView
         android:layout_width="match_parent"
@@ -153,28 +164,20 @@
         android:layout_width="match_parent"
         android:layout_height="5dp"/>
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_height="match_parent">
 
-        <Button
-            android:layout_width="0sp"
-            style="@style/Theme.AppCompat.DayNight"
+        <LinearLayout
+            android:id="@+id/updateDataLayout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="50"
-            android:id="@+id/btnSaveUpdate"
-            android:text="@string/save"/>
-
-        <Button
-            android:layout_width="0sp"
-            style="@style/Theme.AppCompat.DayNight"
-            android:layout_height="wrap_content"
-            android:layout_weight="50"
-            android:id="@+id/btnCancelUpdate"
-            android:text="@string/cancel"/>
+            android:orientation="vertical">
 
 
-    </LinearLayout>
+        </LinearLayout>
+
+
+    </ScrollView>
 
 </LinearLayout>

@@ -1,5 +1,6 @@
 package com.amine.mealmanager;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,6 +13,8 @@ public class ActivityLogIn extends AppCompatActivity implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log_in);
+        ActionBar a = getSupportActionBar();
+        if(a != null) a.setTitle("    Log In");
         initialize();
     }
 

@@ -10,6 +10,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -27,8 +28,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 import static com.amine.mealmanager.MainActivity.getTodayDate;
+import static com.amine.mealmanager.MainActivity.readingPermissionAccepted;
+import static com.amine.mealmanager.MainActivity.readingRef;
 
-public class MaintainTodaysMeal extends AppCompatActivity implements View.OnClickListener, ValueEventListener{
+public class MaintainTodaysMeal extends AppCompatActivity implements View.OnClickListener,
+        ValueEventListener{
 
     private ArrayList<Boarder> boarders;
     private ArrayList<TodayMealStatus> mealStatuses, todayMealStatuses;
@@ -49,6 +53,8 @@ public class MaintainTodaysMeal extends AppCompatActivity implements View.OnClic
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maintain_todays_meal);
+        ActionBar a = getSupportActionBar();
+        if(a != null) a.setTitle("  Manage your meal");
         initialize();
     }
     private void initialize(){
@@ -57,8 +63,8 @@ public class MaintainTodaysMeal extends AppCompatActivity implements View.OnClic
         boarders = new ArrayList<>();
         mealStatuses = new ArrayList<>();
         todayMealStatuses = new ArrayList<>();
-
-        rootRef.child(nameOfManager).addValueEventListener(MaintainTodaysMeal.this);
+        readingRef.addValueEventListener(MaintainTodaysMeal.this);
+        readingPermissionAccepted = true;
     }
 
     private void getLastTimes(final LastTimeCallback lastTimeCallback){
@@ -129,12 +135,30 @@ public class MaintainTodaysMeal extends AppCompatActivity implements View.OnClic
 
     @Override
     public void onDataChange(@NonNull DataSnapshot snapshot) {
-        getLastTimes(new LastTimeCallback() {
-            @Override
-            public void onCallback() {
-                prepareFrame();
-            }
-        });
+
+        makViewsInvisible();
+
+        if(readingPermissionAccepted){
+            getLastTimes(new LastTimeCallback() {
+                @Override
+                public void onCallback() {
+                    makViewsVisible();
+                    readingPermissionAccepted = false;
+                    prepareFrame();
+                }
+            });
+        }
+    }
+
+    private void makViewsInvisible() {
+
+        findViewById(R.id.maintain_progress).setVisibility(View.VISIBLE);
+        findViewById(R.id.maintain_infoLayout).setVisibility(View.GONE);
+    }
+
+    private void makViewsVisible() {
+        findViewById(R.id.maintain_progress).setVisibility(View.GONE);
+        findViewById(R.id.maintain_infoLayout).setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -381,18 +405,6 @@ public class MaintainTodaysMeal extends AppCompatActivity implements View.OnClic
                     selectedRow = finalI1;
                     CheckPassword checkPassword = new CheckPassword(MaintainTodaysMeal.this);
                     checkPassword.show();
-
-                    DisplayMetrics displayMetrics = new DisplayMetrics();
-                    getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-                    int displayWidth = displayMetrics.widthPixels;
-                    int displayHeight = displayMetrics.heightPixels;
-                    WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
-                    layoutParams.copyFrom(checkPassword.getWindow().getAttributes());
-                    int dialogWindowWidth = (int) (displayWidth * 0.6f);
-                    int dialogWindowHeight = (int) (displayHeight * 0.3f);
-                    layoutParams.width = dialogWindowWidth;
-                    layoutParams.height = dialogWindowHeight;
-                    checkPassword.getWindow().setAttributes(layoutParams);
 
                 }
             });
@@ -643,6 +655,10 @@ public class MaintainTodaysMeal extends AppCompatActivity implements View.OnClic
                         b + l + d);
                 rootRef.child(nameOfManager).child("Today's Meal Status").child(selectedName)
                         .child(getTodayDate()).setValue(todayMealStatus);
+
+                readingRef.setValue("");
+                readingPermissionAccepted = true;
+                readingRef.setValue("read");
 
                 dismiss();
 

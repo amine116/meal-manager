@@ -1,8 +1,10 @@
 package com.amine.mealmanager;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -30,7 +32,11 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.concurrent.TimeUnit;
 
+import io.michaelrocks.libphonenumber.android.NumberParseException;
 import io.michaelrocks.libphonenumber.android.PhoneNumberUtil;
+import io.michaelrocks.libphonenumber.android.Phonenumber;
+
+import static com.amine.mealmanager.MainActivity.getTodayDate;
 
 public class RecoverPassword extends AppCompatActivity implements View.OnClickListener {
 
@@ -38,12 +44,15 @@ public class RecoverPassword extends AppCompatActivity implements View.OnClickLi
     private FirebaseAuth fAuth;
     private DatabaseReference ref;
     private TextView textView;
-    private String username = "", phoneNumber = "", verificationCode = "", verificationID = "", dummyPhone = "";
+    private String username = "", phoneNumber = "", verificationCode = "",
+            verificationID = "", dummyPhone = "", cntryCde  = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recover_password);
+        ActionBar a = getSupportActionBar();
+        if(a != null) a.setTitle("  Recover Password");
 
         initialize();
     }
@@ -167,10 +176,11 @@ public class RecoverPassword extends AppCompatActivity implements View.OnClickLi
                                                     TelephonyManager tm =
                                                             (TelephonyManager)getSystemService(
                                                                     Context.TELEPHONY_SERVICE);
+
+                                                    cntryCde = tm.getNetworkCountryIso().toUpperCase();
                                                     int countryCode =
                                                             PhoneNumberUtil.createInstance(RecoverPassword.this)
-                                                            .getCountryCodeForRegion(tm.getNetworkCountryIso()
-                                                                    .toUpperCase());
+                                                            .getCountryCodeForRegion(cntryCde);
                                                     String s = "+" + countryCode;
                                                     EditText edtCountryCode = findViewById(R.id.edtCountryCode);
                                                     edtCountryCode.setText(s);
@@ -197,7 +207,6 @@ public class RecoverPassword extends AppCompatActivity implements View.OnClickLi
                 });
     }
 
-
     private void verifyPhone(){
         if(phoneNumber != null){
 
@@ -211,7 +220,6 @@ public class RecoverPassword extends AppCompatActivity implements View.OnClickLi
                                 public void onVerificationCompleted(
                                         @NonNull PhoneAuthCredential phoneAuthCredential) {
                                     verificationCode = phoneAuthCredential.getSmsCode();
-                                    Log.i("test", "Completed");
                                     if(verificationCode != null){
                                         Toast.makeText(RecoverPassword.this, "Verified",
                                                 Toast.LENGTH_LONG).show();
@@ -242,8 +250,10 @@ public class RecoverPassword extends AppCompatActivity implements View.OnClickLi
                                     super.onCodeSent(s, forceResendingToken);
                                     verificationID = s;
                                     String codeSentMessage =
-                                            "We have sent you a verification code to \n" + dummyPhone + "" +
-                                                    "\nEnter the code bellow";
+                                            "We have sent you a verification code to \n"
+                                                    + phoneNumber.substring(0, 3) + "*****" +
+                                                    phoneNumber.substring(phoneNumber.length() - 2)
+                                                    + "\nEnter the code bellow";
                                     textView.setText(codeSentMessage);
 
                                     findViewById(R.id.recProgress).setVisibility(View.GONE);
@@ -291,15 +301,58 @@ public class RecoverPassword extends AppCompatActivity implements View.OnClickLi
             return;
         }
 
-        DatabaseReference r = FirebaseDatabase.getInstance().getReference().child("change request").child(username);
+        DatabaseReference r = FirebaseDatabase.getInstance().getReference()
+                .child("change request").child("users").child(username);
 
-        r.child("tempPhone").setValue(phoneNumber);
-        r.child("newPassword").setValue(pas);
+        PhoneNumberUtil phoneUtil =
+                PhoneNumberUtil.createInstance(RecoverPassword.this);
+
+        try {
+
+            Phonenumber.PhoneNumber phnE164_1 = phoneUtil.parse(phoneNumber, cntryCde);
+
+            phoneNumber = phoneUtil.format(phnE164_1, PhoneNumberUtil.PhoneNumberFormat.E164);
+
+
+        } catch (NumberParseException e) {
+            e.printStackTrace();
+        }
+
+        r.child("tempPhone").setValue(phoneNumber).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if(!task.isSuccessful()){
+                    String s = "Sorry\nRequest failed! You may need to UPDATE the app\n" +
+                            "(" + task.getResult().toString() + ")";
+                    textView.setText(s);
+                    textView.setBackgroundColor(Color.RED);
+                    Toast.makeText(RecoverPassword.this,
+                            "Sorry\nRequest failed! You need to UPDATE the app\n",
+                            Toast.LENGTH_LONG).show();
+
+                }
+            }
+        });
+        r.child("newPassword").setValue(pas).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if(!task.isSuccessful()){
+                    String s = "Sorry\nRequest failed! You may need to UPDATE the app\n" +
+                            "(" + task.getResult().toString() + ")";
+                    textView.setText(s);
+                    textView.setBackgroundColor(Color.RED);
+                    Toast.makeText(RecoverPassword.this,
+                            "Sorry\nRequest failed! You need to UPDATE the app\n",
+                            Toast.LENGTH_LONG).show();
+                }
+            }
+        });
 
         edtResetPass.setVisibility(View.GONE);
         findViewById(R.id.btnResetPass).setVisibility(View.GONE);
         String s = "Your password change request has been sent to Server.\n" +
-                "If your phone number matches then\n" +
+                "If your phone number matches with\n" +
+                "the number of your account then\n" +
                 "Your password will be changed in 24 hours.\n" +
                 "If you can't login in 24 hours, please request change again!";
 

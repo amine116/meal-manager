@@ -1,5 +1,6 @@
 package com.amine.mealmanager;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -42,6 +43,9 @@ public class EditInterfaceActivity extends AppCompatActivity implements View.OnC
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_interface);
+
+        ActionBar a = getSupportActionBar();
+        if(a != null) a.setTitle("  Edit");
 
         type = getIntent().getStringExtra("TYPE");
         index = getIntent().getIntExtra("INDEX", 0);

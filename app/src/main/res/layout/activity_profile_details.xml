@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white"
+    android:padding="16sp"
+    android:gravity="center"
+    tools:context=".ProfileDetailsActivity">
+
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:id="@+id/imgAnimate"
+        android:visibility="gone"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/image" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/closedHistory_info"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="50sp">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_person"
+                android:background="@android:color/transparent"
+                android:id="@+id/profilePicture"
+                android:contentDescription="@string/profile_picture"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:id="@+id/txtProfileName"
+                android:gravity="center"
+                android:textSize="30sp"
+                android:textColor="@color/light_green"
+                android:layout_toEndOf="@+id/profilePicture"
+                android:background="@android:color/transparent"/>
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:background="@color/black_25"
+            android:layout_height=".5dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="20sp"
+            android:id="@+id/txtProfile_title"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:background="@color/black_25"
+            android:layout_height=".5dp"/>
+
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:dividerHeight="5sp"
+            android:id="@+id/profile_lstStoppedHistory"/>
+
+
+    </LinearLayout>
+
+
+</LinearLayout>

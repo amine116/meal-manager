@@ -1,5 +1,6 @@
 package com.amine.mealmanager;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.ClipData;
@@ -18,6 +19,8 @@ public class ActivityInstructions extends AppCompatActivity implements View.OnCl
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_instructions);
+        ActionBar a = getSupportActionBar();
+        if(a != null) a.setTitle("    Instructions");
         initialize();
     }
 

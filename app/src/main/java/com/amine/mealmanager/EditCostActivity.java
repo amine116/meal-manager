@@ -1,5 +1,6 @@
 package com.amine.mealmanager;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -26,6 +27,8 @@ public class EditCostActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_cost);
+        ActionBar a = getSupportActionBar();
+        if(a != null) a.setTitle("  Edit Info");
         initialize();
         setOption();
     }

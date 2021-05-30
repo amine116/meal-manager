@@ -82,49 +82,6 @@
             android:textStyle="bold"
             android:textColor="#ffffff"/>
 
-        <TextView
-            android:id="@+id/marketerNameLabel"
-            android:layout_width="0sp"
-            android:layout_height="match_parent"
-            android:layout_weight="25"
-            android:text="@string/name"
-            android:gravity="center"
-            android:textStyle="bold"
-            android:textColor="@color/white"
-            android:visibility="gone"/>
-
-        <TextView
-            android:id="@+id/marketDateLabel"
-            android:layout_width="0sp"
-            android:layout_height="match_parent"
-            android:layout_weight="25"
-            android:text="@string/details"
-            android:gravity="center"
-            android:textStyle="bold"
-            android:textColor="@color/white"
-            android:visibility="gone"/>
-
-        <TextView
-            android:id="@+id/marketAmountLabel"
-            android:layout_width="0sp"
-            android:layout_height="match_parent"
-            android:layout_weight="25"
-            android:text="@string/total_amount"
-            android:textColor="@color/white"
-            android:gravity="center"
-            android:textStyle="bold"
-            android:visibility="gone"/>
-
-        <Button
-            android:id="@+id/btnAddMarket"
-            android:layout_width="0sp"
-            android:layout_height="match_parent"
-            android:layout_weight="25"
-            android:textAllCaps="false"
-            android:text="@string/plus"
-            android:gravity="center"
-            android:textStyle="bold"
-            android:visibility="gone"/>
 
 
     </LinearLayout>

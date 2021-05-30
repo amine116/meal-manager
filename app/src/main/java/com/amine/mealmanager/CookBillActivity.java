@@ -1,6 +1,7 @@
 package com.amine.mealmanager;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Dialog;
@@ -17,13 +18,17 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -33,6 +38,8 @@ import java.util.ArrayList;
 
 import static com.amine.mealmanager.MainActivity.IS_MANAGER;
 import static com.amine.mealmanager.MainActivity.MAX_BOARDER;
+import static com.amine.mealmanager.MainActivity.getTodayDate;
+import static com.amine.mealmanager.MainActivity.readFromDatabase;
 import static com.amine.mealmanager.MainActivity.rootRef;
 
 public class CookBillActivity extends AppCompatActivity implements View.OnClickListener {
@@ -41,26 +48,81 @@ public class CookBillActivity extends AppCompatActivity implements View.OnClickL
     private LinearLayout rootLayout;
     private final EditText[] edtCooksBill = new EditText[MAX_BOARDER];
     private static final DecimalFormat df =  new DecimalFormat("0.#");
+    private double totalCookBill = 0, paidCookBill = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cook_bill);
-        findViewById(R.id.btnUpdateCookBill).setOnClickListener(this);
+        ActionBar a = getSupportActionBar();
+        if(a != null) a.setTitle("  Cook Bills");
         initialize();
+        makeInvisible();
+        setPaid(new Wait() {
+            @Override
+            public void onCallback() {
+                makeVisible();
+                setCooksBillsToFrame();
+            }
+        });
     }
 
+    private void setPaid(final Wait wait) {
+        rootRef.child("cookBillPaid").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists()){
+                    String bill = snapshot.getValue(String.class);
+                    paidCookBill = Double.parseDouble(bill);
+                    TextView tv = findViewById(R.id.txtCookBillPaid);
+                    String s = "Paid: " + df.format(paidCookBill);
+                    tv.setText(s);
+                }
+                wait.onCallback();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void makeInvisible(){
+
+        findViewById(R.id.progress_cookBill).setVisibility(View.VISIBLE);
+        findViewById(R.id.billInfoLayout).setVisibility(View.GONE);
+
+    }
+    private void makeVisible(){
+
+        findViewById(R.id.progress_cookBill).setVisibility(View.GONE);
+        findViewById(R.id.billInfoLayout).setVisibility(View.VISIBLE);
+    }
 
     private void initialize(){
         cooksBills = MainActivity.cooksBills;
         rootLayout = findViewById(R.id.rootLayout);
 
-        setCooksBillsToFrame();
+        if(!IS_MANAGER){
+            findViewById(R.id.btnUpdateCookBill).setVisibility(View.GONE);
+            findViewById(R.id.btnPayCook).setVisibility(View.GONE);
+        }
+
+        else{
+            findViewById(R.id.btnUpdateCookBill).setVisibility(View.VISIBLE);
+            findViewById(R.id.btnPayCook).setVisibility(View.VISIBLE);
+            findViewById(R.id.btnUpdateCookBill).setOnClickListener(this);
+            findViewById(R.id.btnPayCook).setOnClickListener(this);
+        }
+
     }
 
     private void setCooksBillsToFrame(){
         final ImageView[] calc = new ImageView[MAX_BOARDER];
         rootLayout.removeAllViews();
+
+        totalCookBill = 0;
 
         Resources res = getResources();
         Drawable drawable = null;
@@ -73,6 +135,8 @@ public class CookBillActivity extends AppCompatActivity implements View.OnClickL
         }
 
         for(int i = 0; i < cooksBills.size(); i++) {
+
+            totalCookBill += Double.parseDouble(cooksBills.get(i).getPaid());
 
             LinearLayout ll = new LinearLayout(CookBillActivity.this),
                     fake = new LinearLayout(CookBillActivity.this);
@@ -148,8 +212,9 @@ public class CookBillActivity extends AppCompatActivity implements View.OnClickL
                         100, 100));
             }
 
-            if(!IS_MANAGER)
+            if(!IS_MANAGER) {
                 tv.setLayoutParams(paramsAm);
+            }
 
             if(IS_MANAGER){
                 final int finalI = i;
@@ -182,6 +247,10 @@ public class CookBillActivity extends AppCompatActivity implements View.OnClickL
 
         }
 
+        TextView tv = findViewById(R.id.txtCookBillTotalPaid);
+        String s = "Cash: " + df.format(totalCookBill);
+        tv.setText(s);
+
 
     }
 
@@ -189,6 +258,7 @@ public class CookBillActivity extends AppCompatActivity implements View.OnClickL
     public void onClick(View v) {
         int id = v.getId();
         if(id == R.id.btnUpdateCookBill){
+            totalCookBill = 0;
             DatabaseReference r = rootRef.child("cooksBill");
             for(int i = 0; i < cooksBills.size(); i++){
                 String cur = edtCooksBill[i].getText().toString();
@@ -201,10 +271,68 @@ public class CookBillActivity extends AppCompatActivity implements View.OnClickL
             r.setValue(cooksBills);
             setCooksBillsToFrame();
         }
+        else if(id == R.id.btnPayCook){
+            RefundDialog r = new RefundDialog(this);
+            r.show();
+        }
     }
+
+    private class RefundDialog extends Dialog implements View.OnClickListener{
+
+        public RefundDialog(@NonNull Context context) {
+            super(context);
+        }
+
+        @Override
+        protected void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.payback_dialog);
+            initialize();
+        }
+
+        @Override
+        public void onClick(View v) {
+            int id = v.getId();
+            if(id == R.id.paybackDialog_btnPayback){
+                EditText ed = findViewById(R.id.paybackDialog_edtAmount);
+                String s = ed.getText().toString();
+                if(s.isEmpty()){
+                    ed.setError("Enter amount");
+                    ed.requestFocus();
+                    return;
+                }
+                double amount = Double.parseDouble(s) + paidCookBill;
+                final DatabaseReference r = rootRef.child("cookBillPaid");
+                r.setValue(amount + "");
+                makeInvisible();
+                setPaid(new Wait() {
+                    @Override
+                    public void onCallback() {
+                        makeVisible();
+                        setCooksBillsToFrame();
+                    }
+                });
+
+            }
+            dismiss();
+
+        }
+
+        private void initialize(){
+            findViewById(R.id.paybackDialog_btnCancel).setOnClickListener(this);
+            Button b = findViewById(R.id.paybackDialog_btnPayback);
+            String s = "Pay";
+            b.setText(s);
+            b.setOnClickListener(this);
+        }
+    }
+
 
     private interface UpdateEditText{
         void onUpdate(String s, int ID);
+    }
+    private interface Wait{
+        void onCallback();
     }
 
     private class CalculatorInterface extends Dialog implements View.OnClickListener{

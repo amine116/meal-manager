@@ -1,6 +1,7 @@
 package com.amine.mealmanager;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Dialog;
@@ -16,20 +17,22 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.database.DatabaseReference;
-
 import org.xmlpull.v1.XmlPullParserException;
-
 import java.io.IOException;
-import java.util.ArrayList;
-
+import static com.amine.mealmanager.MainActivity.IS_MANAGER;
+import static com.amine.mealmanager.MainActivity.df;
 import static com.amine.mealmanager.MainActivity.getTodayDate;
 import static com.amine.mealmanager.MainActivity.marketerHistories;
+import static com.amine.mealmanager.MainActivity.readingPermissionAccepted;
+import static com.amine.mealmanager.MainActivity.readingRef;
 import static com.amine.mealmanager.MainActivity.rootRef;
 
 public class BazaarActivity extends AppCompatActivity implements View.OnClickListener {
@@ -39,13 +42,16 @@ public class BazaarActivity extends AppCompatActivity implements View.OnClickLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bazaar);
+        ActionBar a = getSupportActionBar();
+        if(a != null) a.setTitle("  Bazaar History");
         initialize();
     }
 
 
     private void initialize(){
         rootLayout = findViewById(R.id.rootLayout);
-        findViewById(R.id.btnAddBazaar).setOnClickListener(this);
+        if(!IS_MANAGER) findViewById(R.id.btnAddBazaar).setVisibility(View.GONE);
+        if(IS_MANAGER) findViewById(R.id.btnAddBazaar).setOnClickListener(this);
         setMarketHistoryToFrame();
     }
 
@@ -54,6 +60,7 @@ public class BazaarActivity extends AppCompatActivity implements View.OnClickLis
         rootLayout.removeAllViews();
         Resources res = getResources();
         Drawable drawable = null;
+        double totalBazaarCost = 0;
         try {
             drawable = Drawable.createFromXml(res,
                     res.getXml(R.xml.rectangular_shape_market_history));
@@ -100,12 +107,12 @@ public class BazaarActivity extends AppCompatActivity implements View.OnClickLis
             amount.setTypeface(Typeface.DEFAULT_BOLD);
 
             date.setGravity(Gravity.CENTER);
-            date.setTextColor(Color.WHITE);
+            date.setTextColor(Color.DKGRAY);
             amount.setGravity(Gravity.CENTER);
-            amount.setTextColor(Color.WHITE);
+            amount.setTextColor(Color.DKGRAY);
 
             name.setGravity(Gravity.CENTER);
-            name.setTextColor(Color.WHITE);
+            name.setTextColor(Color.DKGRAY);
 
             fakeH1.setLayoutParams(new LinearLayout.LayoutParams(
                     0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
@@ -144,6 +151,11 @@ public class BazaarActivity extends AppCompatActivity implements View.OnClickLis
             amount.setLayoutParams(paramsAm);
 
             fakeT.setLayoutParams(paramsAm);
+
+            totalBazaarCost += Double.parseDouble(marketerHistories.get(i).getTotalAmount());
+            TextView tv = findViewById(R.id.txtTotalBazaarCost);
+            String s = "Total bazaar cost: " + df.format(totalBazaarCost);
+            tv.setText(s);
         }
     }
 
@@ -153,10 +165,6 @@ public class BazaarActivity extends AppCompatActivity implements View.OnClickLis
             AddMarketHistoryDialog addMarketHistoryDialog = new
                     AddMarketHistoryDialog(BazaarActivity.this);
             addMarketHistoryDialog.show();
-
-            WindowManager.LayoutParams layoutParams =
-                    getWindowParams(addMarketHistoryDialog, 0.8f, 0.4f);
-            addMarketHistoryDialog.getWindow().setAttributes(layoutParams);
         }
     }
 
@@ -173,18 +181,25 @@ public class BazaarActivity extends AppCompatActivity implements View.OnClickLis
 
             if(v.getId() == R.id.saveTheMember){
                 String name = edtName.getText().toString().toLowerCase().trim(),
-                        amount = edtAmount.getText().toString().trim();
+                        amount = edtAmount.getText().toString().trim(),
+                        date = edtDate.getText().toString();
+
                 if(!name.equals("")){
                     if(!amount.equals("")){
-                        MainActivity.totalCost += Double.parseDouble(amount);
-                        saveMarketHistoryToDatabase(name, edtDate.getText().toString(), amount);
-                        dismiss();
+                        Permission p = new Permission(
+                                BazaarActivity.this, name, date, amount, new Wait() {
+                            @Override
+                            public void onCallback() {
+                                dismiss();
+                            }
+                        });
+                        p.show();
                     }else{
                         Toast.makeText(BazaarActivity.this,
                                 "Enter amount \uD83D\uDE44", Toast.LENGTH_LONG).show();
                     }
-
-                }else{
+                }
+                else{
                     Toast.makeText(BazaarActivity.this,
                             "Enter name \uD83D\uDE44", Toast.LENGTH_LONG).show();
                 }
@@ -248,10 +263,73 @@ public class BazaarActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
+    private interface Wait{
+        void onCallback();
+    }
+
+    private class Permission extends Dialog implements View.OnClickListener{
+
+        private final String name, date, amount;
+        private final Wait wait;
+
+        public Permission(@NonNull Context context, String name, String date,
+                          String amount, Wait wait) {
+            super(context);
+            this.name = name;
+            this.date = date;
+            this.amount = amount;
+            this.wait = wait;
+        }
+
+        @Override
+        protected void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.want_parmisstion);
+            initialize();
+        }
+
+        @Override
+        public void onClick(View v) {
+            int id = v.getId();
+            if(id == R.id.yesToDelete){
+
+                MainActivity.totalCost += Double.parseDouble(amount);
+                View view = this.getCurrentFocus();
+                if (view != null) {
+                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                }
+                saveMarketHistoryToDatabase(name, date, amount);
+                dismiss();
+                wait.onCallback();
+
+            }
+            else if(id == R.id.noToDelete){
+                dismiss();
+            }
+        }
+
+        private void initialize(){
+            TextView tv = findViewById(R.id.wantToLogOut);
+            String s = "Warning!\nThis information can not be undone or edited. " +
+                    "Are you sure that the amount " + amount + "(" + name + ")" + " is correct?";
+            tv.setText(s);
+
+            Button b = findViewById(R.id.yesToDelete);
+           s = "Yes";
+           b.setText(s);
+
+           b.setOnClickListener(this);
+           findViewById(R.id.noToDelete).setOnClickListener(this);
+        }
+    }
+
     private void saveMarketHistoryToDatabase(String name, String date, String amount){
         int exis = marketerExists(name);
         if(exis == 0){
-            marketerHistories.add(new MarketerHistory(name, date + " (" + amount + ")", amount));
+            marketerHistories.add(new MarketerHistory(name, date +
+                    " (" + amount + ")", amount));
+
         }else{
             int index = exis - 1;
             String findExpense = marketerHistories.get(index).getExpenseHistory() + "\n" + date + " (" + amount + ")";
@@ -260,10 +338,15 @@ public class BazaarActivity extends AppCompatActivity implements View.OnClickLis
             marketerHistories.get(index).setExpenseHistory(findExpense);
             marketerHistories.get(index).setTotalAmount(findAmount);
         }
+        setMarketHistoryToFrame();
         for(int i = 0; i < marketerHistories.size(); i++){
             DatabaseReference ref = rootRef.child("Marketer History").child(marketerHistories.get(i).getName());
             ref.setValue(marketerHistories.get(i));
         }
+
+        readingRef.setValue("");
+        readingPermissionAccepted = true;
+        readingRef.setValue("read");
     }
 
     private int marketerExists(String name){

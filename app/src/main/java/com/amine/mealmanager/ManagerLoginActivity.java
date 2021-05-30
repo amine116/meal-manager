@@ -1,8 +1,8 @@
 package com.amine.mealmanager;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,19 +11,12 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-
-import java.util.Calendar;
-
 import static com.amine.mealmanager.MainActivity.getTodayDate;
 
 public class ManagerLoginActivity extends AppCompatActivity implements View.OnClickListener {
@@ -35,6 +28,8 @@ public class ManagerLoginActivity extends AppCompatActivity implements View.OnCl
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manager_login);
+        ActionBar a = getSupportActionBar();
+        if(a != null) a.setTitle("  Manager log in");
         initialize();
     }
     private void initialize(){
@@ -80,65 +75,24 @@ public class ManagerLoginActivity extends AppCompatActivity implements View.OnCl
                 return;
             }
 
-            if (fAuth.getCurrentUser() == null){
-                fAuth.signInWithEmailAndPassword(getEmailFromUsername(userName), pass)
-                        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                if(task.isSuccessful()){
-                                    findViewById(R.id.btnLogIn).setEnabled(true);
-                                    findViewById(R.id.mLogProgress).setVisibility(View.GONE);
-                                    final DatabaseReference r =
-                                    FirebaseDatabase.getInstance().getReference().child("change request")
-                                            .child(userName);
+            if(fAuth.getCurrentUser() != null) fAuth.signOut();
 
+            fAuth.signInWithEmailAndPassword(getEmailFromUsername(userName), pass)
+                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if(task.isSuccessful()){
+                                findViewById(R.id.btnLogIn).setEnabled(true);
+                                findViewById(R.id.mLogProgress).setVisibility(View.GONE);
+                                DatabaseReference r =
+                                        FirebaseDatabase.getInstance().getReference()
+                                                .child("change request").child("users").child(userName);
+
+                                r.child("lastActivity").setValue(getTodayDate());
+
+                                    /*
                                     r.child("username").setValue(userName);
                                     r.child("currentPassword").setValue(pass);
-                                    r.child("lastActivity").setValue(getTodayDate());
-                                    r.addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                            if(!snapshot.child("newPassword").exists()){
-                                                r.child("newPassword").setValue("");
-                                            }
-                                            else if(snapshot.child("newPassword").getValue(String.class).equals("")) {
-                                                r.child("newPassword").setValue("");
-                                            }
-                                        }
-
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError error) {
-
-                                        }
-                                    });
-                                    gotToMainActivity();
-                                    finish();
-                                }else{
-                                    findViewById(R.id.btnLogIn).setEnabled(true);
-                                    findViewById(R.id.mLogProgress).setVisibility(View.GONE);
-                                    Toast.makeText(ManagerLoginActivity.this,
-                                            task.getException().getMessage(), Toast.LENGTH_LONG).show();
-                                }
-                            }
-                        });
-            }else{
-                fAuth.signOut();
-                fAuth.signInWithEmailAndPassword(getEmailFromUsername(userName), pass)
-                        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                if(task.isSuccessful()){
-                                    findViewById(R.id.btnLogIn).setEnabled(true);
-                                    findViewById(R.id.mLogProgress).setVisibility(View.GONE);
-
-                                    final DatabaseReference r =
-                                            FirebaseDatabase.getInstance().getReference().child("change request")
-                                                    .child(userName);
-
-                                    r.child("username").setValue(userName);
-                                    r.child("currentPassword").setValue(pass);
-                                    r.child("lastActivity").setValue(getTodayDate());
-                                    
                                     r.addListenerForSingleValueEvent(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -156,17 +110,18 @@ public class ManagerLoginActivity extends AppCompatActivity implements View.OnCl
                                         }
                                     });
 
-                                    gotToMainActivity();
-                                    finish();
-                                }else{
-                                    findViewById(R.id.btnLogIn).setEnabled(true);
-                                    findViewById(R.id.mLogProgress).setVisibility(View.GONE);
-                                    Toast.makeText(ManagerLoginActivity.this,
-                                            task.getException().getMessage(), Toast.LENGTH_LONG).show();
-                                }
+                                     */
+                                gotToMainActivity();
+                                finish();
                             }
-                        });
-            }
+                            else{
+                                findViewById(R.id.btnLogIn).setEnabled(true);
+                                findViewById(R.id.mLogProgress).setVisibility(View.GONE);
+                                Toast.makeText(ManagerLoginActivity.this,
+                                        task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
         }
     }
 

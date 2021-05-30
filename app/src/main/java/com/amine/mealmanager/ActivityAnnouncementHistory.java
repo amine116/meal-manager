@@ -1,6 +1,7 @@
 package com.amine.mealmanager;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.ClipData;
@@ -10,6 +11,7 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,32 +41,16 @@ public class ActivityAnnouncementHistory extends AppCompatActivity implements Va
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_announecement_history);
+        ActionBar a = getSupportActionBar();
+        if(a != null) a.setTitle("    Announcement History");
         initialize();
-
-        findViewById(R.id.ann_history_Ann_scroll).setVisibility(View.GONE);
-        findViewById(R.id.ann_history_progress).setVisibility(View.VISIBLE);
-
-        readPost(new ReadPost() {
-            @Override
-            public void onCallback() {
-                findViewById(R.id.ann_history_Ann_scroll).setVisibility(View.VISIBLE);
-                findViewById(R.id.ann_history_progress).setVisibility(View.GONE);
-
-                txtCopy = new TextView[announcements.size() + 1];
-                txtText = new TextView[announcements.size() + 1];
-
-                setAnnouncementsToFrame();
-
-
-            }
-        });
     }
 
     private void initialize(){
         announcements = new ArrayList<>();
         layout = findViewById(R.id.ann_history_Ann_layout);
         ref = FirebaseDatabase.getInstance().getReference()
-                .child(MainActivity.getManagerName()).child("Post");
+                .child(MainActivity.getManagerName()).child("announcement");
         ref.addValueEventListener(this);
     }
 
@@ -101,9 +87,9 @@ public class ActivityAnnouncementHistory extends AppCompatActivity implements Va
             ll.addView(hFake);
             ll.addView(txtCopy[i]);
 
-            txtText[i].setTextColor(Color.WHITE);
-            txtCopy[i].setTextColor(Color.WHITE);
-            date.setTextColor(Color.WHITE);
+            txtText[i].setTextColor(Color.DKGRAY);
+            txtCopy[i].setTextColor(Color.DKGRAY);
+            date.setTextColor(Color.DKGRAY);
 
             date.setPadding(5, 5, 5, 5);
             txtCopy[i].setPadding(5, 5, 5, 5);
@@ -156,54 +142,29 @@ public class ActivityAnnouncementHistory extends AppCompatActivity implements Va
 
     @Override
     public void onDataChange(@NonNull DataSnapshot snapshot) {
+
         findViewById(R.id.ann_history_Ann_scroll).setVisibility(View.GONE);
         findViewById(R.id.ann_history_progress).setVisibility(View.VISIBLE);
 
-        readPost(new ReadPost() {
-            @Override
-            public void onCallback() {
-                findViewById(R.id.ann_history_Ann_scroll).setVisibility(View.VISIBLE);
-                findViewById(R.id.ann_history_progress).setVisibility(View.GONE);
-
-                txtCopy = new TextView[announcements.size() + 1];
-                txtText = new TextView[announcements.size() + 1];
-                setAnnouncementsToFrame();
-
-
+        announcements.clear();
+        if(snapshot.exists()){
+            for(DataSnapshot ann : snapshot.getChildren()){
+                String date = ann.getKey(),
+                        text = ann.getValue(String.class);
+                announcements.add(new Announcement(text, date));
             }
-        });
+        }
+
+        findViewById(R.id.ann_history_Ann_scroll).setVisibility(View.VISIBLE);
+        findViewById(R.id.ann_history_progress).setVisibility(View.GONE);
+
+        txtCopy = new TextView[announcements.size() + 1];
+        txtText = new TextView[announcements.size() + 1];
+        setAnnouncementsToFrame();
     }
 
     @Override
     public void onCancelled(@NonNull DatabaseError error) {
-
-    }
-
-    private interface ReadPost{
-        void onCallback();
-    }
-
-    private void readPost(final ReadPost read){
-
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                announcements.clear();
-                if(snapshot.exists()){
-                    for(DataSnapshot ann : snapshot.getChildren()){
-                        String date = ann.getKey(),
-                                text = ann.getValue(String.class);
-                        announcements.add(new Announcement(text, date));
-                    }
-                }
-                read.onCallback();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
 
     }
 

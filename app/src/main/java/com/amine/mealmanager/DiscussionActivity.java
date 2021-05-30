@@ -7,8 +7,10 @@ import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import android.text.method.KeyListener;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +30,14 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 import org.xmlpull.v1.XmlPullParserException;
+import static com.amine.mealmanager.MainActivity.boarders;
+import static com.amine.mealmanager.MainActivity.cooksBills;
+import static com.amine.mealmanager.MainActivity.getManagerName;
+import static com.amine.mealmanager.MainActivity.rootRef;
+import static com.amine.mealmanager.MainActivity.selectedBoarderIndex;
+import static com.amine.mealmanager.MainActivity.selectedCookBillIndex;
+import static com.amine.mealmanager.MainActivity.selectedStoppedBoarderIndex;
+import static com.amine.mealmanager.MainActivity.stoppedBoarders;
 
 public class DiscussionActivity extends AppCompatActivity implements View.OnClickListener, ValueEventListener {
 
@@ -42,12 +52,19 @@ public class DiscussionActivity extends AppCompatActivity implements View.OnClic
     private final boolean IS_MANAGER = MainActivity.IS_MANAGER;
     private ScrollView discussionTextScroll;
     private int selectedLayout = -1;
+    private static String profileName = "N/A";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_discussion);
+        ActionBar a = getSupportActionBar();
+        if(a != null) a.setTitle("  Discussions");
         initialize();
+
+        profileName = getProfileName(selectedBoarderIndex, selectedStoppedBoarderIndex,
+                selectedCookBillIndex);
+
         readDiscussionList(new ReadDiscussionListCallback() {
             @Override
             public void onCallback() {
@@ -65,6 +82,25 @@ public class DiscussionActivity extends AppCompatActivity implements View.OnClic
             }
         });
 
+    }
+
+    public static String getProfileName(int bI, int sbI, int cbI) {
+        String profileName = "";
+        if(bI != -1){
+            profileName = boarders.get(bI).getName();
+        }
+
+        if(cbI != -1){
+            profileName = cooksBills.get(cbI).getName();
+        }
+        if(sbI != -1){
+
+            Boarder boarder = stoppedBoarders.get(sbI);
+
+            profileName = boarder.getName();
+        }
+
+        return profileName;
     }
 
     private void initialize(){
@@ -122,7 +158,7 @@ public class DiscussionActivity extends AppCompatActivity implements View.OnClic
             discussionTextScroll.setVisibility(View.GONE);
             publish.setVisibility(View.GONE);
             edit.setVisibility(View.GONE);
-            String s = "Create Note";
+            String s = "Create Message";
             add.setText(s);
             save.setVisibility(View.GONE);
             add.setVisibility(View.VISIBLE);
@@ -182,6 +218,8 @@ public class DiscussionActivity extends AppCompatActivity implements View.OnClic
             else{
                 KeyListener listener = (KeyListener) edtYourName.getTag();
                 if(listener != null) edtYourName.setKeyListener(listener);
+                edtYourName.setText(getProfileName(selectedBoarderIndex, selectedStoppedBoarderIndex,
+                        selectedCookBillIndex));
             }
 
         }
@@ -200,13 +238,45 @@ public class DiscussionActivity extends AppCompatActivity implements View.OnClic
                         r.child("notifications").child("text").setValue(text);
                         r.child("notifications").child("title").setValue("Note from(" + name + ")");
                         r.child("notifications").child("id").setValue(3);
+
+                        for(int i = 0; i < boarders.size(); i++){
+                            DatabaseReference nR = rootRef.child("notifications")
+                                    .child(boarders.get(i).getName()).child("unseen").push();
+                            String key = nR.getKey();
+                            UNotifications not = new UNotifications(key,
+                                    "Message(" + name + ")", date + "\n" + text);
+
+                            if(!profileName.equals(boarders.get(i).getName())) nR.setValue(not);
+                        }
+
+                        if(!IS_MANAGER){
+                            DatabaseReference nR = rootRef.child("notifications")
+                                    .child(getManagerName() + "-Manager-").child("unseen").push();
+                            String notId = nR.getKey();
+                            UNotifications not = new UNotifications(notId,
+                                    "Message from(" + name + ")", date + "\n" + text);
+
+                            nR.setValue(not);
+                        }
+
                     }
                     else{
                         r.child("Market List").child(date).setValue(discussionList);
                         r.child("notifications").child("text").setValue(text);
                         r.child("notifications").child("title").setValue("Market List from(" + name + ")");
                         r.child("notifications").child("id").setValue(4);
+
+                        for(int i = 0; i < boarders.size(); i++){
+                            DatabaseReference nR = rootRef.child("notifications")
+                                    .child(boarders.get(i).getName()).child("unseen").push();
+                            String key = nR.getKey();
+                            UNotifications not = new UNotifications(key,
+                                    "Bazaar Routine", date + "\n" + text);
+
+                            nR.setValue(not);
+                        }
                     }
+
 
                     edit.setVisibility(View.GONE);
                     findViewById(R.id.writingLayout).setVisibility(View.GONE);
@@ -270,8 +340,17 @@ public class DiscussionActivity extends AppCompatActivity implements View.OnClic
                             r.child("notifications").child("text").setValue(text);
                             r.child("notifications").child("title").setValue("Market List Edited(" + name + ")");
                             r.child("notifications").child("id").setValue(4);
-                        }
 
+                           for(int i = 0; i < boarders.size(); i++){
+                               DatabaseReference nR = rootRef.child("notifications")
+                                       .child(boarders.get(i).getName()).child("unseen").push();
+                               String key = nR.getKey();
+                               UNotifications not = new UNotifications(key,
+                                       "Bazaar Routine Changed", date + "\n" + text);
+
+                               nR.setValue(not);
+                           }
+                        }
                         readDiscussionList(new ReadDiscussionListCallback() {
                             @Override
                             public void onCallback() {
@@ -553,4 +632,12 @@ public class DiscussionActivity extends AppCompatActivity implements View.OnClic
         void onCallback();
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        Intent i = new Intent(DiscussionActivity.this, MainActivity.class);
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(i);
+    }
 }

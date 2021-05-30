@@ -27,6 +27,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="30sp"
                 android:gravity="center"
+                android:textSize="20sp"
+                android:textStyle="bold"
                 android:background="@color/light_green"
                 android:text="@string/meal_details"/>
 
@@ -50,6 +52,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="30sp"
                 android:gravity="center"
+                android:textStyle="bold"
+                android:textSize="20sp"
                 android:background="@color/light_green"
                 android:text="@string/payment_history"/>
 

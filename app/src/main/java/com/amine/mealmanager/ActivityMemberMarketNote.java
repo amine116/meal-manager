@@ -1,11 +1,13 @@
 package com.amine.mealmanager;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -34,7 +36,10 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.amine.mealmanager.MainActivity.getManagerName;
 import static com.amine.mealmanager.MainActivity.getTodayDate;
+import static com.amine.mealmanager.MainActivity.rootRef;
 
 public class ActivityMemberMarketNote extends AppCompatActivity implements View.OnClickListener,
         AdapterView.OnItemSelectedListener, ValueEventListener {
@@ -59,6 +64,8 @@ public class ActivityMemberMarketNote extends AppCompatActivity implements View.
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_member_market_note);
+        ActionBar a = getSupportActionBar();
+        if(a != null) a.setTitle("    Bazaar Note");
         initialize();
     }
 
@@ -470,18 +477,24 @@ public class ActivityMemberMarketNote extends AppCompatActivity implements View.
     }
 
     private void saveAllItems(String name){
-        DatabaseReference r1 = FirebaseDatabase.getInstance().getReference().child(MainActivity.getManagerName())
-                .child("Discussion").child("Public Message").child(name).child(date);
+        DatabaseReference r1 = rootRef.child("Discussion").child("Public Message").child(name).child(date);
 
         if(!namesForSpinner.contains(name)) namesForSpinner.add(name);
         r1.setValue(marketItems);
 
-        DatabaseReference r = FirebaseDatabase.getInstance().getReference().child(MainActivity.getManagerName())
-                .child("Discussion");
+        DatabaseReference r = rootRef.child("Discussion"),
+                nR = rootRef.child("notifications").child(getManagerName() + "-Manager-").child("unseen")
+                        .push();
+        String notId = nR.getKey();
+
         String s = "Total market cost: " + df.format(total);
         r.child("notifications").child("text").setValue(s);
         r.child("notifications").child("title").setValue("Market Note from: (" + name + ")");
         r.child("notifications").child("id").setValue(2);
+
+        UNotifications not = new UNotifications(notId, "Market Note from: (" + name + ")",
+                s);
+        nR.setValue(not);
 
         findViewById(R.id.marketNote_progress).setVisibility(View.GONE);
         findViewById(R.id.marketNote_itemsScroll).setVisibility(View.VISIBLE);
@@ -768,5 +781,14 @@ public class ActivityMemberMarketNote extends AppCompatActivity implements View.
         layoutParams.width = dialogWindowWidth;
         layoutParams.height = dialogWindowHeight;
         return layoutParams;
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        Intent i = new Intent(ActivityMemberMarketNote.this, MainActivity.class);
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(i);
     }
 }

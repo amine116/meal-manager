@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16sp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50sp"
+        android:background="@color/light_green"
+        android:padding="2sp">
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white"
+            android:gravity="center"
+            android:id="@+id/paybackDialog_edtAmount"
+            android:inputType="numberDecimal"
+            android:hint="@string/enter"
+            android:autofillHints="" />
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/black_25"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50sp"
+        android:orientation="horizontal">
+
+        <Button
+            android:layout_width="0sp"
+            android:layout_weight="1"
+            style="@style/AppTheme.NoActionBar"
+            android:textAllCaps="false"
+            android:id="@+id/paybackDialog_btnPayback"
+            android:layout_height="match_parent"
+            android:text="@string/refund"/>
+
+        <Button
+            android:layout_width="0sp"
+            android:layout_weight="1"
+            style="@style/AppTheme.NoActionBar"
+            android:textAllCaps="false"
+            android:id="@+id/paybackDialog_btnCancel"
+            android:layout_height="match_parent"
+            android:text="@string/cancel"/>
+
+    </LinearLayout>
+
+</LinearLayout>

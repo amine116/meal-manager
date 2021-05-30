@@ -1,23 +1,19 @@
 package com.amine.mealmanager;
-
 import android.app.Dialog;
-import android.app.Notification;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import android.os.Handler;
-import android.text.Html;
 import android.text.InputType;
 import android.text.Layout;
 import android.text.Spannable;
@@ -26,11 +22,10 @@ import android.text.style.AlignmentSpan;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
-import android.text.style.StyleSpan;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,11 +35,11 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -60,51 +55,58 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
+import static com.amine.mealmanager.DiscussionActivity.getProfileName;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, ValueEventListener{
 
-    private LinearLayout rootLayout;
     public static ArrayList<Boarder> boarders, stoppedBoarders;
     public static ArrayList<MarketerHistory> marketerHistories;
     public static ArrayList<CooksBill> cooksBills;
+    public static Map<String, Payback> paybacks;
+    public static ArrayList<UNotifications> unSeenNot, seenNot;
     private static ArrayList<TodayMealStatus> todayMealStatuses, mealStatuses;
     private File rootFolder, evidence, loggedInPersonFile;
     private TextView txtTotalPaid, txtTotalMeal, txtMealRate, txtTotalCost,
-            txtOverView, txtDetails, txtMarketHistory, marketerNameLabel, marketDateLabel, marketAmountLabel,
-            nameLabel, paidLabel, mealLabel, dueLabel, overHeadLabel, txtLastUpdate, txtCooksBill,
-            txtReminderMoney;
+            txtLastUpdate, txtReminderMoney;
     public static final int MAX_BOARDER = 100;
-    private final EditText[] edtCooksBill = new EditText[MAX_BOARDER];
 
-    private Button btnAddMarket, addBoarder;
-
-    public static boolean IS_MANAGER = false, LOGGED_OUT = true, isBreakfastOn, isLunchOn, isDinnerOn,
-            overViewClicked = true, detailsClicked = false, cooksBillClicked = false,
-            marketHistoryClicked = false;
+    public static boolean IS_MANAGER = false, LOGGED_OUT = true,
+            isBreakfastOn, isLunchOn, isDinnerOn, readingPermissionAccepted = false,
+            isAnimationAlive = false;
     public static double totalMeal = 0.0, totalPaid = 0.0, mealRate = 0.0, totalCost = 0.0,
-            extraMoney = 0, stoppedMeal = 0.0, stoppedCost = 0.0;
-    private static final DecimalFormat df =  new DecimalFormat("0.#");
+            extraMoney = 0, stoppedMeal = 0.0, stoppedCost = 0.0, fakeTotalCost, fakeTotalMeal,
+            reminderMoney;
+    public static final DecimalFormat df =  new DecimalFormat("0.#");
     public static DatabaseReference rootRef, lastUpdateRef, lastChangingTimeRef, marketHistoryRef,
-            mealPeriodRef, mealStatusRef, postRef, todayMealStatusRef, cookBillRef, membersRef;
-    private static String lastUpdate = "", nameOfManager = "", nameOfLoggedInPerson = "";
+            mealPeriodRef, mealStatusRef, postRef, todayMealStatusRef, cookBillRef, membersRef,
+            readingRef;
+    private static String lastUpdate = "", nameOfManager = "", announcement = "";
     private static final String INFO_FILE = "Info.txt", MEMBER_NAME_FILE = "Member Name.txt";
     private FirebaseAuth fAuth;
+    private DrawerLayout drawerLayout;
+    public static int selectedBoarderIndex = -1,
+            selectedStoppedBoarderIndex = -1, selectedCookBillIndex = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar != null) actionBar.hide();
+        initialize();
+        makeManagerOrMemberView();
+    }
 
-        String s = getIntent().getStringExtra("ANIMATED");
-        if(s == null){
-           Intent intent = new Intent(MainActivity.this, Animate.class);
-           startActivity(intent);
-        }
-        else{
-            findViewById(R.id.main_progress).setVisibility(View.VISIBLE);
-            initialize();
-            setViewToFrame();
+    private void makeManagerOrMemberView() {
+        if(!IS_MANAGER){
+            findViewById(R.id.updateData).setVisibility(View.GONE);
+            findViewById(R.id.updatePayment).setVisibility(View.GONE);
+            findViewById(R.id.eraseAll).setVisibility(View.GONE);
+            findViewById(R.id.layout_goToPayBack).setVisibility(View.GONE);
+            findViewById(R.id.addBoarder).setVisibility(View.GONE);
 
         }
     }
@@ -127,7 +129,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 + " + " + df.format(d) + " = " + df.format((b + l + d));
         TextView tv = findViewById(R.id.txtNumberOfTodayMeal);
         tv.setText(todayMeal);
-        tv.setTextColor(Color.WHITE);
         tv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -156,13 +157,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         LOGGED_OUT = false;
                         IS_MANAGER = false;
                         rootRef = FirebaseDatabase.getInstance().getReference().child(nameOfManager);
-                        rootRef.addValueEventListener(this);
+                        readingRef = rootRef.child("readingNode");
+                        readingPermissionAccepted = true;
+                        readingRef.addValueEventListener(this);
 
                         if(loggedInPersonFile.exists()){
                             Scanner scanner1 = new Scanner(loggedInPersonFile);
                             if(scanner1.hasNextLine()){
-                                nameOfLoggedInPerson = scanner1.nextLine();
+                                selectedBoarderIndex = Integer.parseInt(scanner1.nextLine());
+                                selectedStoppedBoarderIndex = Integer.parseInt(scanner1.nextLine());
+                                selectedCookBillIndex = Integer.parseInt(scanner1.nextLine());
                             }
+                            scanner1.close();
                         }
 
                         setReferences();
@@ -185,13 +191,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         else{
             try {
+
+                if(loggedInPersonFile.exists()){
+                    Scanner scanner1 = new Scanner(loggedInPersonFile);
+                    if(scanner1.hasNextLine()){
+                        selectedBoarderIndex = Integer.parseInt(scanner1.nextLine());
+                        selectedStoppedBoarderIndex = Integer.parseInt(scanner1.nextLine());
+                        selectedCookBillIndex = Integer.parseInt(scanner1.nextLine());
+                    }
+                    scanner1.close();
+                }
+
                 nameOfManager = getUsernameFromEmail(fAuth.getCurrentUser().getEmail());
                 IS_MANAGER = true;
                 LOGGED_OUT = false;
                 rootRef = FirebaseDatabase.getInstance().getReference().child(nameOfManager);
-                rootRef.addValueEventListener(this);
+                readingRef = rootRef.child("readingNode");
+                readingPermissionAccepted = true;
+                readingRef.addValueEventListener(this);
                 setReferences();
-                FirebaseDatabase.getInstance().getReference().child("change request").child(nameOfManager)
+                FirebaseDatabase.getInstance().getReference().child("change request")
+                        .child("users").child(nameOfManager)
                         .child("lastActivity").setValue(getTodayDate());
             }catch (Exception e){
                 Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
@@ -221,149 +241,44 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void makeViewsInvisible(){
-        findViewById(R.id.infoLayout).setVisibility(View.GONE);
-        findViewById(R.id.main_progress).setVisibility(View.VISIBLE);
+        findViewById(R.id.infoLayout).setVisibility(View.INVISIBLE);
+        findViewById(R.id.imgAnimate).setVisibility(View.VISIBLE);
+        isAnimationAlive = true;
+        animate();
     }
 
     private void makeViewsVisible(){
         findViewById(R.id.infoLayout).setVisibility(View.VISIBLE);
-        findViewById(R.id.main_progress).setVisibility(View.GONE);
+        isAnimationAlive = false;
+        findViewById(R.id.imgAnimate).setVisibility(View.GONE);
 
     }
 
-    private void setViewToFrame(){
-
-        if(LOGGED_OUT){
-            setLogInPage();
-        }
-        else{
-            rootLayout.setVisibility(View.VISIBLE);
-            findViewById(R.id.modeLayout).setVisibility(View.VISIBLE);
-            findViewById(R.id.labelLayout).setVisibility(View.VISIBLE);
-            findViewById(R.id.totalThingsLayout).setVisibility(View.VISIBLE);
-            findViewById(R.id.announceLayout).setVisibility(View.VISIBLE);
-
-            if(IS_MANAGER){
-                findViewById(R.id.updateData).setVisibility(View.VISIBLE);
-                findViewById(R.id.eraseAll).setVisibility(View.VISIBLE);
-                findViewById(R.id.addBoarder).setVisibility(View.VISIBLE);
-                findViewById(R.id.updatePayment).setVisibility(View.VISIBLE);
-
-            }
-            else{
-                findViewById(R.id.updateData).setVisibility(View.GONE);
-                findViewById(R.id.eraseAll).setVisibility(View.GONE);
-                findViewById(R.id.addBoarder).setVisibility(View.GONE);
-                findViewById(R.id.updatePayment).setVisibility(View.GONE);
-            }
-            txtOverView.setTextColor(Color.CYAN);
-            txtOverView.setPaintFlags(txtOverView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-
-        }
-
-
-    }
-
-    private void setAnnouncementToFront(){
-        findViewById(R.id.mealOverViewLayout).setVisibility(View.VISIBLE);
-        TextView textView = findViewById(R.id.announcementInstruction);
-        String instruction = "";
-        if(IS_MANAGER) instruction = "Long click Here to make announcement";
-        else instruction = "Click Here to see Details";
-        textView.setText(instruction);
-
-        DatabaseReference r = rootRef.child("Post").child(getTodayDate());
-        r.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(snapshot.exists()){
-                    findViewById(R.id.mealOverViewLayout).setVisibility(View.VISIBLE);
-                    String ann = snapshot.getValue(String.class);
-                    if(ann != null && !ann.equals("")){
-                        TextView tv = findViewById(R.id.txtAnnouncement);
-                        tv.setText(ann);
-                        Thread thread = getAnnounceThread();
-                        thread.start();
-                    }
-                }
-                else{
-                    findViewById(R.id.mealOverViewLayout).setVisibility(View.GONE);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
-        if(IS_MANAGER){
-            findViewById(R.id.mealOverViewLayout).setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-
-                    TextView textView = findViewById(R.id.txtAnnouncement);
-                    String announcement = textView.getText().toString();
-
-                    MakeAnnouncement makeAnnouncement = new MakeAnnouncement(MainActivity.this,
-                            announcement);
-                    makeAnnouncement.show();
-
-                    WindowManager.LayoutParams params =
-                            getWindowParams(makeAnnouncement, 0.9f, 0.3f);
-                    makeAnnouncement.getWindow().setAttributes(params);
-
-                    return false;
-                }
-            });
-        }
-        findViewById(R.id.mealOverViewLayout).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                TextView textView = findViewById(R.id.txtAnnouncement);
-                String s = textView.getText().toString();
-                Intent i = new Intent(MainActivity.this, ActivitySeeAnnouncement.class);
-                i.putExtra("ANNOUNCEMENT_TEXT", s);
-                startActivity(i);
-            }
-        });
-
-    }
-
-    private Thread getAnnounceThread(){
+    private void animate(){
         final Handler handler = new Handler(getApplicationContext().getMainLooper());
+        final ImageView imgAnimate = findViewById(R.id.imgAnimate);
+        final int sleepTime = 50;
 
-        return new Thread(new Runnable() {
-            int threadAlive = 0;
+        new Thread(new Runnable() {
             @Override
             public void run() {
-                final TextView textView = findViewById(R.id.baseAnnouncement);
-                while (threadAlive <= 1000 && !LOGGED_OUT){
-
-                    if(threadAlive < 2){
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
+                while (isAnimationAlive){
 
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
+
                             /*
-                            getSupportActionBar().setTitle(Html.fromHtml("<font color='#ffffff'>" +
-                                    announce + "</font>" + finalTx));
+                            imgAnimate.setImageBitmap(decodeSampledBitmapFromResource(getResources(),
+                                            R.drawable.i1, imageWidthInPixel, imageHeightInPixels));
+                            Log.i("test", "Image: 1");*/
 
-                             */
-                            textView.setTextColor(Color.rgb(222, 31, 44));
-
+                            imgAnimate.setImageResource(R.drawable.i1);
                         }
                     });
 
-
                     try {
-                        Thread.sleep(150);
+                        Thread.sleep(sleepTime);
                     } catch (InterruptedException e) {
                         Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
                     }
@@ -371,37 +286,239 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
-                            /*
-                            getSupportActionBar().setTitle(Html.fromHtml("<font color='#ffffff'>" +
-                                    announce + "</font>" + finalTx));
-
-                             */
-                            textView.setTextColor(Color.rgb(31, 222, 181));
+                            /*imgAnimate.setImageBitmap(decodeSampledBitmapFromResource(getResources(),
+                                    R.drawable.i2, imageWidthInPixel, imageHeightInPixels));
+                           // Log.i("test", "Image: 2");*/
+                            imgAnimate.setImageResource(R.drawable.i2);
                         }
                     });
 
-
                     try {
-                        Thread.sleep(150);
+                        Thread.sleep(sleepTime);
                     } catch (InterruptedException e) {
                         Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
                     }
 
-                    threadAlive++;
+
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            /*imgAnimate.setImageBitmap(decodeSampledBitmapFromResource(getResources(),
+                                    R.drawable.i3, imageWidthInPixel, imageHeightInPixels));
+                            //Log.i("test", "Image: 3");*/
+                            imgAnimate.setImageResource(R.drawable.i3);
+                        }
+                    });
+
+                    try {
+                        Thread.sleep(sleepTime);
+                    } catch (InterruptedException e) {
+                        Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+
+
+
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            /*imgAnimate.setImageBitmap(decodeSampledBitmapFromResource(getResources(),
+                                    R.drawable.i4, imageWidthInPixel, imageHeightInPixels));
+                            //Log.i("test", "Image: 4");*/
+                            imgAnimate.setImageResource(R.drawable.i4);
+                        }
+                    });
+
+                    try {
+                        Thread.sleep(sleepTime);
+                    } catch (InterruptedException e) {
+                        Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+
+
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            /*imgAnimate.setImageBitmap(decodeSampledBitmapFromResource(getResources(),
+                                    R.drawable.i5, imageWidthInPixel, imageHeightInPixels));
+                            //Log.i("test", "Image: 5");*/
+                            imgAnimate.setImageResource(R.drawable.i5);
+                        }
+                    });
+
+                    try {
+                        Thread.sleep(sleepTime);
+                    } catch (InterruptedException e) {
+                        Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+
+
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            /*imgAnimate.setImageBitmap(decodeSampledBitmapFromResource(getResources(),
+                                    R.drawable.i6, imageWidthInPixel, imageHeightInPixels));
+                            //Log.i("test", "Image: 6");*/
+                            imgAnimate.setImageResource(R.drawable.i6);
+                        }
+                    });
+
+                    try {
+                        Thread.sleep(sleepTime);
+                    } catch (InterruptedException e) {
+                        Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+
+
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            /*imgAnimate.setImageBitmap(decodeSampledBitmapFromResource(getResources(),
+                                    R.drawable.i7, imageWidthInPixel, imageHeightInPixels));
+                            //Log.i("test", "Image: 7");*/
+                            imgAnimate.setImageResource(R.drawable.i7);
+                        }
+                    });
+
+                    try {
+                        Thread.sleep(sleepTime);
+                    } catch (InterruptedException e) {
+                        Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+
+
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            /*imgAnimate.setImageBitmap(decodeSampledBitmapFromResource(getResources(),
+                                    R.drawable.i8, imageWidthInPixel, imageHeightInPixels));
+                            //Log.i("test", "Image: 8");*/
+                            imgAnimate.setImageResource(R.drawable.i8);
+                        }
+                    });
+
+                    try {
+                        Thread.sleep(sleepTime);
+                    } catch (InterruptedException e) {
+                        Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+
+
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            /*imgAnimate.setImageBitmap(decodeSampledBitmapFromResource(getResources(),
+                                    R.drawable.i9, imageWidthInPixel, imageHeightInPixels));
+                            //Log.i("test", "Image: 9");*/
+                            imgAnimate.setImageResource(R.drawable.i9);
+                        }
+                    });
+
+                    try {
+                        Thread.sleep(sleepTime);
+                    } catch (InterruptedException e) {
+                        Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+
+
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            /*imgAnimate.setImageBitmap(decodeSampledBitmapFromResource(getResources(),
+                                    R.drawable.i10, imageWidthInPixel, imageHeightInPixels));
+                            //Log.i("test", "Image: 10");*/
+                            imgAnimate.setImageResource(R.drawable.i10);
+                        }
+                    });
+
+                    try {
+                        Thread.sleep(sleepTime);
+                    } catch (InterruptedException e) {
+                        Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+
+
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            /*imgAnimate.setImageBitmap(decodeSampledBitmapFromResource(getResources(),
+                                    R.drawable.i11, imageWidthInPixel, imageHeightInPixels));
+                            //Log.i("test", "Image: 11");*/
+                            imgAnimate.setImageResource(R.drawable.i11);
+                        }
+                    });
+
+                    try {
+                        Thread.sleep(sleepTime);
+                    } catch (InterruptedException e) {
+                        Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+
+
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            /*imgAnimate.setImageBitmap(decodeSampledBitmapFromResource(getResources(),
+                                    R.drawable.i12, imageWidthInPixel, imageHeightInPixels));
+                            //Log.i("test", "Image: 12");*/
+                            imgAnimate.setImageResource(R.drawable.i12);
+                        }
+                    });
+
+                    try {
+                        Thread.sleep(sleepTime);
+                    } catch (InterruptedException e) {
+                        Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+
+
+
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            /*imgAnimate.setImageBitmap(decodeSampledBitmapFromResource(getResources(),
+                                    R.drawable.i13, imageWidthInPixel, imageHeightInPixels));
+                            //Log.i("test", "Image: 13");*/
+                            imgAnimate.setImageResource(R.drawable.i13);
+                        }
+                    });
+
+                    try {
+                        Thread.sleep(sleepTime);
+                    } catch (InterruptedException e) {
+                        Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+
+
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            /*imgAnimate.setImageBitmap(decodeSampledBitmapFromResource(getResources(),
+                                    R.drawable.i14, imageWidthInPixel, imageHeightInPixels));
+                           // Log.i("test", "Image: 14");*/
+                            imgAnimate.setImageResource(R.drawable.i14);
+                        }
+                    });
+
+                    try {
+                        Thread.sleep(sleepTime);
+                    } catch (InterruptedException e) {
+                        Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
                 }
             }
-        });
+        }).start();
     }
 
     private void setStatistics(){
-        double fakeTotalCost = totalCost - stoppedCost,
-                fakeTotalMeal = totalMeal - stoppedMeal, reminderMoney;
+        fakeTotalCost = totalCost - stoppedCost;
+        fakeTotalMeal = totalMeal - stoppedMeal;
+
 
         String s = "Total meal: " + df.format(totalMeal) + ",\nCurrent Meal: " + df.format(fakeTotalMeal);
         txtTotalMeal.setText(s);
         s = "Total Cost: " + df.format(totalCost) + ",\nCurrent cost: " + df.format(fakeTotalCost);
         txtTotalCost.setText(s);
-        reminderMoney = totalPaid - totalCost;
+        reminderMoney = getReminderMoney();
         if(fakeTotalMeal > 0) mealRate = fakeTotalCost/fakeTotalMeal;
         else{
             if(totalMeal > 0) mealRate = totalCost/totalMeal;
@@ -414,7 +531,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         s = "Reminder Money: " + df.format(reminderMoney);
         txtReminderMoney.setText(s);
         s = "Current meal rate: " + df.format(mealRate) +
-                "(" + df.format(fakeTotalCost) + " ÷ " + df.format(fakeTotalMeal) + ")";
+                " (" + df.format(fakeTotalCost) + "÷" + df.format(fakeTotalMeal) + ")";
         txtMealRate.setText(s);
         s = "Total Paid: " + df.format(totalPaid);
         txtTotalPaid.setText(s);
@@ -423,191 +540,396 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         editText.setText(s);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
+    public static double getReminderMoney(){
+        return (totalPaid - totalCost - getTotalPayback());
     }
 
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        if(IS_MANAGER){
-            menu.findItem(R.id.updateMPDPP).setVisible(true);
-            menu.findItem(R.id.makeAnnouncement).setVisible(true);
-            menu.findItem(R.id.manageTodayMeal).setVisible(true);
-            menu.findItem(R.id.lastTimeOfChangingMeal).setVisible(true);
-            menu.findItem(R.id.changePassword).setVisible(true);
-            menu.findItem(R.id.btnLogOut).setVisible(true);
-            menu.findItem(R.id.memberPasswords).setVisible(true);
-            menu.findItem(R.id.menu_editInfo).setVisible(true);
-        }else if(LOGGED_OUT){
-            menu.findItem(R.id.updateMPDPP).setVisible(false);
-            menu.findItem(R.id.makeAnnouncement).setVisible(false);
-            menu.findItem(R.id.manageTodayMeal).setVisible(false);
-            menu.findItem(R.id.changePassword).setVisible(false);
-            menu.findItem(R.id.btnLogOut).setVisible(false);
-            menu.findItem(R.id.memberPasswords).setVisible(false);
-            menu.findItem(R.id.lastTimeOfChangingMeal).setVisible(false);
-            menu.findItem(R.id.menu_editInfo).setVisible(false);
+    private static double getTotalPayback() {
+        double total = 0;
+        for(Map.Entry<String, Payback> paybackEntry : paybacks.entrySet()){
+            total += paybackEntry.getValue().getAmount();
         }
-        else{
-            menu.findItem(R.id.updateMPDPP).setVisible(false);
-            menu.findItem(R.id.makeAnnouncement).setVisible(false);
-            menu.findItem(R.id.manageTodayMeal).setVisible(true);
-            menu.findItem(R.id.lastTimeOfChangingMeal).setVisible(false);
-            menu.findItem(R.id.memberPasswords).setVisible(false);
-            menu.findItem(R.id.changePassword).setVisible(true);
-            menu.findItem(R.id.btnLogOut).setVisible(true);
-            menu.findItem(R.id.menu_editInfo).setVisible(false);
-        }
-        menu.findItem(R.id.itemAbout).setVisible(true);
-        menu.findItem(R.id.btnInstructions).setVisible(true);
-
-        return super.onPrepareOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.lastTimeOfChangingMeal) {
-
-            SetLastTimeOfChangingMeals setLastTimeOfChangingMeals = new SetLastTimeOfChangingMeals(
-                    MainActivity.this);
-            setLastTimeOfChangingMeals.show();
-            return true;
-        }
-        if(id == R.id.changePassword){
-
-            UpdatePassword updatePassword = new UpdatePassword(MainActivity.this);
-            updatePassword.show();
-
-            return true;
-        }
-
-        if(id == R.id.btnLogOut){
-            PermissionToLogOut permissionToLogOut = new PermissionToLogOut(MainActivity.this);
-            permissionToLogOut.show();
-        }
-
-        if(id == R.id.updateMPDPP){
-            UpdateMPDPP updateMPDPP = new UpdateMPDPP(MainActivity.this);
-            updateMPDPP.show();
-        }
-
-        if(id == R.id.makeAnnouncement){
-
-            TextView textView = findViewById(R.id.txtAnnouncement);
-            String announcement = textView.getText().toString();
-
-            MakeAnnouncement makeAnnouncement = new MakeAnnouncement(this, announcement);
-            makeAnnouncement.show();
-
-            WindowManager.LayoutParams params = getWindowParams(makeAnnouncement, 0.9f, 0.3f);
-            makeAnnouncement.getWindow().setAttributes(params);
-        }
-
-        if(id == R.id.manageTodayMeal){
-            Intent intent = new Intent(MainActivity.this, MaintainTodaysMeal.class);
-            startActivity(intent);
-        }
-
-        if(id == R.id.btnInstructions){
-            Intent intent = new Intent(MainActivity.this, ActivityInstructions.class);
-            startActivity(intent);
-        }
-
-        if(id == R.id.itemAbout){
-            Intent intent = new Intent(MainActivity.this, ActivityAbout.class);
-            startActivity(intent);
-        }
-
-        if(id == R.id.memberPasswords){
-            Intent intent = new Intent(MainActivity.this, MemberPasswordsActivity.class);
-            startActivity(intent);
-        }
-
-        if(id == R.id.menu_editInfo){
-            Intent i = new Intent(this, EditInfo.class);
-            startActivity(i);
-        }
-
-
-        return super.onOptionsItemSelected(item);
+        return total;
     }
 
     @Override
     public void onDataChange(@NonNull DataSnapshot snapshot) {
         makeViewsInvisible();
-        if(snapshot.child("Discussion").child("notifications").child("text").exists()){
-            String text =
-                    snapshot.child("Discussion").child("notifications").child("text").getValue(String.class);
+        disableNavItems();
+        if(readingPermissionAccepted){
+            makeViewsInvisible();
+            readFromDatabase(new CallBack() {
+                @Override
+                public void onCallback() {
 
-            if(snapshot.child("Discussion").child("notifications").child("title").exists()) {
-                String title = snapshot.child("Discussion").child("notifications").
-                        child("title").getValue(String.class);
+                    readingPermissionAccepted = false;
+                    makeViewsVisible();
+                    enableNavItems();
+                    showNotice();
 
-                if(snapshot.child("Discussion").child("notifications").child("id").exists()){
-                    int id = snapshot.child("Discussion").child("notifications").
-                            child("id").getValue(Integer.class);
+                    if(selectedBoarderIndex == -1 && selectedStoppedBoarderIndex == -1 &&
+                            selectedCookBillIndex == -1 && (boarders.size() != 0 ||
+                            stoppedBoarders.size() != 0)){
+                        SelectNamesForLogIn d = new SelectNamesForLogIn(MainActivity.this);
+                        if(!MainActivity.this.isFinishing()) d.show();
 
-                    DatabaseReference r1 = rootRef.child("Discussion")
-                            .child("notifications");
+                    }
+                    if(boarders.size() == 0 && stoppedBoarders.size() == 0){
+                        setHadith();
+                    }
+                    else {
 
-                    NotificationManagerCompat notificationManager =
-                            NotificationManagerCompat.from(MainActivity.this);
-                    Notification notification = new NotificationCompat.Builder(MainActivity.this,
-                            MyNotificationChannels.ANNOUNCEMENT_ID)
-                            .setSmallIcon(R.drawable.announcementicon)
-                            .setContentTitle(title)
-                            .setLargeIcon(BitmapFactory.decodeResource(getResources()
-                                    ,R.drawable.announcementicon))
-                            .setContentText(text)
-                            .setPriority(NotificationCompat.PRIORITY_HIGH)
-                            .setCategory(NotificationCompat.CATEGORY_MESSAGE)
-                            .build();
-                    notificationManager.notify(id, notification);
+                        findViewById(R.id.infoLayout).setVisibility(View.VISIBLE);
+                        findViewById(R.id.layout_hadith).setVisibility(View.GONE);
 
-                    r1.removeValue();
+                        setStatistics();
+                        recalculate();
+                        countOfTodaysMeal();
+                        announce();
+                        txtLastUpdate.setText(lastUpdate);
+
+                        setProfile(selectedBoarderIndex, selectedStoppedBoarderIndex,
+                                selectedCookBillIndex);
+
+                    }
                 }
-            }
+            });
+        }
+    }
+
+    private void setHadith(){
+        findViewById(R.id.infoLayout).setVisibility(View.GONE);
+        findViewById(R.id.layout_hadith).setVisibility(View.VISIBLE);
+        if(IS_MANAGER){
+            findViewById(R.id.addBoarder2).setVisibility(View.VISIBLE);
+            findViewById(R.id.addBoarder2).setOnClickListener(this);
+        }
+        else{
+            findViewById(R.id.addBoarder2).setVisibility(View.GONE);
+        }
+        if(boarders.size() == 0 && stoppedBoarders.size() == 0){
+
+            TextView txtHadith = findViewById(R.id.txtHadith),
+                    txtInstructions = findViewById(R.id.txtInstruction);
+            String hadith = "\"Give food to the hungry,\n" +
+                    "pay a visit to the sick and release (set free) \n" +
+                    "the one in captivity (by paying his ransom)\".\n",
+
+                    referenceText =
+                            "----------------------------------------------------------------- Muhammad(ﷺ)\n" +
+                                    "Sahih Al Bukhari 1.\n" +
+                                    "Chapter 71.\n" +
+                                    "Hadith: 5373\n\n\n",
+
+                    welcomeText = "Welcome to the new session of eating \uD83D\uDE0E.\n",
+                    addMemberText = "Add members ",
+                    lastText = "to get your meal start. You can see Instructions for better understanding!",
+                    s, s1, s2,
+
+                    mainText = hadith + referenceText + welcomeText + addMemberText + lastText;
+
+            Spannable spannable = new SpannableString(mainText);
+
+            // TODO
+            //  HADITH
+            spannable.setSpan(new RelativeSizeSpan(1f), 0,
+                    hadith.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            spannable.setSpan(new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER), 0,
+                    hadith.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            // TODO
+            //  Reference
+            s = hadith + referenceText;
+            spannable.setSpan(new AlignmentSpan.Standard(Layout.Alignment.ALIGN_OPPOSITE),
+                    hadith.length(), s.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            spannable.setSpan(new RelativeSizeSpan(1f),
+                    hadith.length(), s.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            // TODO
+            //  welcome text
+            s1 = hadith + referenceText;
+            s = hadith + referenceText + welcomeText;
+            spannable.setSpan(new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER),
+                    s1.length(),
+                    s.length(),
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            spannable.setSpan(new RelativeSizeSpan(1.5f),
+                    s1.length(),
+                    s.length(),
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            // TODO
+            //  add member
+            s1 = hadith + referenceText + welcomeText;
+            s = hadith + referenceText + welcomeText + addMemberText;
+            spannable.setSpan(new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER),
+                    s1.length(),
+                    s.length(),
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            spannable.setSpan(new RelativeSizeSpan(1.5f),
+                    s1.length(),
+                    s.length(),
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+
+            spannable.setSpan(new ForegroundColorSpan(Color.RED),
+                    s1.length(),
+                    s.length(),
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+
+            // TODO
+            //  welcome text
+            s1 = hadith + referenceText + welcomeText + addMemberText;
+            s = hadith + referenceText + welcomeText + addMemberText + lastText;
+            spannable.setSpan(new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER),
+                    s1.length(),
+                    s.length(),
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            spannable.setSpan(new RelativeSizeSpan(1.5f),
+                    s1.length(),
+                    s.length(),
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+
+            txtHadith.setText(spannable, TextView.BufferType.SPANNABLE);
+
+
+            s2 = "\nSee Instructions";
+            txtInstructions.setText(s2);
+            txtInstructions.setTextColor(Color.BLACK);
+            txtInstructions.setTypeface(null, Typeface.BOLD);
+            txtInstructions.setLayoutParams(new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, 150));
+            txtInstructions.setGravity(Gravity.CENTER);
+            txtInstructions.setTextSize(20);
+            txtInstructions.setPaintFlags(txtInstructions.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+            txtInstructions.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(MainActivity.this, ActivityInstructions.class);
+                    startActivity(intent);
+                }
+            });
+
+
 
         }
+    }
+
+    private void disableNavItems() {
+        findViewById(R.id.layout_goOverView).setEnabled(false);
+        findViewById(R.id.layout_goDetails).setEnabled(false);
+        findViewById(R.id.layout_goCookBill).setEnabled(false);
+        findViewById(R.id.layout_goBazaarList).setEnabled(false);
+        findViewById(R.id.layout_goToPayBack).setEnabled(false);
+        findViewById(R.id.updateData).setEnabled(false);
+        findViewById(R.id.updatePayment).setEnabled(false);
+        findViewById(R.id.btnDiscussion).setEnabled(false);
+        findViewById(R.id.eraseAll).setEnabled(false);
+    }
+
+    private void enableNavItems() {
+        findViewById(R.id.layout_goOverView).setEnabled(true);
+        findViewById(R.id.layout_goDetails).setEnabled(true);
+        findViewById(R.id.layout_goCookBill).setEnabled(true);
+        findViewById(R.id.layout_goBazaarList).setEnabled(true);
+        findViewById(R.id.layout_goToPayBack).setEnabled(true);
+        findViewById(R.id.updateData).setEnabled(true);
+        findViewById(R.id.updatePayment).setEnabled(true);
+        findViewById(R.id.btnDiscussion).setEnabled(true);
+        findViewById(R.id.eraseAll).setEnabled(true);
+    }
+
+    private void announce() {
+        ImageView iv = findViewById(R.id.imgAnnouncement);
+        iv.setOnClickListener(this);
+        if(!announcement.equals("")){
+            getAnnouncementThread(iv).start();
+        }
+    }
+
+    private Thread getAnnouncementThread(final ImageView iv){
+        final Handler handler = new Handler();
+        return new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for(int i = 1; i < 60; i++){
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            iv.setBackgroundColor(Color.WHITE);
+                        }
+                    });
+
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            iv.setBackgroundColor(getResources().getColor(R.color.discussion_write));
+                        }
+                    });
+
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+    }
+
+    private void setProfile(final int bI, final int sbI, final int cbI){
+        final TextView txtProfileName = findViewById(R.id.txtProfileName),
+                txtProfileConsumedMeal = findViewById(R.id.txtProfileConsumedMeal),
+                txtProfilePaid = findViewById(R.id.txtProfilePaid),
+                txtProfileCost = findViewById(R.id.txtProfileCost),
+                txtProfileMelDueOrOverHead = findViewById(R.id.txtProfileMelDueOrOverHead),
+                txtProfileCookBill = findViewById(R.id.txtProfileCookBill),
+                txtMealState = findViewById(R.id.txtProfileMealState),
+                txtProfileTotalDueOrOverHead = findViewById(R.id.txtProfileTotalDueOrOverHead);
 
         makeViewsInvisible();
-        readFromDatabase(new CallBack() {
+        final String profileName = getProfileName(bI, sbI, cbI);
+        final Payback p = paybacks.get(profileName);
+        readNotific(profileName, new Wait() {
             @Override
             public void onCallback() {
                 makeViewsVisible();
-                setStatistics();
-                recalculate();
-                if(overViewClicked) {
-                    //setDataToAppFrame();
-                    Intent i = new Intent(MainActivity.this, ActivityOverView.class);
-                    startActivity(i);
+                setUnseenNotToFrame(getResources().getColor(R.color.pure_red));
+                double bMeal = 0, bPaid = 0, bCost = 0, bDue = 0, bOve = 0, cBill = 0,
+                        due = bDue, ove = bOve, sbMeal = 0, sbPaid = 0;
+
+                if(bI != -1){
+                    bMeal = boarders.get(bI).getMeals();
+                    bPaid = boarders.get(bI).getPaidMoney();
+                    bCost = boarders.get(bI).getMeals() * mealRate;
+                    bDue = boarders.get(bI).getDue();
+                    bOve = boarders.get(bI).getOverHead();
+                    cBill = 0;
+                    due = bDue;
+                    ove = bOve;
+                    sbMeal = 0;
+                    sbPaid = 0;
                 }
-                else if(detailsClicked){
-                    //setDetailsToFrame();
-                    Intent i = new Intent(MainActivity.this, DetailsActivity.class);
-                    startActivity(i);
+
+                if(cbI != -1){
+                    cBill = Double.parseDouble(cooksBills.get(cbI).getPaid());
                 }
-                else if(cooksBillClicked){
-                    //setCooksBillsToFrame();
-                    Intent i = new Intent(MainActivity.this, CookBillActivity.class);
-                    startActivity(i);
+                if(sbI != -1){
+
+                    Boarder boarder = stoppedBoarders.get(sbI);
+
+                    due += boarder.getDue();
+                    ove += boarder.getOverHead();
+                    sbMeal += boarder.getMeals();
+                    sbPaid += boarder.getPaidMoney();
+
+                    if(boarder.getDue() == 0)
+                        bCost += (boarder.getPaidMoney() - boarder.getOverHead());
+                    else bCost += (boarder.getPaidMoney() + boarder.getDue());
                 }
-                else if(marketHistoryClicked){
-                    //setMarketHistoryToFrame();
-                    Intent i = new Intent(MainActivity.this, BazaarActivity.class);
-                    startActivity(i);
+
+                txtProfileName.setText(profileName);
+
+                String s = "Consumed Meal: " + df.format(bMeal + sbMeal);
+                txtProfileConsumedMeal.setText(s);
+
+                s = "Paid: " + df.format(bPaid + sbPaid);
+                txtProfilePaid.setText(s);
+
+                s = "Cost: " + df.format(bCost);
+                txtProfileCost.setText(s);
+
+                if(p != null){
+                   ove -= p.getAmount();
                 }
-                countOfTodaysMeal();
-                setAnnouncementToFront();
-                txtLastUpdate.setText(lastUpdate);
+
+                s = ove > due ?
+                        "Overhead: " + df.format(ove - due): "Due: "
+                        + df.format(due - ove);
+
+                txtProfileMelDueOrOverHead.setText(s);
+                if(ove > due) txtProfileMelDueOrOverHead.setTextColor(Color.GREEN);
+                else txtProfileMelDueOrOverHead.setTextColor(Color.RED);
+
+                s = "Cook Bill Paid: " + df.format(cBill);
+                txtProfileCookBill.setText(s);
+
+                if(selectedBoarderIndex == -1) s = "Status: Off";
+                else s = "Status: On";
+                txtMealState.setText(s);
             }
         });
+    }
 
+    private void setUnseenNotToFrame(int color) {
+        TextView textView = findViewById(R.id.txtNotification);
+        String s = unSeenNot.size() + "";
+        if(unSeenNot.size() > 0){
+            textView.setText(s);
+            textView.setTextColor(color);
+        }
+        else{
+            textView.setText("");
+            textView.setTextColor(Color.WHITE);
+        }
+    }
+
+    private void readNotific(String profileName, final Wait wait) {
+        if(IS_MANAGER) profileName = nameOfManager + "-Manager-";
+        final DatabaseReference notR = rootRef.child("notifications").child(profileName);
+
+        notR.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                unSeenNot.clear();
+                seenNot.clear();
+                if(snapshot.child("unseen").exists()){
+                    /*
+                    GenericTypeIndicator<ArrayList<UNotifications>> t =
+                            new GenericTypeIndicator<ArrayList<UNotifications>>() {};
+                    unSeenNot = snapshot.child("unseen").getValue(t);
+
+                     */
+                    for(DataSnapshot ids : snapshot.child("unseen").getChildren()){
+                        UNotifications not = ids.getValue(UNotifications.class);
+                        if(not != null){
+                            unSeenNot.add(not);
+                        }
+
+                    }
+
+                }
+                if(snapshot.child("seen").exists()){
+                    for(DataSnapshot ids : snapshot.child("seen").getChildren()){
+                        UNotifications not = ids.getValue(UNotifications.class);
+                        if(not != null){
+                            seenNot.add(not);
+                        }
+
+                    }
+                }
+                wait.onCallback();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
     @Override
@@ -617,24 +939,206 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private class SelectNamesForLogIn extends Dialog implements View.OnClickListener {
 
+        private final CheckBox[] names = new CheckBox[boarders.size() + stoppedBoarders.size() + 1];
+        private int totalIndex = -1;
+        private String selectedName = "";
+
         public SelectNamesForLogIn(@NonNull Context context) {
             super(context);
         }
 
         @Override
-        public void onClick(View v) {
+        protected void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.select_name_page);
+            initialize();
 
+        }
+
+        @Override
+        public void onClick(View v) {
+            int id = v.getId();
+            if(id == R.id.btnSaveSelection){
+
+                selectedBoarderIndex = -1;
+                selectedStoppedBoarderIndex = -1;
+                selectedCookBillIndex = -1;
+
+                if(selectedName.equals("")){
+                    Toast.makeText(MainActivity.this, "Select a name",
+                            Toast.LENGTH_LONG).show();
+                }
+                else{
+                    for(int i = 0; i < boarders.size(); i++){
+                        if(boarders.get(i).getName().equals(selectedName)){
+                            selectedBoarderIndex = i;
+                            break;
+                        }
+                    }
+
+                    for(int i = 0; i < stoppedBoarders.size(); i++){
+                        if(stoppedBoarders.get(i).getName().equals(selectedName)){
+                            selectedStoppedBoarderIndex = i;
+                            break;
+                        }
+                    }
+
+                    for(int i = 0; i < cooksBills.size(); i++){
+                        if(cooksBills.get(i).getName().equals(selectedName)){
+                            selectedCookBillIndex = i;
+                            break;
+                        }
+                    }
+
+                    saveSelectedIndexes();
+
+                    dismiss();
+                }
+            }
+            else if(id == R.id.btnCancelSelection){
+                dismiss();
+            }
+        }
+
+        private void initialize(){
+            findViewById(R.id.btnSaveSelection).setOnClickListener(this);
+            findViewById(R.id.btnCancelSelection).setOnClickListener(this);
+            LinearLayout selectName = findViewById(R.id.layout_selectName);
+
+            totalIndex = -1;
+
+            for(int i = 0; i < boarders.size(); i++){
+
+                totalIndex++;
+
+                LinearLayout ll = new LinearLayout(MainActivity.this);
+                selectName.addView(ll);
+                ll.setLayoutParams(new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                ll.setPadding(3, 3, 3,3);
+                ll.setBackgroundColor(getResources().getColor(R.color.light_green));
+
+                names[i] = new CheckBox(MainActivity.this);
+                View view = new View(MainActivity.this);
+
+                ll.addView(names[i]);
+                selectName.addView(view);
+
+                names[i].setLayoutParams(new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+                names[i].setBackgroundColor(getResources().getColor(R.color.white));
+
+                view.setLayoutParams(new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, 10));
+
+                String s = boarders.get(i).getName();
+                names[i].setGravity(Gravity.CENTER);
+                names[i].setText(s);
+
+                final int finalI = i;
+                names[i].setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        names[finalI].setChecked(names[finalI].isChecked());
+                        selectedName = names[finalI].getText().toString();
+
+                        for(int k = 0; k <= totalIndex; k++){
+                            if(finalI != k){
+
+                                names[k].setChecked(false);
+                            }
+                        }
+                    }
+                });
+            }
+
+            int j = 0, newInd = totalIndex + 1;
+            for( ; j < stoppedBoarders.size(); j++){
+
+                String s = stoppedBoarders.get(j).getName();
+                if(isBoarderOn(s) == 0) {
+                    totalIndex++;
+
+                    LinearLayout ll = new LinearLayout(MainActivity.this);
+                    selectName.addView(ll);
+                    ll.setLayoutParams(new LinearLayout.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                    ll.setPadding(3, 3, 3,3);
+                    ll.setBackgroundColor(getResources().getColor(R.color.light_green));
+
+                    names[newInd] = new CheckBox(MainActivity.this);
+                    View view = new View(MainActivity.this);
+
+                    ll.addView(names[newInd]);
+                    names[newInd].setBackgroundColor(getResources().getColor(R.color.white));
+
+                    selectName.addView(view);
+
+                    names[newInd].setLayoutParams(new LinearLayout.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+                    view.setLayoutParams(new LinearLayout.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT, 10));
+
+                    names[newInd].setGravity(Gravity.CENTER);
+                    names[newInd].setText(s);
+
+                    final int finalJ = newInd;
+                    names[newInd].setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            names[finalJ].setChecked(names[finalJ].isChecked());
+                            selectedName = names[finalJ].getText().toString();
+
+                            for(int i = 0; i < totalIndex; i++){
+                                if(finalJ != i){
+
+                                    names[i].setChecked(false);
+                                }
+                            }
+                        }
+                    });
+
+                    newInd++;
+                }
+            }
+        }
+
+
+    }
+
+    private void saveSelectedIndexes() {
+        if(loggedInPersonFile.exists()){
+            try {
+                PrintWriter pr = new PrintWriter(loggedInPersonFile);
+                pr.println(selectedBoarderIndex);
+                pr.println(selectedStoppedBoarderIndex);
+                pr.println(selectedCookBillIndex);
+
+                pr.close();
+
+                setProfile(selectedBoarderIndex, selectedStoppedBoarderIndex, selectedCookBillIndex);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
         }
     }
 
-    public class MakeAnnouncement extends Dialog implements View.OnClickListener{
+    private int isBoarderOn(String name){
+        for(int i = 0; i < boarders.size(); i++){
+            if(boarders.get(i).getName().equals(name)) return (i + 1);
+        }
+
+        return 0;
+    }
+
+    public static class MakeAnnouncement extends Dialog implements View.OnClickListener{
 
         private EditText editText;
-        private final String ann;
 
-        public MakeAnnouncement(@NonNull Context context, String ann) {
+        public MakeAnnouncement(@NonNull Context context) {
             super(context);
-            this.ann = ann;
         }
 
         @Override
@@ -644,16 +1148,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 editText = findViewById(R.id.edtEnterAnnouncement);
                 String announcement = editText.getText().toString();
 
-                DatabaseReference r = rootRef.child("Post").child(getTodayDate()),
-                        r1 = rootRef.child("Discussion");
+                DatabaseReference r = rootRef.child("announcement").child(getTodayDate());
                 r.setValue(announcement);
 
-                r1.child("notifications").child("text").setValue(announcement);
-                r1.child("notifications").child("title").setValue("Announcement from Manager");
-                r1.child("notifications").child("id").setValue(1);
-
-
-                setAnnouncementToFront();
+                readingRef.setValue("");
+                readingPermissionAccepted = true;
+                readingRef.setValue("read");
 
                 dismiss();
             }
@@ -674,7 +1174,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             findViewById(R.id.btnCancelAnnouncement).setOnClickListener(this);
 
             editText = findViewById(R.id.edtEnterAnnouncement);
-            if(!ann.isEmpty()) editText.setText(ann);
+            if(!announcement.isEmpty()) editText.setText(announcement);
         }
     }
 
@@ -684,26 +1184,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
     public void initialize(){
-        rootLayout = findViewById(R.id.rootLayout);
         txtTotalPaid = findViewById(R.id.txtTotalPaid);
         txtTotalMeal = findViewById(R.id.txtTotalMeal);
         txtMealRate = findViewById(R.id.txtMealRate);
         txtReminderMoney = findViewById(R.id.txtReminderMoney);
         txtTotalCost = findViewById(R.id.txtTotalCost);
-        txtOverView = findViewById(R.id.txtOverView);
-        txtDetails = findViewById(R.id.txtDetails);
         txtLastUpdate = findViewById(R.id.lastUpdate);
-        txtMarketHistory = findViewById(R.id.txtMarketHistory);
-        marketerNameLabel = findViewById(R.id.marketerNameLabel);
-        marketDateLabel = findViewById(R.id.marketDateLabel);
-        marketAmountLabel = findViewById(R.id.marketAmountLabel);
-        nameLabel = findViewById(R.id.nameLabel);
-        paidLabel = findViewById(R.id.paidLabel);
-        mealLabel = findViewById(R.id.mealLabel);
-        txtCooksBill = findViewById(R.id.txtCookBills);
-        dueLabel = findViewById(R.id.dueLabel);
-        overHeadLabel = findViewById(R.id.overHeadLabel);
-        btnAddMarket = findViewById(R.id.btnAddMarket);
 
         boarders = new ArrayList<>();
         marketerHistories = new ArrayList<>();
@@ -711,27 +1197,44 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mealStatuses = new ArrayList<>();
         todayMealStatuses = new ArrayList<>();
         stoppedBoarders = new ArrayList<>();
+        paybacks = new HashMap<>();
+        unSeenNot = new ArrayList<>();
+        seenNot = new ArrayList<>();
         fAuth = FirebaseAuth.getInstance();
 
         rootFolder = getCacheDir();
         evidence = new File(rootFolder, INFO_FILE);
         loggedInPersonFile = new File(rootFolder, MEMBER_NAME_FILE);
 
-        addBoarder = findViewById(R.id.addBoarder);
-        addBoarder.setOnClickListener(MainActivity.this);
-        findViewById(R.id.updateData).setOnClickListener(MainActivity.this);
-        txtMarketHistory.setOnClickListener(MainActivity.this);
-        txtDetails.setOnClickListener(MainActivity.this);
-        txtOverView.setOnClickListener(MainActivity.this);
-        btnAddMarket.setOnClickListener(MainActivity.this);
+        drawerLayout = findViewById(R.id.drawer_main);
 
-        findViewById(R.id.txtCookBills).setOnClickListener(MainActivity.this);
+        findViewById(R.id.menu_more).setOnClickListener(this);
+        findViewById(R.id.img_navigation_menu).setOnClickListener(this);
+        findViewById(R.id.layout_goOverView).setOnClickListener(this);
+        findViewById(R.id.layout_goDetails).setOnClickListener(this);
+        findViewById(R.id.layout_goCookBill).setOnClickListener(this);
+        findViewById(R.id.layout_goBazaarList).setOnClickListener(this);
+        findViewById(R.id.layout_goToPayBack).setOnClickListener(this);
+        findViewById(R.id.addBoarder).setOnClickListener(MainActivity.this);
+        findViewById(R.id.updateData).setOnClickListener(MainActivity.this);
         findViewById(R.id.btnDiscussion).setOnClickListener(MainActivity.this);
         findViewById(R.id.updatePayment).setOnClickListener(MainActivity.this);
         findViewById(R.id.eraseAll).setOnClickListener(MainActivity.this);
+        findViewById(R.id.imgProfileChange).setOnClickListener(this);
+        findViewById(R.id.txtSeeProfileDetails).setOnClickListener(this);
+        findViewById(R.id.txtNotification).setOnClickListener(this);
+        findViewById(R.id.txtSeeMealDetails).setOnClickListener(this);
+        findViewById(R.id.imgRefresh).setOnClickListener(this);
 
         createNeededFiles();
+
         checkAndSetSecurity();
+        setDrawerHome();
+    }
+
+    private void setDrawerHome() {
+        TextView tv = findViewById(R.id.txtHomeManagerName);
+        tv.setText(nameOfManager);
     }
 
     private void createNeededFiles(){
@@ -766,7 +1269,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v) {
 
-        if(v.getId() == R.id.addBoarder){
+        if(v.getId() == R.id.addBoarder ||
+            v.getId() == R.id.addBoarder2){
 
             if(boarders.size() + 1 == MAX_BOARDER){
 
@@ -776,15 +1280,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
             AddMemberDialog addMemberDialog = new AddMemberDialog(MainActivity.this);
             addMemberDialog.show();
-            WindowManager.LayoutParams layoutParams = getWindowParams(addMemberDialog,
-                    0.8f, 0.4f);
-            addMemberDialog.getWindow().setAttributes(layoutParams);
         }
         if(v.getId() == R.id.updateData){
 
-            if(totalCost == 0.0){
-                Toast.makeText(this, "You need to input market cost before updating meal",
-                        Toast.LENGTH_LONG).show();
+            if(stoppedBoarders.size() == 0 && boarders.size() == 0){
+                Toast.makeText(this, "You need to add " +
+                        "members to use this feature", Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -792,312 +1293,358 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             updateMealDialog.show();
 
         }
-        if(v.getId() == R.id.txtOverView){
-            overViewClicked = true;
-            detailsClicked = false;
-            cooksBillClicked = false;
-            marketHistoryClicked = false;
-            setDataToAppFrame();
-        }
-        if(v.getId() == R.id.txtDetails){
-            overViewClicked = false;
-            detailsClicked = true;
-            cooksBillClicked = false;
-            marketHistoryClicked = false;
-            setDetailsToFrame();
-        }
-        if(v.getId() == R.id.txtMarketHistory){
-            overViewClicked = false;
-            detailsClicked = false;
-            cooksBillClicked = false;
-            marketHistoryClicked = true;
-            setMarketHistoryToFrame();
-        }
-        if(v.getId() == R.id.btnAddMarket){
-            AddMarketHistoryDialog addMarketHistoryDialog = new
-                    AddMarketHistoryDialog(MainActivity.this);
-            addMarketHistoryDialog.show();
 
-            WindowManager.LayoutParams layoutParams =
-                    getWindowParams(addMarketHistoryDialog, 0.8f, 0.4f);
-            addMarketHistoryDialog.getWindow().setAttributes(layoutParams);
-        }
-        if(v.getId() == R.id.txtCookBills){
-            overViewClicked = false;
-            detailsClicked = false;
-            cooksBillClicked = true;
-            marketHistoryClicked = false;
-            setCooksBillsToFrame();
-            btnAddMarket.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    DatabaseReference r = rootRef.child("cooksBill");
-                    for(int i = 0; i < cooksBills.size(); i++){
-                        String cur = edtCooksBill[i].getText().toString();
-                        if(cur.equals("")) cur = "0";
-                        String fin = (Double.parseDouble(cooksBills.get(i).getPaid()) +
-                                Double.parseDouble(cur)) + "";
-
-                        cooksBills.set(i, new CooksBill(cooksBills.get(i).getName(), fin));
-                    }
-                    r.setValue(cooksBills);
-                    setCooksBillsToFrame();
-                }
-            });
-
-        }
         if(v.getId() == R.id.btnDiscussion){
             Intent intent = new Intent(MainActivity.this, DiscussionActivity.class);
             startActivity(intent);
         }
         if(v.getId() == R.id.updatePayment){
+            if(stoppedBoarders.size() == 0 && boarders.size() == 0){
+                Toast.makeText(this, "You need to add " +
+                        "members to use this feature", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             UpdatePaymentDialog updatePaymentDialog = new UpdatePaymentDialog(MainActivity.this);
             updatePaymentDialog.show();
-
         }
         if(v.getId() == R.id.eraseAll){
 
             EraseAll eraseAll = new EraseAll(MainActivity.this);
             eraseAll.show();
         }
-    }
-
-    private void prepareMarketHistoryLayout(){
-        txtOverView.setPaintFlags(txtOverView.getPaintFlags() & (~Paint.UNDERLINE_TEXT_FLAG));
-        txtOverView.setTextColor(Color.BLACK);
-
-        txtMarketHistory.setPaintFlags(txtMarketHistory.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-        txtMarketHistory.setTextColor(getResources().getColor(R.color.actionbar_color));
-
-        txtDetails.setPaintFlags(txtDetails.getPaintFlags() & (~Paint.UNDERLINE_TEXT_FLAG));
-        txtCooksBill.setPaintFlags(txtDetails.getPaintFlags() & (~Paint.UNDERLINE_TEXT_FLAG));
-
-        txtCooksBill.setTextColor(Color.BLACK);
-        txtDetails.setTextColor(Color.BLACK);
-
-        rootLayout.removeAllViews();
-        marketerNameLabel.setVisibility(View.VISIBLE);
-        marketDateLabel.setVisibility(View.VISIBLE);
-        marketAmountLabel.setVisibility(View.VISIBLE);
-        btnAddMarket.setVisibility(View.VISIBLE);
-        btnAddMarket.setText("+");
-        nameLabel.setVisibility(View.GONE);
-        paidLabel.setVisibility(View.GONE);
-        mealLabel.setVisibility(View.GONE);
-        dueLabel.setVisibility(View.GONE);
-        overHeadLabel.setVisibility(View.GONE);
-        findViewById(R.id.labelLayout).setVisibility(View.VISIBLE);
-        findViewById(R.id.infoScroll).setVisibility(View.VISIBLE);
-        findViewById(R.id.detailsLayout).setVisibility(View.GONE);
-        rootLayout.setVisibility(View.VISIBLE);
-        findViewById(R.id.addPaymentLabel).setVisibility(View.GONE);
-        btnAddMarket.setOnClickListener(MainActivity.this);
-
-        if(IS_MANAGER) btnAddMarket.setVisibility(View.VISIBLE);
-        else btnAddMarket.setVisibility(View.GONE);
-    }
-    private void prepareDetailsLayout(){
-        txtOverView.setPaintFlags(txtOverView.getPaintFlags() & (~Paint.UNDERLINE_TEXT_FLAG));
-        txtOverView.setTextColor(Color.BLACK);
-
-        txtCooksBill.setPaintFlags(txtDetails.getPaintFlags() & (~Paint.UNDERLINE_TEXT_FLAG));
-        txtCooksBill.setTextColor(Color.BLACK);
-
-        txtMarketHistory.setPaintFlags(txtMarketHistory.getPaintFlags() & (~Paint.UNDERLINE_TEXT_FLAG));
-        txtMarketHistory.setTextColor(Color.BLACK);
-
-        txtDetails.setPaintFlags(txtDetails.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-        txtDetails.setTextColor(getResources().getColor(R.color.actionbar_color));
-
-        findViewById(R.id.labelLayout).setVisibility(View.GONE);
-        findViewById(R.id.detailsLayout).setVisibility(View.VISIBLE);
-        findViewById(R.id.rootLayout).setVisibility(View.GONE);
-    }
-    private void prepareOverViewLayout(){
-        txtOverView.setPaintFlags(txtOverView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-        txtOverView.setTextColor(getResources().getColor(R.color.actionbar_color));
-
-        txtMarketHistory.setPaintFlags(txtMarketHistory.getPaintFlags() & (~Paint.UNDERLINE_TEXT_FLAG));
-        txtMarketHistory.setTextColor(Color.BLACK);
-
-        txtDetails.setPaintFlags(txtDetails.getPaintFlags() & (~Paint.UNDERLINE_TEXT_FLAG));
-        txtDetails.setTextColor(Color.BLACK);
-
-        findViewById(R.id.addPaymentLabel).setVisibility(View.GONE);
-        txtCooksBill.setPaintFlags(txtDetails.getPaintFlags() & (~Paint.UNDERLINE_TEXT_FLAG));
-        txtCooksBill.setTextColor(Color.BLACK);
-        marketerNameLabel.setVisibility(View.GONE);
-        btnAddMarket.setVisibility(View.GONE);
-        marketDateLabel.setVisibility(View.GONE);
-        marketAmountLabel.setVisibility(View.GONE);
-        nameLabel.setVisibility(View.VISIBLE);
-        paidLabel.setVisibility(View.VISIBLE);
-        mealLabel.setVisibility(View.VISIBLE);
-        dueLabel.setVisibility(View.VISIBLE);
-        overHeadLabel.setVisibility(View.VISIBLE);
-        findViewById(R.id.detailsLayout).setVisibility(View.GONE);
-        findViewById(R.id.rootLayout).setVisibility(View.VISIBLE);
-        findViewById(R.id.labelLayout).setVisibility(View.VISIBLE);
-    }
-    private void prepareCooksBillLayout(){
-        txtCooksBill.setPaintFlags(txtDetails.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-        txtCooksBill.setTextColor(getResources().getColor(R.color.actionbar_color));
-        txtOverView.setPaintFlags(txtOverView.getPaintFlags() & (~Paint.UNDERLINE_TEXT_FLAG));
-        txtOverView.setTextColor(Color.BLACK);
-        txtMarketHistory.setPaintFlags(txtMarketHistory.getPaintFlags() & (~Paint.UNDERLINE_TEXT_FLAG));
-        txtMarketHistory.setTextColor(Color.BLACK);
-        txtDetails.setPaintFlags(txtDetails.getPaintFlags() & (~Paint.UNDERLINE_TEXT_FLAG));
-        txtDetails.setTextColor(Color.BLACK);
-        findViewById(R.id.labelLayout).setVisibility(View.VISIBLE);
-        findViewById(R.id.infoScroll).setVisibility(View.VISIBLE);
-        findViewById(R.id.detailsLayout).setVisibility(View.GONE);
-        findViewById(R.id.addPaymentLabel).setVisibility(View.VISIBLE);
-        mealLabel.setVisibility(View.GONE);
-        dueLabel.setVisibility(View.GONE);
-        overHeadLabel.setVisibility(View.GONE);
-        findViewById(R.id.marketerNameLabel).setVisibility(View.GONE);
-        findViewById(R.id.marketAmountLabel).setVisibility(View.GONE);
-        findViewById(R.id.marketDateLabel).setVisibility(View.GONE);
-        paidLabel.setVisibility(View.VISIBLE);
-        nameLabel.setVisibility(View.VISIBLE);
-        findViewById(R.id.detailsLayout).setVisibility(View.GONE);
-        findViewById(R.id.rootLayout).setVisibility(View.VISIBLE);
-        if(!IS_MANAGER){
-            btnAddMarket.setVisibility(View.INVISIBLE);
-            findViewById(R.id.addPaymentLabel).setVisibility(View.INVISIBLE);
+        if(v.getId() == R.id.img_navigation_menu){
+            openDrawer(drawerLayout);
         }
 
-        if(IS_MANAGER){
-            btnAddMarket.setVisibility(View.VISIBLE);
-            String s = "Update Bills";
-            btnAddMarket.setText(s);
-        }
-    }
-
-    private void setCooksBillsToFrame(){
-        prepareCooksBillLayout();
-        final ImageView[] calc = new ImageView[MAX_BOARDER];
-        rootLayout.removeAllViews();
-
-        Resources res = getResources();
-        Drawable drawable = null;
-        try {
-            drawable = Drawable.createFromXml(res,
-                    res.getXml(R.xml.rectangular_shape_cook_bill));
-        }
-        catch (IOException | XmlPullParserException e) {
-            e.printStackTrace();
+        if(v.getId() == R.id.imgRefresh){
+            finish();
+            Intent i = new Intent(this, MainActivity.class);
+            startActivity(i);
         }
 
-        for(int i = 0; i < cooksBills.size(); i++) {
+        if(v.getId() == R.id.menu_more){
 
-            LinearLayout ll = new LinearLayout(MainActivity.this),
-                    fake = new LinearLayout(MainActivity.this);
-            rootLayout.addView(ll);
-            rootLayout.addView(fake);
-
-            ll.setOrientation(LinearLayout.HORIZONTAL);
-            LinearLayout.LayoutParams paramsLl = new LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, 150),
-                    paramsFake =
-                            new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 10);
-            ll.setLayoutParams(paramsLl);
-            fake.setLayoutParams(paramsFake);
-
-            if(drawable != null) ll.setBackground(drawable);
-
-            fake.setBackgroundColor(Color.WHITE);
-
-            TextView name = new TextView(MainActivity.this),
-                    paid = new TextView(MainActivity.this);
-            if(IS_MANAGER) {
-                edtCooksBill[i] = new EditText(MainActivity.this);
-                edtCooksBill[i].setInputType(InputType.TYPE_CLASS_NUMBER);
-                calc[i] = new ImageView(MainActivity.this);
-                calc[i].setId(i);
-            }
-            TextView tv = new TextView(MainActivity.this);
-
-
-            ll.addView(name);
-            ll.addView(paid);
-            if(IS_MANAGER)
-                ll.addView(edtCooksBill[i]);
-            if(IS_MANAGER) {
-                ll.addView(calc[i]);
-            }
-            else
-                ll.addView(tv);
-            ll.setGravity(Gravity.CENTER);
-
-
-            LinearLayout.LayoutParams paramsNm = new LinearLayout.LayoutParams(
-                    0,
-                    ViewGroup.LayoutParams.MATCH_PARENT, 30);
-
-            name.setLayoutParams(paramsNm);
-            String s = (i + 1) + ". " + cooksBills.get(i).getName();
-            name.setText(s);
-            name.setGravity(Gravity.CENTER);
-            name.setTypeface(Typeface.DEFAULT_BOLD);
-
-            LinearLayout.LayoutParams paramsDt = new LinearLayout.LayoutParams(
-                    0,
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    20
-            );
-            paid.setText(df.format(Double.parseDouble(cooksBills.get(i).getPaid())));
-            paid.setGravity(Gravity.CENTER);
-            paid.setTypeface(Typeface.DEFAULT_BOLD);
-            paid.setLayoutParams(paramsDt);
-
-            LinearLayout.LayoutParams paramsAm = new LinearLayout.LayoutParams(
-                    0,
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    30
-            );
-            if(IS_MANAGER){
-                edtCooksBill[i].setHint("Add Payment");
-                edtCooksBill[i].setLayoutParams(paramsAm);
-
-                calc[i].setImageResource(R.drawable.calcimagee);
-                calc[i].setLayoutParams(new LinearLayout.LayoutParams(
-                        100, 100));
-            }
-
-            if(!IS_MANAGER)
-                tv.setLayoutParams(paramsAm);
+            PopupMenu menu = new PopupMenu(this, v);
+            MenuInflater inflater = menu.getMenuInflater();
+            inflater.inflate(R.menu.menu_main, menu.getMenu());
 
             if(IS_MANAGER){
-                final int finalI = i;
-                calc[i].setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        CalculatorInterface c = new CalculatorInterface(MainActivity.this,
-                                calc[finalI].getId(),
-                                new UpdateEditText() {
-                                    @Override
-                                    public void onUpdate(String s, int ID) {
-                                        edtCooksBill[ID].setText(s);
-                                    }
-                                });
-                        c.show();
-                        DisplayMetrics displayMetrics = new DisplayMetrics();
-                        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-                        int displayWidth = displayMetrics.widthPixels;
-                        int displayHeight = displayMetrics.heightPixels;
-                        WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
-                        layoutParams.copyFrom(c.getWindow().getAttributes());
-                        int dialogWindowWidth = (int) (displayWidth * 0.9f);
-                        int dialogWindowHeight = (int) (displayHeight * 0.8f);
-                        layoutParams.width = dialogWindowWidth;
-                        layoutParams.height = dialogWindowHeight;
-                        c.getWindow().setAttributes(layoutParams);
+                menu.getMenu().findItem(R.id.updateMPDPP).setVisible(true);
+                menu.getMenu().findItem(R.id.makeAnnouncement).setVisible(true);
+                menu.getMenu().findItem(R.id.manageTodayMeal).setVisible(true);
+                menu.getMenu().findItem(R.id.lastTimeOfChangingMeal).setVisible(true);
+                menu.getMenu().findItem(R.id.changePassword).setVisible(true);
+                menu.getMenu().findItem(R.id.btnLogOut).setVisible(true);
+                menu.getMenu().findItem(R.id.memberPasswords).setVisible(true);
+                menu.getMenu().findItem(R.id.menu_editInfo).setVisible(true);
+            }
+            else if(LOGGED_OUT){
+                menu.getMenu().findItem(R.id.updateMPDPP).setVisible(false);
+                menu.getMenu().findItem(R.id.makeAnnouncement).setVisible(false);
+                menu.getMenu().findItem(R.id.manageTodayMeal).setVisible(false);
+                menu.getMenu().findItem(R.id.changePassword).setVisible(false);
+                menu.getMenu().findItem(R.id.btnLogOut).setVisible(false);
+                menu.getMenu().findItem(R.id.memberPasswords).setVisible(false);
+                menu.getMenu().findItem(R.id.lastTimeOfChangingMeal).setVisible(false);
+                menu.getMenu().findItem(R.id.menu_editInfo).setVisible(false);
+            }
+            else{
+                menu.getMenu().findItem(R.id.updateMPDPP).setVisible(false);
+                menu.getMenu().findItem(R.id.makeAnnouncement).setVisible(false);
+                menu.getMenu().findItem(R.id.manageTodayMeal).setVisible(true);
+                menu.getMenu().findItem(R.id.lastTimeOfChangingMeal).setVisible(false);
+                menu.getMenu().findItem(R.id.memberPasswords).setVisible(false);
+                menu.getMenu().findItem(R.id.changePassword).setVisible(true);
+                menu.getMenu().findItem(R.id.btnLogOut).setVisible(true);
+                menu.getMenu().findItem(R.id.menu_editInfo).setVisible(false);
+            }
+            menu.getMenu().findItem(R.id.itemAbout).setVisible(true);
+            menu.getMenu().findItem(R.id.btnInstructions).setVisible(true);
+
+            setOnClickListenerForPopUpMenu(menu);
+
+            menu.show();
+        }
+        if(v.getId() == R.id.layout_goOverView){
+
+            if(stoppedBoarders.size() == 0 && boarders.size() == 0){
+                Toast.makeText(this, "You need to add " +
+                        "members to use this feature", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            Intent i = new Intent(MainActivity.this, ActivityOverView.class);
+            startActivity(i);
+        }
+        if(v.getId() == R.id.layout_goDetails){
+
+            if(stoppedBoarders.size() == 0 && boarders.size() == 0){
+                Toast.makeText(this, "You need to add " +
+                        "members to use this feature", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            Intent i = new Intent(MainActivity.this, DetailsActivity.class);
+            startActivity(i);
+        }
+        if(v.getId() == R.id.layout_goCookBill){
+
+            if(stoppedBoarders.size() == 0 && boarders.size() == 0){
+                Toast.makeText(this, "You need to add " +
+                        "members to use this feature", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            Intent i = new Intent(MainActivity.this, CookBillActivity.class);
+            startActivity(i);
+        }
+        if(v.getId() == R.id.layout_goBazaarList){
+
+            if(stoppedBoarders.size() == 0 && boarders.size() == 0){
+                Toast.makeText(this, "You need to add " +
+                        "members to use this feature", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            Intent i = new Intent(MainActivity.this, BazaarActivity.class);
+            startActivity(i);
+        }
+        if(v.getId() == R.id.imgProfileChange){
+            SelectNamesForLogIn d = new SelectNamesForLogIn(this);
+            d.show();
+        }
+        if(v.getId() == R.id.txtSeeProfileDetails){
+            Intent i = new Intent(this, ProfileDetailsActivity.class);
+            i.putExtra("BI", selectedBoarderIndex);
+            i.putExtra("SBI", selectedStoppedBoarderIndex);
+            i.putExtra("CBI", selectedCookBillIndex);
+            startActivity(i);
+        }
+        if(v.getId() == R.id.txtNotification){
+
+            Intent i = new Intent(this, NotificationActivity.class);
+            if(IS_MANAGER){
+                i.putExtra("NAME", nameOfManager + "-Manager-");
+            }
+            else{
+                i.putExtra("NAME", getProfileName(selectedBoarderIndex,
+                        selectedStoppedBoarderIndex, selectedCookBillIndex));
+            }
+            startActivity(i);
+        }
+        if(v.getId() == R.id.txtSeeMealDetails){
+
+            if(stoppedBoarders.size() == 0 && boarders.size() == 0){
+                Toast.makeText(this, "You need to add " +
+                        "members to use this feature", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            Intent i = new Intent(this, DetailMealCalcActivity.class);
+            startActivity(i);
+        }
+        if(v.getId() == R.id.imgAnnouncement){
+            Intent i = new Intent(this, ActivitySeeAnnouncement.class);
+            i.putExtra("ANNOUNCEMENT_TEXT", announcement);
+            startActivity(i);
+        }
+        if(v.getId() == R.id.layout_goToPayBack){
+
+            if(stoppedBoarders.size() == 0 && boarders.size() == 0){
+                Toast.makeText(this, "You need to add " +
+                        "members to use this feature", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            Intent i = new Intent(this, PaybackActivity.class);
+            startActivity(i);
+        }
+
+    }
+
+    private void showNotice() {
+
+        boolean isBazaarNoticeShown = false;
+        DatabaseReference r = FirebaseDatabase.getInstance().getReference().child("change request")
+                .child("versionName");
+        if((boarders.size() > 0 || stoppedBoarders.size() > 0) && totalCost == 0 && IS_MANAGER){
+
+            isBazaarNoticeShown = true;
+            BazaarNoticeForUsers nfu = new BazaarNoticeForUsers(this);
+            if(!MainActivity.this.isFinishing()) nfu.show();
+        }
+        final boolean finalIsBazaarNoticeShown = isBazaarNoticeShown;
+        r.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists()){
+                    String versionName = snapshot.getValue(String.class);
+                    if (!finalIsBazaarNoticeShown && versionName != null &&
+                            !versionName.equals(BuildConfig.VERSION_NAME)){
+                        AppUpdateNoticeForUsers nfu =
+                                new AppUpdateNoticeForUsers(MainActivity.this,
+                                        versionName);
+
+                        if(!MainActivity.this.isFinishing()) nfu.show();
+
                     }
-                });
+                }
             }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+    }
+
+    private static class BazaarNoticeForUsers extends Dialog implements View.OnClickListener {
+
+        public BazaarNoticeForUsers(@NonNull Context context) {
+            super(context);
         }
+
+        @Override
+        protected void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.notice);
+            initialize();
+            showNotice();
+
+        }
+
+        private void initialize(){
+            findViewById(R.id.notice_txtOk).setOnClickListener(this);
+        }
+
+        private void showNotice(){
+            TextView tv = findViewById(R.id.txtNotice);
+            String bazaarCostNotice = "You didn't add bazaar cost yet." +
+                    " Click navigation bar on top-left and " +
+                    "go to 'Bazaar history' to add bazaar cost. Otherwise calculation can" +
+                    " not be shown correctly! ";
+            tv.setText(bazaarCostNotice);
+        }
+
+        @Override
+        public void onClick(View v) {
+            int id = v.getId();
+            if(id == R.id.notice_txtOk){
+                dismiss();
+            }
+        }
+    }
+
+    private static class AppUpdateNoticeForUsers extends Dialog implements View.OnClickListener {
+        private final String info;
+
+        public AppUpdateNoticeForUsers(@NonNull Context context, String info) {
+            super(context);
+            this.info = info;
+        }
+
+        @Override
+        protected void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.notice);
+            initialize();
+            showNotice();
+
+        }
+
+        private void initialize(){
+            findViewById(R.id.notice_txtOk).setOnClickListener(this);
+        }
+
+        private void showNotice(){
+            TextView tv = findViewById(R.id.txtNotice);
+            String updateNotice = info + " update available. Please visit play store to update " +
+                    "and experience better functionality";
+            tv.setText(updateNotice);
+        }
+
+        @Override
+        public void onClick(View v) {
+            int id = v.getId();
+            if(id == R.id.notice_txtOk){
+                dismiss();
+            }
+        }
+    }
+
+    private void setOnClickListenerForPopUpMenu(PopupMenu menu) {
+        menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+
+                int id = item.getItemId();
+
+                if (id == R.id.lastTimeOfChangingMeal) {
+
+                    SetLastTimeOfChangingMeals setLastTimeOfChangingMeals =
+                            new SetLastTimeOfChangingMeals(MainActivity.this);
+                    setLastTimeOfChangingMeals.show();
+                }
+                if(id == R.id.changePassword){
+
+                    UpdatePassword updatePassword =
+                            new UpdatePassword(MainActivity.this);
+                    updatePassword.show();
+                }
+
+                if(id == R.id.btnLogOut){
+                    PermissionToLogOut permissionToLogOut =
+                            new PermissionToLogOut(MainActivity.this);
+                    permissionToLogOut.show();
+                }
+
+                if(id == R.id.updateMPDPP){
+                    UpdateMPDPP updateMPDPP = new UpdateMPDPP(MainActivity.this);
+                    updateMPDPP.show();
+                }
+
+                if(id == R.id.makeAnnouncement){
+
+                    MakeAnnouncement makeAnnouncement =
+                            new MakeAnnouncement(MainActivity.this);
+                    makeAnnouncement.show();
+                }
+
+                if(id == R.id.manageTodayMeal){
+                    Intent intent = new Intent(MainActivity.this, MaintainTodaysMeal.class);
+                    startActivity(intent);
+                }
+
+                if(id == R.id.btnInstructions){
+                    Intent intent =
+                            new Intent(MainActivity.this, ActivityInstructions.class);
+                    startActivity(intent);
+                }
+
+                if(id == R.id.itemAbout){
+                    Intent intent = new Intent(MainActivity.this, ActivityAbout.class);
+                    startActivity(intent);
+                }
+
+                if(id == R.id.memberPasswords){
+                    Intent intent = new Intent(MainActivity.this, MemberPasswordsActivity.class);
+                    startActivity(intent);
+                }
+
+                if(id == R.id.menu_editInfo){
+                    Intent i = new Intent(MainActivity.this, EditInfo.class);
+                    startActivity(i);
+                }
+
+                return false;
+            }
+        });
+    }
+
+    private static void openDrawer(DrawerLayout drawerLayout) {
+        drawerLayout.openDrawer(GravityCompat.START);
     }
 
     private class EraseAll extends Dialog implements View.OnClickListener{
@@ -1128,11 +1675,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     return;
                 }
 
-                for(int i = 0; i < boarders.size(); i++){
-                    DatabaseReference r = rootRef.child("members").child(boarders.get(i).getName());
-                    r.removeValue();
-                }
 
+                rootRef.child("members").removeValue();
                 rootRef.child("Marketer History").removeValue();
                 rootRef.child("Meal Period").removeValue();
                 rootRef.child("Meal Status").removeValue();
@@ -1145,6 +1689,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 rootRef.child("Post").removeValue();
                 rootRef.child("Today's Meal Status").removeValue();
                 rootRef.child("numOfBoarders").removeValue();
+                rootRef.child("notifications").removeValue();
+                rootRef.child("Payback").removeValue();
+                rootRef.child("announcement").removeValue();
+                rootRef.child("cookBillPaid").removeValue();
+
+                if(loggedInPersonFile.exists()){
+                    if(!loggedInPersonFile.delete()){
+                        Toast.makeText(MainActivity.this,
+                                "Logged In File couldn't be found", Toast.LENGTH_SHORT).show();
+                    }
+                    selectedBoarderIndex = -1;
+                    selectedCookBillIndex = -1;
+                    selectedStoppedBoarderIndex = -1;
+                }
+
+                readingRef.setValue("");
+                readingPermissionAccepted = true;
+                readingRef.setValue("read");
+
 
             }
             dismiss();
@@ -1157,7 +1720,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             edtConsentText = findViewById(R.id.permission_edtWriteMove);
 
             txtConsent.setVisibility(View.VISIBLE);
-            edtConsentText.setVisibility(View.VISIBLE);
+            findViewById(R.id.permission_writeMoveLayout).setVisibility(View.VISIBLE);
 
             String s = "Do you want to erase all data?\n" +
                     "\u26A0 This action is irreversible.";
@@ -1188,295 +1751,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private void setDetailsToFrame(){
-
-        prepareDetailsLayout();
-        rootLayout.removeAllViews();
-        int width = 0;
-        for(int i = 0; i < boarders.size(); i++){
-            if(boarders.get(i).getMealD().size() > width)
-                width = boarders.get(i).getMealD().size();
-        }
-        for(int i = 0; i < stoppedBoarders.size(); i++){
-            if(stoppedBoarders.get(i).getMealD().size() > width)
-                width = stoppedBoarders.get(i).getMealD().size();
-        }
-        width += 2;
-        width *= 300;
-
-        Resources res = getResources();
-        Drawable drawable = null;
-
-        LinearLayout paymentD = findViewById(R.id.paymentD), mealD = findViewById(R.id.mealD);
-
-        paymentD.removeAllViews();
-        mealD.removeAllViews();
-
-        try {
-            drawable = Drawable.createFromXml(res,
-                    res.getXml(R.xml.rectangular_shape_details_meal));
-        }
-        catch (IOException | XmlPullParserException e) {
-            e.printStackTrace();
-        }
-
-        for(int i = 0; i < boarders.size(); i++){
-            LinearLayout ll = new LinearLayout(MainActivity.this),
-                    fake = new LinearLayout(MainActivity.this);
-            mealD.addView(ll);
-            mealD.addView(fake);
-            ll.setOrientation(LinearLayout.HORIZONTAL);
-            LinearLayout.LayoutParams paramsLayout = new LinearLayout.LayoutParams(
-                    width, ViewGroup.LayoutParams.WRAP_CONTENT),
-                    paramsFake = new LinearLayout.LayoutParams(ll.getWidth(), 10),
-
-                    paramsName = new LinearLayout.LayoutParams(
-                            300, ViewGroup.LayoutParams.MATCH_PARENT),
-                    paramsFakeH = new LinearLayout.LayoutParams(10, 150);
-
-            ll.setLayoutParams(paramsLayout);
-            fake.setLayoutParams(paramsFake);
-
-            fake.setBackgroundColor(Color.WHITE);
-
-
-
-            //if(drawable != null) ll.setBackground(drawable);
-            ll.setBackgroundColor(getResources().getColor(R.color.meal_details));
-
-            for(int j = 0; boarders.get(i).getMealD() != null && j < boarders.get(i).getMealD().size(); j++){
-                TextView det = new TextView(MainActivity.this),
-                        nameView = new TextView(MainActivity.this);
-                LinearLayout h = new LinearLayout(MainActivity.this);
-
-                if(j == 0) ll.addView(nameView);
-                ll.addView(h);
-                ll.addView(det);
-                h.setLayoutParams(paramsFakeH);
-                h.setBackgroundColor(Color.WHITE);
-
-                nameView.setLayoutParams(paramsName);
-                nameView.setGravity(Gravity.CENTER);
-                nameView.setTextColor(Color.WHITE);
-                det.setLayoutParams(paramsName);
-                det.setTextColor(Color.WHITE);
-                det.setGravity(Gravity.CENTER);
-                String nm = (i + 1) + ". " + boarders.get(i).getName(),
-                        m = boarders.get(i).getMealD().get(j).getDate() + "\n" +
-                                boarders.get(i).getMealD().get(j).getMeal();
-                if(j == 0) nameView.setText(nm);
-                det.setText(m);
-            }
-
-            if(IS_MANAGER){
-                final int finalI = i;
-                ll.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(MainActivity.this, EditInterfaceActivity.class);
-                        intent.putExtra("TYPE", "MEAL");
-                        intent.putExtra("INDEX", finalI);
-                        startActivity(intent);
-                    }
-                });
-            }
-        }
-
-        for(int i = 0; i < stoppedBoarders.size(); i++){
-            LinearLayout ll = new LinearLayout(MainActivity.this),
-                    fake = new LinearLayout(MainActivity.this);
-            mealD.addView(ll);
-            mealD.addView(fake);
-            ll.setOrientation(LinearLayout.HORIZONTAL);
-            LinearLayout.LayoutParams paramsLayout = new LinearLayout.LayoutParams(
-                    width, ViewGroup.LayoutParams.WRAP_CONTENT),
-                    paramsFake = new LinearLayout.LayoutParams(ll.getWidth(), 10),
-
-                    paramsName = new LinearLayout.LayoutParams(300, ViewGroup.LayoutParams.MATCH_PARENT),
-                    paramsFakeH = new LinearLayout.LayoutParams(10, 150);
-
-            ll.setLayoutParams(paramsLayout);
-            fake.setLayoutParams(paramsFake);
-
-            fake.setBackgroundColor(Color.WHITE);
-
-            //if(drawable != null) ll.setBackground(drawable);
-            ll.setBackgroundColor(getResources().getColor(R.color.meal_details));
-
-            int index = boarders.size();
-
-            for(int j = 0;stoppedBoarders.get(i).getMealD() != null &&
-                    j < stoppedBoarders.get(i).getMealD().size(); j++){
-                TextView det = new TextView(MainActivity.this),
-                        nameView = new TextView(MainActivity.this);
-                LinearLayout h = new LinearLayout(MainActivity.this);
-
-                if(j == 0) ll.addView(nameView);
-                ll.addView(h);
-                ll.addView(det);
-                h.setLayoutParams(paramsFakeH);
-                h.setBackgroundColor(Color.WHITE);
-
-                nameView.setLayoutParams(paramsName);
-                det.setLayoutParams(paramsName);
-                nameView.setTextColor(Color.WHITE);
-                det.setTextColor(Color.WHITE);
-                nameView.setGravity(Gravity.CENTER);
-                det.setGravity(Gravity.CENTER);
-                String nm = (index + i + 1) + ". " + stoppedBoarders.get(i).getName() + " (Previous sessions)",
-                        m = "   " + stoppedBoarders.get(i).getMealD().get(j).getDate() + "\n" +
-                                stoppedBoarders.get(i).getMealD().get(j).getMeal();
-                if(j == 0) nameView.setText(nm);
-                det.setText(m);
-            }
-        }
-
-        width = 0;
-
-        for(int i = 0; i < boarders.size(); i++){
-            if(boarders.get(i).getPaymentD().size() > width)
-                width = boarders.get(i).getPaymentD().size();
-        }
-        for(int i = 0; i < stoppedBoarders.size(); i++){
-            if(stoppedBoarders.get(i).getPaymentD().size() > width)
-                width = stoppedBoarders.get(i).getPaymentD().size();
-        }
-        width += 2;
-        width *= 300;
-
-        try {
-            drawable = Drawable.createFromXml(res,
-                    res.getXml(R.xml.rectangular_shape_details_payment));
-        }
-        catch (IOException | XmlPullParserException e) {
-            e.printStackTrace();
-        }
-
-        for(int i = 0; i < boarders.size(); i++){
-            LinearLayout ll = new LinearLayout(MainActivity.this),
-                    fake = new LinearLayout(MainActivity.this);
-            paymentD.addView(ll);
-            paymentD.addView(fake);
-            ll.setOrientation(LinearLayout.HORIZONTAL);
-            LinearLayout.LayoutParams paramsLayout = new LinearLayout.LayoutParams(
-                    width, ViewGroup.LayoutParams.WRAP_CONTENT),
-                    paramsFake = new LinearLayout.LayoutParams(width, 10),
-                    paramsFakeH = new LinearLayout.LayoutParams(10, 150),
-                    paramsName = new LinearLayout.LayoutParams(300, ViewGroup.LayoutParams.MATCH_PARENT);
-
-            ll.setLayoutParams(paramsLayout);
-            fake.setLayoutParams(paramsFake);
-
-            fake.setBackgroundColor(Color.WHITE);
-
-            if(drawable != null) ll.setBackground(drawable);
-
-            for(int j = 0; boarders.get(i).getPaymentD() != null &&
-                    j < boarders.get(i).getPaymentD().size(); j++){
-                TextView det = new TextView(MainActivity.this),
-                        nameView = new TextView(MainActivity.this);
-                LinearLayout h = new LinearLayout(MainActivity.this);
-
-                if(j == 0) ll.addView(nameView);
-                ll.addView(h);
-                ll.addView(det);
-
-                h.setBackgroundColor(Color.WHITE);
-                h.setLayoutParams(paramsFakeH);
-                nameView.setLayoutParams(paramsName);
-                det.setLayoutParams(paramsName);
-                nameView.setTextColor(Color.WHITE);
-                det.setTextColor(Color.WHITE);
-                nameView.setGravity(Gravity.CENTER);
-                det.setGravity(Gravity.CENTER);
-
-                String nm = (i + 1) + ". " + boarders.get(i).getName(),
-                        m = "   " + boarders.get(i).getPaymentD().get(j).getDate() + "\n" +
-                                boarders.get(i).getPaymentD().get(j).getMeal();
-                if(j == 0) nameView.setText(nm);
-                det.setText(m);
-            }
-
-            if(IS_MANAGER){
-                final int finalI = i;
-                ll.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(MainActivity.this, EditInterfaceActivity.class);
-                        intent.putExtra("TYPE", "PAYMENT");
-                        intent.putExtra("INDEX", finalI);
-                        startActivity(intent);
-                    }
-                });
-            }
-        }
-
-        for(int i = 0; i < stoppedBoarders.size(); i++){
-            LinearLayout ll = new LinearLayout(MainActivity.this),
-                    fake = new LinearLayout(MainActivity.this);
-            paymentD.addView(ll);
-            paymentD.addView(fake);
-            ll.setOrientation(LinearLayout.HORIZONTAL);
-            LinearLayout.LayoutParams paramsLayout = new LinearLayout.LayoutParams(
-                    width, ViewGroup.LayoutParams.WRAP_CONTENT),
-                    paramsFake = new LinearLayout.LayoutParams(width, 10),
-                    paramsFakeH = new LinearLayout.LayoutParams(10, 150),
-                    paramsName = new LinearLayout.LayoutParams(300, ViewGroup.LayoutParams.MATCH_PARENT);
-
-            ll.setLayoutParams(paramsLayout);
-            fake.setLayoutParams(paramsFake);
-
-            fake.setBackgroundColor(Color.WHITE);
-
-            if(drawable != null) ll.setBackground(drawable);
-
-            int index = boarders.size();
-
-            for(int j = 0; stoppedBoarders.get(i).getPaymentD() != null &&
-                    j < stoppedBoarders.get(i).getPaymentD().size(); j++){
-                TextView det = new TextView(MainActivity.this),
-                        nameView = new TextView(MainActivity.this);
-                LinearLayout h = new LinearLayout(MainActivity.this);
-
-                if(j == 0) ll.addView(nameView);
-                ll.addView(h);
-                ll.addView(det);
-
-                h.setBackgroundColor(Color.WHITE);
-                h.setLayoutParams(paramsFakeH);
-                nameView.setLayoutParams(paramsName);
-                det.setLayoutParams(paramsName);
-
-                nameView.setTextColor(Color.WHITE);
-                det.setTextColor(Color.WHITE);
-                nameView.setGravity(Gravity.CENTER);
-                det.setGravity(Gravity.CENTER);
-                String nm = (index + i + 1)  + ". " + stoppedBoarders.get(i).getName() + " (Previous sessions)",
-                        m = "   " + stoppedBoarders.get(i).getPaymentD().get(j).getDate() + "\n" +
-                                stoppedBoarders.get(i).getPaymentD().get(j).getMeal();
-                if(j == 0) nameView.setText(nm);
-                det.setText(m);
-            }
-        }
-
-    }
-
-    private interface CallBack{
+    public interface CallBack{
         void onCallback();
     }
-    private interface Wait{
+    public interface Wait{
         void onCallback();
     }
 
     private void setLogInPage(){
-
-        findViewById(R.id.mealOverViewLayout).setVisibility(View.GONE);
-        findViewById(R.id.announceLayout).setVisibility(View.GONE);
-        findViewById(R.id.modeLayout).setVisibility(View.GONE);
-        findViewById(R.id.labelLayout).setVisibility(View.GONE);
-        findViewById(R.id.totalThingsLayout).setVisibility(View.GONE);
-        findViewById(R.id.rootLayout).setVisibility(View.GONE);
-        findViewById(R.id.detailsLayout).setVisibility(View.GONE);
 
         finish();
         Intent intent = new Intent(MainActivity.this, ActivityLogIn.class);
@@ -1521,6 +1803,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             String pass = snapshot.getValue(String.class);
                             if(pass.equals(givenPass)){
                                 r.setValue(newPass);
+
+                                readingRef.setValue("");
+                                readingPermissionAccepted = true;
+                                readingRef.setValue("read");
+
                                 dismiss();
                             }else{
                                 Toast.makeText(MainActivity.this, "Incorrect password",
@@ -1615,6 +1902,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 r.child("Breakfast").setValue(brH*60 + brM);
                 r.child("Lunch").setValue(lH*60 + lM);
                 r.child("Dinner").setValue(dH*60 + dM);
+
+                readingRef.setValue("");
+                readingPermissionAccepted = true;
+                readingRef.setValue("read");
+
                 dismiss();
             }
             if(v.getId() == R.id.lastTimeCancel){
@@ -2142,6 +2434,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             }
 
                         }
+                        readingRef.setValue("");
+                        readingPermissionAccepted = true;
+                        readingRef.setValue("read");
                         mealStatusThreadAlive = false;
                         dismiss();
                     }
@@ -2190,14 +2485,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             findViewById(R.id.rbDinnerDecide).setVisibility(View.GONE);
             findViewById(R.id.checkboxLayout).setVisibility(View.GONE);
 
-            findViewById(R.id.updateLabelLayout).setVisibility(View.GONE);
-
             rbB = findViewById(R.id.rbBreakFirstDecide);
             rbL = findViewById(R.id.rbLunchDecide);
             rbD = findViewById(R.id.rbDinnerDecide);
             rbB.setChecked(isBreakfastOn);
             rbL.setChecked(isLunchOn);
             rbD.setChecked(isDinnerOn);
+
+            if(todayMealStatuses.size() == 0){
+                findViewById(R.id.updateLabelLayout).setVisibility(View.GONE);
+            }
+            else{
+                findViewById(R.id.updateLabelLayout).setVisibility(View.VISIBLE);
+                TextView tv = findViewById(R.id.updateNameLabel);
+                tv.setText(closedMemberString());
+            }
 
             Resources res = getResources();
             Drawable drawable = null;
@@ -2593,7 +2895,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         }
 
+        private String closedMemberString() {
+            if (todayMealStatuses.size() > 0) {
+                StringBuilder s = new StringBuilder();
+                if(todayMealStatuses.size() == 1)
+                    s = new StringBuilder(todayMealStatuses.get(0).getName()
+                            + " has changed his meal.\n");
+                else {
+                    s = new StringBuilder(todayMealStatuses.size() +
+                            " Members have changed their meal.\n");
+                    for (int i = 0; i < todayMealStatuses.size(); i++) {
 
+                        if(i == todayMealStatuses.size() - 1){
+                            s.append(todayMealStatuses.get(i).getName());
+                        }else{
+                            s.append(todayMealStatuses.get(i).getName()).append(", ");
+                        }
+                    }
+                }
+
+                return s.toString();
+            }
+            else{
+                return "";
+            }
+        }
     }
 
     private class UpdatePaymentDialog extends Dialog implements View.OnClickListener{
@@ -2611,6 +2937,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if(v.getId() == R.id.btnSavePayment){
 
                 String date = getTodayDate();
+
                 for(int i = 0; i < boarders.size(); i++){
                     String payment = editText[i].getText().toString().trim();
                     if(isCorrectInput(payment) == 0){
@@ -2639,6 +2966,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
 
                 for(int i = boarders.size(), k = 0; k < stoppedBoarders.size(); k++){
+
                     String payment;
                     boolean isExist = false;
                     for(int j = 0; j < boarders.size(); j++){
@@ -2650,9 +2978,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                     if(!isExist){
                         payment = editText[i].getText().toString().trim();
+                        i++;
                         //if(payment.equals("")) payment = "0";
                         if(payment.equals("")) continue;
-                        i++;
                         double paymentD = Double.parseDouble(payment);
                         double finPay = stoppedBoarders.get(k).getPaidMoney() + paymentD;
                         stoppedBoarders.get(k).setPaidMoney(finPay);
@@ -2677,6 +3005,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 break;
                             }
                         }
+
                         if(!exist){
                             stoppedBoarders.get(k).getPaymentD().add(new MealOrPaymentDetails(date, payment));
                         }
@@ -2684,8 +3013,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
 
                 }
+
                 saveStoppedBoarderToStorage();
                 recalculate();
+                readingRef.setValue("");
+                readingPermissionAccepted = true;
+                readingRef.setValue("read");
                 dismiss();
             }
             if(v.getId() == R.id.btnCancelPayment){
@@ -2766,7 +3099,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 editText[index].setHintTextColor(Color.WHITE);
 
                 String s = (index + 1) + ". " + boarders.get(index).getName() + "(" +
-                        df.format(boarders.get(index).getPaidMoney()) + "): ";
+                        df.format(boarders.get(index).getPaidMoney() +
+                                getStoppedPaid(boarders.get(index).getName())) + "): ";
                 name[index].setText(s);
                 name[index].setTextSize(20);
                 name[index].setTextColor(Color.WHITE);
@@ -2906,6 +3240,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    private double getStoppedPaid(String name) {
+        for(int i = 0; i < stoppedBoarders.size(); i++){
+            if(stoppedBoarders.get(i).getName().equals(name)){
+                return stoppedBoarders.get(i).getPaidMoney();
+            }
+        }
+        return 0;
+    }
+
     private class UpdateMPDPP extends Dialog implements View.OnClickListener{
         private final TextView[] textViewsB = new TextView[MAX_BOARDER], textViewsL = new TextView[MAX_BOARDER],
         textViewsD = new TextView[MAX_BOARDER];
@@ -2962,7 +3305,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             r3.setValue(boarders.get(i));
                             r4.removeValue();
                             r.removeValue();
-                        }else{
+                        }
+                        else{
                             double P = stoppedBoarders.get(pos).getPaidMoney() +
                                     boarders.get(i).getPaidMoney(),
                                     M = stoppedBoarders.get(pos).getMeals() + boarders.get(i).getMeals(),
@@ -2993,6 +3337,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             r.removeValue();
                             r4.removeValue();
                         }
+
+                        deleteSelectedName();
+
+                        saveMealRateHistory(boarders.get(i), mealRate);
                     }
 
 
@@ -3000,6 +3348,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 r2.child("Breakfast").setValue(rbB.isChecked());
                 r2.child("Lunch").setValue(rbL.isChecked());
                 r2.child("Dinner").setValue(rbD.isChecked());
+
+                readingRef.setValue("");
+                readingPermissionAccepted = true;
+                readingRef.setValue("read");
+
             }
             dismiss();
         }
@@ -3351,7 +3704,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                             private void initialize(){
                                 TextView tv = findViewById(R.id.wantToLogOut);
-                                String s1 = "Do you want to change meal status of " +
+                                String s1 = "সতর্কতাঃ কারো মিল বন্ধ করলে তার হিসেব বর্তমান " +
+                                        "মিল রেট অনুযায়ি আলাদা করে রাখা হবে। কাজেই, যদি বড়ধরনের বাজার করা " +
+                                        "হয়ে যায় ইতোমধ্যেই(যেমন চালের বস্তা কেনা ইত্যাদি যেগুলা " +
+                                        boarders.get(finalI).getName() + " এখনো শেষ করে যেতে পারেন নি তাহলে মিল " +
+                                        "বন্ধ করা উচিৎ হবে না।বন্ধ না করে Update MPDPH থেকে তার প্রতেক " +
+                                        "বেলার মিল 0 করে দিন। এতে করে তার হিসেব রেগুলার" +
+                                        " পরিবর্তন হবে বর্তমান মিল রেট অনুযায়ী, কিন্তু মিল বাড়বে না।\n\n" +
+                                        "Warning: If you close his/her meal, calculation of this member " +
+                                        "will be kept differntly according to current meal rate." +
+                                        "If big amount of bazaar is already brought(like big amount" +
+                                        " of rice etc.), that is not finished yet, then you should" +
+                                        " not close his/her meal." +
+                                        "All you need to do is, set his/her all meal to zero(0)" +
+                                        " from Update MPDPH.\n\n" + "After reading that,\n" +
+                                        "Do you still want to close meal of " +
                                         boarders.get(finalI).getName() + "?";
                                 tv.setText(s1);
 
@@ -3372,6 +3739,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
 
+    }
+
+    private void deleteSelectedName() {
+        if(!(loggedInPersonFile.exists() && loggedInPersonFile.delete())) {
+            Toast.makeText(this, "Can't find to delete " + loggedInPersonFile.toString(),
+                    Toast.LENGTH_SHORT).show();
+        }
+        else{
+            selectedBoarderIndex = -1;
+            selectedCookBillIndex = -1;
+            selectedStoppedBoarderIndex = -1;
+        }
+    }
+
+    private void saveMealRateHistory(Boarder boarder, double mealRate) {
+        DatabaseReference r = rootRef.child("those who stopped meal").child("stoppedHistory")
+                .child(boarder.getName()).push();
+        r.setValue(new StoppedHistory(boarder, mealRate));
     }
 
     public static boolean isDateFormatCorrect(String date){
@@ -3417,22 +3802,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         PrintWriter printWriter2 = new PrintWriter(evidence);
                         printWriter2.close();
                     }
-
-                    txtOverView.setTextSize(15);
-                    txtOverView.setPaintFlags(txtOverView.getPaintFlags() & (~Paint.UNDERLINE_TEXT_FLAG));
-                    txtOverView.setTextColor(Color.BLACK);
-
-                    txtCooksBill.setTextSize(15);
-                    txtCooksBill.setPaintFlags(txtDetails.getPaintFlags() & (~Paint.UNDERLINE_TEXT_FLAG));
-                    txtCooksBill.setTextColor(Color.BLACK);
-
-                    txtMarketHistory.setTextSize(15);
-                    txtMarketHistory.setPaintFlags(txtMarketHistory.getPaintFlags() & (~Paint.UNDERLINE_TEXT_FLAG));
-                    txtMarketHistory.setTextColor(Color.BLACK);
-
-                    txtDetails.setTextSize(15);
-                    txtDetails.setPaintFlags(txtDetails.getPaintFlags() & (~Paint.UNDERLINE_TEXT_FLAG));
-                    txtDetails.setTextColor(Color.CYAN);
+                    if(loggedInPersonFile.exists()){
+                        if(!loggedInPersonFile.delete()){
+                            Toast.makeText(MainActivity.this,
+                                    "Logged In File couldn't be found", Toast.LENGTH_SHORT).show();
+                        }
+                        selectedBoarderIndex = -1;
+                        selectedCookBillIndex = -1;
+                        selectedStoppedBoarderIndex = -1;
+                    }
                     setLogInPage();
 
                 } catch (FileNotFoundException e) {
@@ -3456,108 +3834,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             findViewById(R.id.yesToDelete).setOnClickListener(this);
             findViewById(R.id.noToDelete).setOnClickListener(this);
 
-        }
-    }
-
-    private void setMarketHistoryToFrame(){
-        prepareMarketHistoryLayout();
-        rootLayout.removeAllViews();
-
-        Resources res = getResources();
-        Drawable drawable = null;
-        try {
-            drawable = Drawable.createFromXml(res,
-                    res.getXml(R.xml.rectangular_shape_market_history));
-        }
-        catch (IOException | XmlPullParserException e) {
-            e.printStackTrace();
-        }
-
-        for(int i = 0; i < marketerHistories.size(); i++){
-            LinearLayout ll = new LinearLayout(MainActivity.this),
-                    fake = new LinearLayout(MainActivity.this);
-            rootLayout.addView(ll);
-            rootLayout.addView(fake);
-
-            ll.setOrientation(LinearLayout.HORIZONTAL);
-            LinearLayout.LayoutParams paramsLl = new LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT),
-                    paramsFake = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 10);
-
-            ll.setLayoutParams(paramsLl);
-            if(drawable != null) ll.setBackground(drawable);
-            fake.setLayoutParams(paramsFake);
-            fake.setBackgroundColor(Color.WHITE);
-
-
-            TextView name = new TextView(this),
-                    date = new TextView(this),
-                    amount = new TextView(this),
-                    fakeT = new TextView(this),
-                    fakeH1 = new TextView(this),
-                    fakeH2 = new TextView(this),
-                    fakeH3 = new TextView(this);
-
-            ll.addView(name);
-            ll.addView(fakeH1);
-            ll.addView(date);
-            ll.addView(fakeH2);
-            ll.addView(amount);
-            ll.addView(fakeH3);
-            ll.setGravity(Gravity.CENTER);
-
-            //name.setTextSize(20);
-            //date.setTextSize(20);
-            //amount.setTextSize(20);
-            name.setTypeface(Typeface.DEFAULT_BOLD);
-            date.setTypeface(Typeface.DEFAULT_BOLD);
-            amount.setTypeface(Typeface.DEFAULT_BOLD);
-
-            date.setGravity(Gravity.CENTER);
-            date.setTextColor(Color.WHITE);
-            amount.setGravity(Gravity.CENTER);
-            amount.setTextColor(Color.WHITE);
-
-            name.setGravity(Gravity.CENTER);
-            name.setTextColor(Color.WHITE);
-
-            fakeH1.setLayoutParams(new LinearLayout.LayoutParams(
-                    0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
-            fakeH2.setLayoutParams(new LinearLayout.LayoutParams(
-                    0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
-            fakeH3.setLayoutParams(new LinearLayout.LayoutParams(
-                    0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
-
-            fakeH1.setBackgroundColor(Color.WHITE);
-            fakeH2.setBackgroundColor(Color.WHITE);
-            fakeH3.setBackgroundColor(Color.WHITE);
-
-            LinearLayout.LayoutParams paramsNm = new LinearLayout.LayoutParams(
-                    0,
-                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                    35
-            );
-            name.setLayoutParams(paramsNm);
-            String nm = (i + 1) + ". " + marketerHistories.get(i).getName();
-            name.setText(nm);
-
-            LinearLayout.LayoutParams paramsDt = new LinearLayout.LayoutParams(
-                    0,
-                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                    42
-            );
-            date.setText(marketerHistories.get(i).getExpenseHistory());
-            date.setLayoutParams(paramsDt);
-
-            LinearLayout.LayoutParams paramsAm = new LinearLayout.LayoutParams(
-                    0,
-                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                    20
-            );
-            amount.setText(marketerHistories.get(i).getTotalAmount());
-            amount.setLayoutParams(paramsAm);
-
-            fakeT.setLayoutParams(paramsAm);
         }
     }
 
@@ -3699,7 +3975,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             initialize();
         }
 
-
         @Override
         public void onClick(View v) {
             if(v.getId() == R.id.saveTheMember){
@@ -3731,6 +4006,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     final DatabaseReference r = rootRef.child("Meal Status").child(name),
                             r2 = rootRef.child("Meal Period"),
                             r3 = rootRef.child("cooksBill");
+
                     cooksBills.add(new CooksBill(name, "0.0"));
                     r3.setValue(cooksBills);
 
@@ -3738,24 +4014,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     if(isBreakfastOn){
                         b = 1;
                         total++;
-                    }else{
+                    }
+                    else{
                         b = 0;
                     }
                     if(isLunchOn){
                         l = 1;
                         total++;
-                    }else{
+                    }
+                    else{
                         l = 0;
                     }
                     if(isDinnerOn){
                         d = 1;
                         total++;
-                    }else{
+                    }
+                    else{
                         d = 0;
                     }
                     TodayMealStatus t = new TodayMealStatus(name, b, l, d, total);
                     r.setValue(t);
-
                     if(b == 0 && l == 0 && d == 0){
                         TodayMealStatus tt =
                                 new TodayMealStatus(name, 0, 1,
@@ -3766,6 +4044,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         r2.child("Dinner").setValue(true);
                     }
 
+                    readingRef.setValue("");
+                    readingPermissionAccepted = true;
+                    readingRef.setValue("read");
+
                     dismiss();
                 }
                 else if(boarderExist == -1){
@@ -3775,7 +4057,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 else if(boarderExist == -2){
                     Toast.makeText(MainActivity.this, "Invalid Name \uD83D\uDE20",
                             Toast.LENGTH_LONG).show();
-                }else{
+                }
+                else{
                     Toast.makeText(MainActivity.this,
                             "Boarder with this name exist\n" +
                                     "Change name \uD83E\uDD0F",
@@ -3844,7 +4127,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return 0;
     }
 
-    private void readFromDatabase(final CallBack callBack){
+    public static void readFromDatabase(final CallBack callBack){
+
         rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -3853,12 +4137,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 marketerHistories.clear();
                 mealStatuses.clear();
                 todayMealStatuses.clear();
+                paybacks.clear();
                 cooksBills.clear();
                 totalPaid = 0;
                 totalMeal = 0;
                 stoppedCost = 0.0;
                 stoppedMeal = 0.0;
                 extraMoney = 0.0;
+                reminderMoney = 0.0;
+                totalCost = 0.0;
+
                 if(snapshot.child("members").exists()){
                     for(DataSnapshot items : snapshot.child("members").getChildren()){
                         Boarder boarder = items.getValue(Boarder.class);
@@ -3879,9 +4167,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         totalMeal += boarder.getMeals();
                         totalPaid += boarder.getPaidMoney();
                         stoppedMeal += boarder.getMeals();
-                        if(boarder.getDue() == 0)
-                            stoppedCost += (boarder.getPaidMoney() - boarder.getOverHead());
-                        else stoppedCost += (boarder.getPaidMoney() + boarder.getDue());
+                        stoppedCost += (boarder.getPaidMoney() - boarder.getOverHead() + boarder.getDue());
 
                         stoppedBoarders.add(boarder);
                     }
@@ -3902,7 +4188,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
 
                 if(snapshot.child("Marketer History").exists()){
-                    totalCost = 0;
                     for(DataSnapshot items : snapshot.child("Marketer History").getChildren()){
                         MarketerHistory marketerHistory = items.getValue(MarketerHistory.class);
                         marketerHistories.add(marketerHistory);
@@ -3944,6 +4229,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 else{
                     lastUpdate = "Last meal update: N/A";
                 }
+                if(snapshot.child("announcement").child(getTodayDate()).exists()){
+                    announcement = snapshot.child("announcement").child(getTodayDate())
+                            .getValue(String.class);
+
+                }
+
+                if(snapshot.child("Payback").exists()){
+                    for(DataSnapshot name : snapshot.child("Payback").getChildren()){
+                        paybacks.put(name.getKey(), name.getValue(Payback.class));
+                    }
+                }
 
                 sortDetailMealAndPayment(new Wait() {
                     @Override
@@ -3962,7 +4258,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    private void sortDetailMealAndPayment(Wait wait){
+    private static void sortDetailMealAndPayment(Wait wait){
 
         for(int i = 0; i < boarders.size(); i++){
             Collections.sort(boarders.get(i).getMealD(), new Comparator<MealOrPaymentDetails>() {
@@ -3998,11 +4294,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             });
         }
-
         wait.onCallback();
     }
 
-    private int getIntegerOfDates(String date){
+    private static int getIntegerOfDates(String date){
         int day = Integer.parseInt(date.substring(0, 2)),
                 month = Integer.parseInt(date.substring(3, 5)),
                 year = Integer.parseInt(date.substring(6));
@@ -4058,719 +4353,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         for(int i = 0; i < boarders.size(); i++){
             DatabaseReference ref = membersRef.child(boarders.get(i).getName());
             ref.setValue(boarders.get(i));
-        }
-    }
-
-    private void setDataToAppFrame(){
-
-        prepareOverViewLayout();
-        rootLayout.removeAllViews();
-        setStatistics();
-
-        if(boarders.size() == 0 && stoppedBoarders.size() == 0){
-            rootLayout.setVisibility(View.VISIBLE);
-
-            findViewById(R.id.announceLayout).setVisibility(View.GONE);
-            findViewById(R.id.mealOverViewLayout).setVisibility(View.GONE);
-            findViewById(R.id.modeLayout).setVisibility(View.GONE);
-            findViewById(R.id.labelLayout).setVisibility(View.GONE);
-            //findViewById(R.id.totalThingsScroll).setVisibility(View.GONE);
-
-            TextView txtWelcomeText = new TextView(MainActivity.this),
-                    txtInstructions = new TextView(this);
-            rootLayout.addView(txtWelcomeText);
-            String hadith = "\"Give food to the hungry,\n" +
-                    "pay a visit to the sick and release (set free) \n" +
-                    "the one in captivity (by paying his ransom)\".\n",
-
-                    referenceText =
-                            "----------------------------------------------------------------- Muhammad(ﷺ)\n" +
-                            "Sahih Al Bukhari 1.\n" +
-                            "Chapter 71.\n" +
-                            "Hadith: 5373\n\n\n",
-
-                    welcomeText = "Welcome to the new session of eating \uD83D\uDE0E.\n",
-                    addMemberText = "Add members ",
-                    lastText = "to get your meal start. You can see Instructions for better understanding!",
-                    s, s1, s2,
-
-                    mainText = hadith + referenceText + welcomeText + addMemberText + lastText;
-
-            Spannable spannable = new SpannableString(mainText);
-
-            // TODO
-            //  HADITH
-            spannable.setSpan(new RelativeSizeSpan(1f), 0,
-                    hadith.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-            spannable.setSpan(new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER), 0,
-                    hadith.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-            // TODO
-            //  Reference
-            s = hadith + referenceText;
-            spannable.setSpan(new AlignmentSpan.Standard(Layout.Alignment.ALIGN_OPPOSITE),
-                    hadith.length(), s.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-            spannable.setSpan(new RelativeSizeSpan(1f),
-                    hadith.length(), s.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-            // TODO
-            //  welcome text
-            s1 = hadith + referenceText;
-            s = hadith + referenceText + welcomeText;
-            spannable.setSpan(new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER),
-                    s1.length(),
-                    s.length(),
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-            spannable.setSpan(new RelativeSizeSpan(1.5f),
-                    s1.length(),
-                    s.length(),
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-            // TODO
-            //  add member
-            s1 = hadith + referenceText + welcomeText;
-            s = hadith + referenceText + welcomeText + addMemberText;
-            spannable.setSpan(new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER),
-                    s1.length(),
-                    s.length(),
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-            spannable.setSpan(new RelativeSizeSpan(1.5f),
-                    s1.length(),
-                    s.length(),
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-
-            spannable.setSpan(new ForegroundColorSpan(Color.RED),
-                    s1.length(),
-                    s.length(),
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-
-            // TODO
-            //  welcome text
-            s1 = hadith + referenceText + welcomeText + addMemberText;
-            s = hadith + referenceText + welcomeText + addMemberText + lastText;
-            spannable.setSpan(new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER),
-                    s1.length(),
-                    s.length(),
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-            spannable.setSpan(new RelativeSizeSpan(1.5f),
-                    s1.length(),
-                    s.length(),
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-
-            txtWelcomeText.setText(spannable, TextView.BufferType.SPANNABLE);
-
-            addBoarder.setTextColor(Color.RED);
-
-            rootLayout.addView(txtInstructions);
-            s2 = "\nSee Instructions";
-            txtInstructions.setText(s2);
-            txtInstructions.setTextColor(Color.BLACK);
-            txtInstructions.setTypeface(null, Typeface.BOLD);
-            txtInstructions.setLayoutParams(new LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, 150));
-            txtInstructions.setGravity(Gravity.CENTER);
-            txtInstructions.setTextSize(20);
-            txtInstructions.setPaintFlags(txtInstructions.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-            txtInstructions.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(MainActivity.this, ActivityInstructions.class);
-                    startActivity(intent);
-                }
-            });
-
-
-
-        }
-        else{
-            addBoarder.setTextColor(Color.BLACK);
-
-            findViewById(R.id.announceLayout).setVisibility(View.VISIBLE);
-            findViewById(R.id.mealOverViewLayout).setVisibility(View.VISIBLE);
-            findViewById(R.id.modeLayout).setVisibility(View.VISIBLE);
-            findViewById(R.id.labelLayout).setVisibility(View.VISIBLE);
-            //findViewById(R.id.totalThingsScroll).setVisibility(View.VISIBLE);
-
-            Resources res = getResources();
-            Drawable drawable = null;
-            try {
-                drawable = Drawable.createFromXml(res,
-                        res.getXml(R.xml.rectangular_shape_main_activity_data));
-            }
-            catch (IOException | XmlPullParserException e) {
-                e.printStackTrace();
-            }
-
-            for(int i = 0; i < boarders.size(); i++){
-                LinearLayout ll = new LinearLayout(MainActivity.this),
-                        fake = new LinearLayout(MainActivity.this),
-                        fakeH1 = new LinearLayout(MainActivity.this),
-                        fakeH2 = new LinearLayout(MainActivity.this),
-                        fakeH3 = new LinearLayout(MainActivity.this),
-                        fakeH4 = new LinearLayout(MainActivity.this);
-                LinearLayout.LayoutParams paramsFakeH = new LinearLayout.LayoutParams(10, 150);
-                fakeH1.setLayoutParams(paramsFakeH);
-                fakeH2.setLayoutParams(paramsFakeH);
-                fakeH3.setLayoutParams(paramsFakeH);
-                fakeH4.setLayoutParams(paramsFakeH);
-
-                fakeH1.setBackgroundColor(Color.WHITE);
-                fakeH2.setBackgroundColor(Color.WHITE);
-                fakeH3.setBackgroundColor(Color.WHITE);
-                fakeH4.setBackgroundColor(Color.WHITE);
-
-                if(drawable != null){
-                    ll.setBackground(drawable);
-                }
-
-
-                int pos = -1;
-                double d1, ov1, d2, ov2, d = 0, ov = 0;
-                for(int j = 0; j < stoppedBoarders.size(); j++){
-                    if(boarders.get(i).getName().equals(stoppedBoarders.get(j).getName())){
-                        d1 = boarders.get(i).getDue();
-                        d2 = stoppedBoarders.get(j).getDue();
-                        ov1 = boarders.get(i).getOverHead();
-                        ov2 = stoppedBoarders.get(j).getOverHead();
-                        d = d1 + d2;
-                        ov = ov1 + ov2;
-                        if(d > ov){
-                            d -= ov;
-                            ov = 0;
-                        }else{
-                            ov -= d;
-                            d = 0;
-                        }
-                        pos = j;
-                        break;
-                    }
-                }
-
-                String s;
-
-                TextView name = new TextView(this);
-                s = (i + 1) + ". " + boarders.get(i).getName();
-                name.setText(s);
-                name.setGravity(Gravity.CENTER);
-                name.setTypeface(Typeface.DEFAULT_BOLD);
-                name.setTextColor(Color.rgb(245, 247, 246));
-                //name.setTextSize(17);
-
-                TextView paid = new TextView(this);
-                if(pos == -1) s = df.format(boarders.get(i).getPaidMoney()) + "";
-                else s = df.format((boarders.get(i).getPaidMoney() + stoppedBoarders.get(pos).getPaidMoney())) + "";
-                paid.setText(s);
-                paid.setGravity(Gravity.CENTER);
-                paid.setTypeface(Typeface.DEFAULT_BOLD);
-                //paid.setTextSize(17);
-                paid.setTextColor(Color.rgb(245, 247, 246));
-
-                TextView meal = new TextView(this);
-                if(pos == -1) s = df.format(boarders.get(i).getMeals()) + "";
-                else s = df.format((boarders.get(i).getMeals() + stoppedBoarders.get(pos).getMeals())) + "";
-                meal.setText(s);
-                meal.setGravity(Gravity.CENTER);
-                meal.setTypeface(Typeface.DEFAULT_BOLD);
-                //meal.setTextSize(17);
-                meal.setTextColor(Color.rgb(245, 247, 246));
-
-                TextView due = new TextView(this);
-                if(pos == -1) s = df.format(boarders.get(i).getDue());
-                else s = df.format(d);
-                due.setText(s);
-                due.setGravity(Gravity.CENTER);
-                due.setTypeface(Typeface.DEFAULT_BOLD);
-                //due.setTextSize(17);
-                due.setTextColor(Color.rgb(245, 247, 246));
-
-                TextView overHead = new TextView(this);
-                if(pos == -1) s = df.format(boarders.get(i).getOverHead());
-                else s = df.format(ov);
-                overHead.setText(s);
-                overHead.setGravity(Gravity.CENTER);
-                overHead.setTextColor(Color.rgb(245, 247, 246));
-                //overHead.setTextSize(18);
-                overHead.setTypeface(Typeface.DEFAULT_BOLD);
-
-                ll.setOrientation(LinearLayout.HORIZONTAL);
-
-                ll.addView(name);
-                ll.addView(fakeH1);
-                ll.addView(paid);
-                ll.addView(fakeH2);
-                ll.addView(meal);
-                ll.addView(fakeH3);
-                ll.addView(due);
-                ll.addView(fakeH4);
-                ll.addView(overHead);
-
-                LinearLayout.LayoutParams params30 = new LinearLayout.LayoutParams(
-                        0,
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        35
-                );
-                LinearLayout.LayoutParams params15 = new LinearLayout.LayoutParams(
-                        0,
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        17
-                );
-                LinearLayout.LayoutParams params20 = new LinearLayout.LayoutParams(
-                        0,
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        25
-                );
-                name.setLayoutParams(params30);
-                paid.setLayoutParams(params15);
-                meal.setLayoutParams(params15);
-                due.setLayoutParams(params15);
-                overHead.setLayoutParams(params20);
-
-                rootLayout.addView(ll);
-                if(i != boarders.size() - 1) rootLayout.addView(fake);
-
-                LinearLayout.LayoutParams paramsLl = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT, 150),
-                        paramsFake = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 10);
-                ll.setLayoutParams(paramsLl);
-
-                fake.setLayoutParams(paramsFake);
-                fake.setBackgroundColor(Color.WHITE);
-            }
-
-            try {
-                drawable = Drawable.createFromXml(res,
-                        res.getXml(R.xml.rectangular_shape_main_activity_data2));
-            }
-            catch (IOException | XmlPullParserException e) {
-                e.printStackTrace();
-            }
-
-            int index = boarders.size() + 1;
-            for(int i = 0; i < stoppedBoarders.size(); i++){
-
-                boolean isExist = false;
-
-                for(int j = 0; j < boarders.size(); j++){
-                    if(boarders.get(j).getName().equals(stoppedBoarders.get(i).getName())){
-                        isExist = true;
-                        break;
-                    }
-                }
-
-                if(!isExist){
-                    LinearLayout ll = new LinearLayout(MainActivity.this),
-                            fake = new LinearLayout(MainActivity.this),
-                            fakeH1 = new LinearLayout(MainActivity.this),
-                            fakeH2 = new LinearLayout(MainActivity.this),
-                            fakeH3 = new LinearLayout(MainActivity.this),
-                            fakeH4 = new LinearLayout(MainActivity.this);
-                    LinearLayout.LayoutParams paramsFakeH = new LinearLayout.LayoutParams(10, 150);
-                    fakeH1.setLayoutParams(paramsFakeH);
-                    fakeH2.setLayoutParams(paramsFakeH);
-                    fakeH3.setLayoutParams(paramsFakeH);
-                    fakeH4.setLayoutParams(paramsFakeH);
-
-                    fakeH1.setBackgroundColor(Color.WHITE);
-                    fakeH2.setBackgroundColor(Color.WHITE);
-                    fakeH3.setBackgroundColor(Color.WHITE);
-                    fakeH4.setBackgroundColor(Color.WHITE);
-
-
-                    String s;
-
-                    final TextView name = new TextView(this);
-                    s = index + ". " + stoppedBoarders.get(i).getName();
-                    name.setText(s);
-                    name.setGravity(Gravity.CENTER);
-                    name.setTextColor(Color.rgb(245, 247, 246));
-                    name.setTextSize(17);
-
-                    TextView paid = new TextView(this);
-                    s = df.format(stoppedBoarders.get(i).getPaidMoney()) + "";
-                    paid.setText(s);
-                    paid.setGravity(Gravity.CENTER);
-                    paid.setTextSize(17);
-                    paid.setTextColor(Color.rgb(245, 247, 246));
-
-                    TextView meal = new TextView(this);
-                    s = df.format(stoppedBoarders.get(i).getMeals()) + "";
-                    meal.setText(s);
-                    meal.setGravity(Gravity.CENTER);
-                    meal.setTextSize(17);
-                    meal.setTextColor(Color.rgb(245, 247, 246));
-
-                    TextView due = new TextView(this);
-                    s = df.format(stoppedBoarders.get(i).getDue()) + "";
-                    due.setText(s);
-                    due.setGravity(Gravity.CENTER);
-                    due.setTextColor(Color.rgb(250, 245, 150));
-                    due.setTextSize(17);
-                    due.setTextColor(Color.rgb(245, 247, 246));
-
-                    TextView overHead = new TextView(this);
-                    s = df.format(stoppedBoarders.get(i).getOverHead()) + "";
-                    overHead.setText(s);
-                    overHead.setGravity(Gravity.CENTER);
-                    overHead.setTextColor(Color.rgb(245, 247, 246));
-                    overHead.setTextSize(18);
-
-                    ll.setOrientation(LinearLayout.HORIZONTAL);
-
-                    ll.addView(name);
-                    ll.addView(fakeH1);
-                    ll.addView(paid);
-                    ll.addView(fakeH2);
-                    ll.addView(meal);
-                    ll.addView(fakeH3);
-                    ll.addView(due);
-                    ll.addView(fakeH4);
-                    ll.addView(overHead);
-
-                    LinearLayout.LayoutParams params30 = new LinearLayout.LayoutParams(
-                            0,
-                            ViewGroup.LayoutParams.MATCH_PARENT,
-                            35
-                    );
-                    LinearLayout.LayoutParams params15 = new LinearLayout.LayoutParams(
-                            0,
-                            ViewGroup.LayoutParams.MATCH_PARENT,
-                            17
-                    );
-                    LinearLayout.LayoutParams params20 = new LinearLayout.LayoutParams(
-                            0,
-                            ViewGroup.LayoutParams.MATCH_PARENT,
-                            25
-                    );
-                    name.setLayoutParams(params30);
-                    paid.setLayoutParams(params15);
-                    meal.setLayoutParams(params15);
-                    due.setLayoutParams(params15);
-                    overHead.setLayoutParams(params20);
-
-                    rootLayout.addView(ll);
-                    rootLayout.addView(fake);
-
-                    LinearLayout.LayoutParams paramsLl = new LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.MATCH_PARENT, 150),
-                            paramsFake = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                                    10);
-                    ll.setLayoutParams(paramsLl);
-                    if(drawable != null){
-                        ll.setBackground(drawable);
-                    }
-
-                    fake.setLayoutParams(paramsFake);
-                    fake.setBackgroundColor(Color.WHITE);
-
-                    final int finalI = i;
-                    ll.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Toast.makeText(MainActivity.this, stoppedBoarders.get(finalI).getName() +
-                                    " Has deactivated his/her meal", Toast.LENGTH_LONG).show();
-                        }
-                    });
-
-
-                    if(IS_MANAGER){
-                        ll.setOnLongClickListener(new View.OnLongClickListener() {
-                            @Override
-                            public boolean onLongClick(View v) {
-
-                                class ActivateHisMeal extends Dialog implements View.OnClickListener{
-
-                                    TextView br, ln, dn;
-
-                                    public ActivateHisMeal(@NonNull Context context) {
-                                        super(context);
-                                    }
-
-                                    @Override
-                                    protected void onCreate(Bundle savedInstanceState) {
-                                        super.onCreate(savedInstanceState);
-                                        setContentView(R.layout.reactivate_meal);
-                                        initialize();
-                                    }
-
-                                    private void initialize(){
-                                        TextView textView = findViewById(R.id.reactivateUserName);
-                                        br = findViewById(R.id.brTxt);
-                                        ln = findViewById(R.id.lTxt);
-                                        dn = findViewById(R.id.dTxt);
-                                        textView.setText(stoppedBoarders.get(finalI).getName());
-
-                                        findViewById(R.id.reactivate_moveUnderCalc).setVisibility(View.VISIBLE);
-
-
-                                        findViewById(R.id.reactivateMeal).setOnClickListener(this);
-                                        findViewById(R.id.cancelReactivation).setOnClickListener(this);
-                                        findViewById(R.id.reactivate_moveUnderCalc).setOnClickListener(this);
-                                        findViewById(R.id.brMinus).setOnClickListener(this);
-                                        findViewById(R.id.brPlus).setOnClickListener(this);
-                                        findViewById(R.id.lMinus).setOnClickListener(this);
-                                        findViewById(R.id.lPlus).setOnClickListener(this);
-                                        findViewById(R.id.dMinus).setOnClickListener(this);
-                                        findViewById(R.id.dPlus).setOnClickListener(this);
-
-
-                                    }
-
-                                    @Override
-                                    public void onClick(View v) {
-                                        int id = v.getId();
-
-                                        if(id == R.id.brMinus){
-                                            if(isBreakfastOn) {
-                                                double prev = Double.parseDouble(br.getText().toString());
-                                                if (prev > 0) prev -= 0.5;
-                                                String fin = df.format(prev) + "";
-                                                br.setText(fin);
-                                            }else{
-                                                Toast.makeText(MainActivity.this,
-                                                        "Breakfast meal off!", Toast.LENGTH_LONG).show();
-                                            }
-                                        }
-                                        else if(id == R.id.brPlus){
-                                            if(isBreakfastOn){
-                                                double prev = Double.parseDouble(br.getText().toString());
-                                                prev += 0.5;
-                                                String fin = df.format(prev) + "";
-                                                br.setText(fin);
-                                            }else{
-                                                Toast.makeText(MainActivity.this,
-                                                        "Breakfast meal off!", Toast.LENGTH_LONG).show();
-                                            }
-                                        }
-                                        else if(id == R.id.lMinus){
-                                            if(isLunchOn){
-                                                double prev = Double.parseDouble(ln.getText().toString());
-                                                if(prev > 0) prev -= 0.5;
-                                                String fin = df.format(prev) + "";
-                                                ln.setText(fin);
-                                            }else{
-                                                Toast.makeText(MainActivity.this,
-                                                        "Lunch meal off!", Toast.LENGTH_LONG).show();
-                                            }
-                                        }
-                                        else if(id == R.id.lPlus){
-                                            if(isLunchOn){
-                                                double prev = Double.parseDouble(ln.getText().toString());
-                                                prev += 0.5;
-                                                String fin = df.format(prev) + "";
-                                                ln.setText(fin);
-                                            }else{
-                                                Toast.makeText(MainActivity.this,
-                                                        "Lunch meal off!", Toast.LENGTH_LONG).show();
-                                            }
-                                        }
-                                        else if(id == R.id.dMinus){
-                                            if(isDinnerOn){
-                                                double prev = Double.parseDouble(dn.getText().toString());
-                                                if(prev > 0) prev -= 0.5;
-                                                String fin = df.format(prev) + "";
-                                                dn.setText(fin);
-                                            }else{
-                                                Toast.makeText(MainActivity.this,
-                                                        "Dinner meal off!", Toast.LENGTH_LONG).show();
-                                            }
-                                        }
-                                        else if(id == R.id.dPlus){
-                                            if(isDinnerOn){
-                                                double prev = Double.parseDouble(dn.getText().toString());
-                                                prev += 0.5;
-                                                String fin = df.format(prev) + "";
-                                                dn.setText(fin);
-                                            }else{
-                                                Toast.makeText(MainActivity.this,
-                                                        "Dinner meal off!", Toast.LENGTH_LONG).show();
-                                            }
-                                        }
-                                        else if(id == R.id.reactivateMeal){
-                                            final double b = Double.parseDouble(br.getText().toString()),
-                                                    l = Double.parseDouble(ln.getText().toString()),
-                                                    d = Double.parseDouble(dn.getText().toString()),
-                                                    total = b + l + d;
-                                            if(total == 0){
-                                                Toast.makeText(MainActivity.this, "Can't Reactivate" +
-                                                        " with 0 meal", Toast.LENGTH_LONG).show();
-                                            }else{
-                                                final String nm = stoppedBoarders.get(finalI).getName();
-                                                final ArrayList<MealOrPaymentDetails> temp = new ArrayList<>();
-                                                temp.add(new MealOrPaymentDetails(getTodayDate(), "0"));
-
-                                                final DatabaseReference r = rootRef.child("members").child(nm),
-                                                        r2 = rootRef.child("Meal Status").child(nm),
-                                                        r3 = rootRef.child("those who stopped meal/members")
-                                                                .child(nm);
-
-                                                r3.addListenerForSingleValueEvent(new ValueEventListener() {
-                                                    @Override
-                                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                        Boarder boarder = snapshot.getValue(Boarder.class);
-                                                        Boarder boarder1 = new Boarder(nm,
-                                                                boarder.getMemberPassword(),
-                                                                0, 0, 0,
-                                                                0, temp, temp, true);
-                                                        r.setValue(boarder1);
-                                                        TodayMealStatus t = new TodayMealStatus(nm, b, l,
-                                                                d, total);
-                                                        r2.setValue(t);
-                                                        dismiss();
-                                                    }
-
-                                                    @Override
-                                                    public void onCancelled(@NonNull DatabaseError error) {
-
-                                                    }
-                                                });
-                                            }
-                                        }
-                                        else if(id == R.id.cancelReactivation){
-                                            dismiss();
-                                        }
-                                        else if(id == R.id.reactivate_moveUnderCalc){
-                                            final double b = Double.parseDouble(br.getText().toString()),
-                                                    l = Double.parseDouble(ln.getText().toString()),
-                                                    d = Double.parseDouble(dn.getText().toString()),
-                                                    total = b + l + d;
-
-                                            PermToMoveUnderCurCalc p = new PermToMoveUnderCurCalc(
-                                                    MainActivity.this, stoppedBoarders.get(finalI),
-                                                    df.format(b), df.format(l), df.format(d), df.format(total));
-                                            p.show();
-                                            dismiss();
-                                        }
-                                    }
-                                }
-
-                                ActivateHisMeal activateHisMeal = new ActivateHisMeal(MainActivity.this);
-                                activateHisMeal.show();
-                                return true;
-                            }
-                        });
-                    }
-
-
-
-                    index++;
-                }
-            }
-
-            LinearLayout ll = new LinearLayout(MainActivity.this);
-            LinearLayout.LayoutParams params =
-                    new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 10);
-            rootLayout.addView(ll);
-            ll.setLayoutParams(params);
-            ll.setBackgroundColor(Color.BLACK);
-
-        }
-    }
-
-    private class PermToMoveUnderCurCalc extends Dialog implements View.OnClickListener{
-        private final Boarder boarder;
-        private final String br, ln, dn, total;
-        private TextView txtConsent;
-        private EditText edtConsentText;
-        public PermToMoveUnderCurCalc(@NonNull Context context,
-                                      Boarder boarder, String b, String l, String d, String total) {
-            super(context);
-            this.boarder = boarder;
-            this.br = b;
-            this.ln = l;
-            this.dn = d;
-            this.total = total;
-        }
-
-        @Override
-        protected void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            setContentView(R.layout.want_parmisstion);
-            initialize();
-        }
-
-        private void initialize(){
-            TextView tv = findViewById(R.id.wantToLogOut);
-            Button b = findViewById(R.id.yesToDelete);
-            txtConsent = findViewById(R.id.permission_txtConsent);
-            edtConsentText = findViewById(R.id.permission_edtWriteMove);
-
-
-            txtConsent.setVisibility(View.VISIBLE);
-            edtConsentText.setVisibility(View.VISIBLE);
-
-            String first = "Moving members under current calculation will",
-                    tobeChange = " AFFECT ALL MEMBER's",
-                    last = " statistics.\n\n" +
-            "Do you want to move with total meal " + total + "(" + br + "-" + ln + "-" + dn + ")?";
-
-            String finalString = first + tobeChange + last;
-            Spannable spannable = new SpannableString(finalString);
-
-            spannable.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.announcement)),
-                    first.length(),
-                    first.length() + tobeChange.length(),
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-            tv.setText(spannable, TextView.BufferType.SPANNABLE);
-            String s = "Yes, Move";
-            b.setText(s);
-
-            String firstPart = "Type",
-                    toBoldPart = " move",
-                    lastPart = " to confirm.";
-            finalString = firstPart + toBoldPart + lastPart;
-
-            spannable = new SpannableString(finalString);
-            spannable.setSpan(new BackgroundColorSpan(getResources().getColor(R.color.announcement)),
-                    firstPart.length() + 1,
-                    firstPart.length() + toBoldPart.length(),
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-            spannable.setSpan(new ForegroundColorSpan(Color.BLACK),
-                    firstPart.length() + 1,
-                    firstPart.length() + toBoldPart.length(),
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-            txtConsent.setText(spannable, TextView.BufferType.SPANNABLE);
-
-            findViewById(R.id.wantToLogOut).setOnClickListener(this);
-            findViewById(R.id.yesToDelete).setOnClickListener(this);
-            findViewById(R.id.noToDelete).setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View v) {
-            int id = v.getId();
-            if(id == R.id.yesToDelete){
-                String strConsentText = edtConsentText.getText().toString();
-                if(strConsentText.equals("") || strConsentText.isEmpty() || !strConsentText.equals("move")){
-                    txtConsent.setTextColor(Color.RED);
-
-                    return;
-                }
-
-                TodayMealStatus m = new TodayMealStatus(boarder.getName(), Double.parseDouble(br),
-                        Double.parseDouble(ln),
-                        Double.parseDouble(dn),
-                        Double.parseDouble(total));
-                mealStatusRef.child(boarder.getName()).setValue(m);
-                membersRef.child(boarder.getName()).setValue(boarder);
-                rootRef.child("those who stopped meal").child("members").
-                        child(boarder.getName()).removeValue();
-
-                dismiss();
-            }
-            else if(id == R.id.noToDelete){
-                dismiss();
-            }
         }
     }
 
@@ -4842,4 +4424,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static DatabaseReference getMembersRef() {
         return membersRef;
     }
+
 }

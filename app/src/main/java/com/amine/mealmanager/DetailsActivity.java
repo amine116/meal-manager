@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -28,6 +29,7 @@ public class DetailsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
+        getSupportActionBar().setTitle("    Details");
         initialize();
     }
 
@@ -88,7 +90,7 @@ public class DetailsActivity extends AppCompatActivity {
 
             fake.setBackgroundColor(Color.WHITE);
 
-            ll.setBackgroundColor(getResources().getColor(R.color.meal_details));
+            ll.setBackgroundColor(getResources().getColor(R.color.discussion_write));
 
             for(int j = 0; boarders.get(i).getMealD() != null && j < boarders.get(i).getMealD().size(); j++){
                 TextView det = new TextView(DetailsActivity.this),
@@ -102,10 +104,11 @@ public class DetailsActivity extends AppCompatActivity {
                 h.setBackgroundColor(Color.WHITE);
 
                 nameView.setLayoutParams(paramsName);
-                nameView.setGravity(Gravity.CENTER);
-                nameView.setTextColor(Color.WHITE);
+                nameView.setGravity(Gravity.START);
+                nameView.setTextColor(Color.DKGRAY);
+                nameView.setPadding(12, 12, 0, 0);
                 det.setLayoutParams(paramsName);
-                det.setTextColor(Color.WHITE);
+                det.setTextColor(Color.DKGRAY);
                 det.setGravity(Gravity.CENTER);
                 String nm = (i + 1) + ". " + boarders.get(i).getName(),
                         m = boarders.get(i).getMealD().get(j).getDate() + "\n" +
@@ -147,7 +150,7 @@ public class DetailsActivity extends AppCompatActivity {
             fake.setBackgroundColor(Color.WHITE);
 
             //if(drawable != null) ll.setBackground(drawable);
-            ll.setBackgroundColor(getResources().getColor(R.color.meal_details));
+            ll.setBackgroundColor(getResources().getColor(R.color.discussion_write));
 
             int index = boarders.size();
 
@@ -165,9 +168,10 @@ public class DetailsActivity extends AppCompatActivity {
 
                 nameView.setLayoutParams(paramsName);
                 det.setLayoutParams(paramsName);
-                nameView.setTextColor(Color.WHITE);
-                det.setTextColor(Color.WHITE);
-                nameView.setGravity(Gravity.CENTER);
+                nameView.setTextColor(Color.DKGRAY);
+                det.setTextColor(Color.DKGRAY);
+                nameView.setGravity(Gravity.START);
+                nameView.setPadding(2, 2, 2, 2);
                 det.setGravity(Gravity.CENTER);
                 String nm = (index + i + 1) + ". " + stoppedBoarders.get(i).getName() + " (Previous sessions)",
                         m = "   " + stoppedBoarders.get(i).getMealD().get(j).getDate() + "\n" +
@@ -231,8 +235,8 @@ public class DetailsActivity extends AppCompatActivity {
                 h.setLayoutParams(paramsFakeH);
                 nameView.setLayoutParams(paramsName);
                 det.setLayoutParams(paramsName);
-                nameView.setTextColor(Color.WHITE);
-                det.setTextColor(Color.WHITE);
+                nameView.setTextColor(Color.DKGRAY);
+                det.setTextColor(Color.DKGRAY);
                 nameView.setGravity(Gravity.CENTER);
                 det.setGravity(Gravity.CENTER);
 
@@ -293,9 +297,9 @@ public class DetailsActivity extends AppCompatActivity {
                 nameView.setLayoutParams(paramsName);
                 det.setLayoutParams(paramsName);
 
-                nameView.setTextColor(Color.WHITE);
-                det.setTextColor(Color.WHITE);
-                nameView.setGravity(Gravity.CENTER);
+                nameView.setTextColor(Color.DKGRAY);
+                det.setTextColor(Color.DKGRAY);
+                nameView.setGravity(Gravity.START);
                 det.setGravity(Gravity.CENTER);
                 String nm = (index + i + 1)  + ". " + stoppedBoarders.get(i).getName() + " (Previous sessions)",
                         m = "   " + stoppedBoarders.get(i).getPaymentD().get(j).getDate() + "\n" +

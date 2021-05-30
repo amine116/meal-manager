@@ -1,10 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:id="@+id/drawer_main">
 
-    <include layout="@layout/content_main" />
 
-</RelativeLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <include layout="@layout/main_toolbar"/>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imgAnimate"
+            android:visibility="gone"
+            android:scaleType="fitCenter"
+            android:contentDescription="@string/image"/>
+
+        <include layout="@layout/content_main"
+            android:id="@+id/infoLayout"
+            android:visibility="invisible"/>
+
+        <include layout="@layout/hadith"
+            android:id="@+id/layout_hadith"
+            android:visibility="gone"/>
+
+    </LinearLayout>
+
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:background="@color/white">
+
+
+        <include layout="@layout/main_nav_drawer"
+            android:id="@+id/navigationItems"/>
+
+
+    </RelativeLayout>
+
+
+
+</androidx.drawerlayout.widget.DrawerLayout>

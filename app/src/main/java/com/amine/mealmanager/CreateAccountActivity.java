@@ -1,12 +1,15 @@
 package com.amine.mealmanager;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -19,6 +22,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
@@ -34,7 +38,9 @@ import java.util.Calendar;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
+import io.michaelrocks.libphonenumber.android.NumberParseException;
 import io.michaelrocks.libphonenumber.android.PhoneNumberUtil;
+import io.michaelrocks.libphonenumber.android.Phonenumber;
 
 import static com.amine.mealmanager.MainActivity.getTodayDate;
 
@@ -53,7 +59,11 @@ public class CreateAccountActivity extends AppCompatActivity implements View.OnC
     private String verificationCode = "";
     private String verificationID = "";
     private String country = "";
-    private String phone = "";
+    private String phone = "", cntryCde;
+    private Phonenumber.PhoneNumber phnE164_1, phnE164_2;
+    private final DatabaseReference rootRef = FailedAccount.ROOT_REF.push();
+
+    private boolean isThreadRunning = false;
 
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallback;
 
@@ -61,7 +71,30 @@ public class CreateAccountActivity extends AppCompatActivity implements View.OnC
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_account);
+        ActionBar a = getSupportActionBar();
+        if(a != null) a.setTitle("  Create Account");
         initialize();
+        initializeFailedAccount();
+    }
+
+    private void initializeFailedAccount() {
+        writeFailedAccountInfo(rootRef.child(FailedAccount.USER_NAME), "init");
+        writeFailedAccountInfo(rootRef.child(FailedAccount.PHONE), "init");
+        writeFailedAccountInfo(rootRef.child(FailedAccount.PASSWORD), "init");
+
+        writeFailedAccountInfo(rootRef.child(FailedAccount.USER_COLLISION), FailedAccount.NO);
+        writeFailedAccountInfo(rootRef.child(FailedAccount.VERIFICATION_FAILED), FailedAccount.NO);
+        writeFailedAccountInfo(rootRef.child(FailedAccount.CODE_SENT), FailedAccount.NO);
+        writeFailedAccountInfo(rootRef.child(FailedAccount.CODE_SUBMITTED), FailedAccount.NO);
+        writeFailedAccountInfo(rootRef.child(FailedAccount.CREATED), FailedAccount.NO);
+    }
+
+    private void writeFailedAccountInfo(DatabaseReference ref, String info) {
+        ref.setValue(info);
+    }
+
+    private void writeFailedAccountInfo(DatabaseReference ref, int info) {
+        ref.setValue(info);
     }
 
     private void initialize(){
@@ -114,6 +147,12 @@ public class CreateAccountActivity extends AppCompatActivity implements View.OnC
                 return;
             }
 
+            if(usernameValid == 2){
+                edtChooseUserName.setError("Invalid username!\nYou can't choose this username");
+                edtChooseUserName.requestFocus();
+                return;
+            }
+
             if(password.isEmpty()){
                 edtChoosePassword.setError("Password required");
                 edtChoosePassword.requestFocus();
@@ -135,27 +174,65 @@ public class CreateAccountActivity extends AppCompatActivity implements View.OnC
                 return;
             }
 
-            findViewById(R.id.chooseUserNameLayout).setVisibility(View.GONE);
-            findViewById(R.id.choosePassLayout).setVisibility(View.GONE);
-            findViewById(R.id.confirmPassLayout).setVisibility(View.GONE);
-            continue1.setVisibility(View.GONE);
+            writeFailedAccountInfo(rootRef.child(FailedAccount.USER_NAME), username);
+            writeFailedAccountInfo(rootRef.child(FailedAccount.PASSWORD), password);
 
-            findViewById(R.id.phoneRootLayout).setVisibility(View.VISIBLE);
-            continue2.setVisibility(View.VISIBLE);
+            textView.setVisibility(View.VISIBLE);
+            isThreadRunning = true;
+            runningThread();
+            fAuth.createUserWithEmailAndPassword(getEmailFromUsername(username), "123456")
+                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            isThreadRunning = false;
+                            textView.setVisibility(View.GONE);
+                            if(task.isSuccessful()){
 
-            try {
-                TelephonyManager tm = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
-                int countryCode = PhoneNumberUtil.createInstance(CreateAccountActivity.this)
-                        .getCountryCodeForRegion(tm.getNetworkCountryIso().toUpperCase());
-                String s = "+" + countryCode;
-                edtCountryCode.setText(s);
-            }catch (Exception e){
-                Toast.makeText(CreateAccountActivity.this, "Write country code!",
-                        Toast.LENGTH_LONG).show();
-            }
+                                FirebaseUser user = fAuth.getCurrentUser();
+                                if(user!= null) user.delete();
+                                fAuth.signOut();
+
+                                findViewById(R.id.chooseUserNameLayout).setVisibility(View.GONE);
+                                findViewById(R.id.choosePassLayout).setVisibility(View.GONE);
+                                findViewById(R.id.confirmPassLayout).setVisibility(View.GONE);
+                                continue1.setVisibility(View.GONE);
+
+                                findViewById(R.id.phoneRootLayout).setVisibility(View.VISIBLE);
+                                continue2.setVisibility(View.VISIBLE);
+
+                                writeFailedAccountInfo(rootRef.child(FailedAccount.USER_COLLISION),
+                                        FailedAccount.NO);
+
+                                try {
+                                    TelephonyManager tm = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+                                    cntryCde = tm.getNetworkCountryIso().toUpperCase();
+                                    int countryCode = PhoneNumberUtil.createInstance(CreateAccountActivity.this)
+                                            .getCountryCodeForRegion(cntryCde);
+                                    String s = "+" + countryCode;
+                                    edtCountryCode.setText(s);
+                                }
+                                catch (Exception e){
+                                    Toast.makeText(CreateAccountActivity.this,
+                                            "Write country code!",
+                                            Toast.LENGTH_LONG).show();
+                                }
+
+                            }
+                            else{
+
+                                writeFailedAccountInfo(rootRef.child(
+                                        FailedAccount.USER_COLLISION), FailedAccount.YES);
+
+                                edtChooseUserName.setError("Username taken");
+                                edtChooseUserName.requestFocus();
+                            }
+                        }
+                    });
+
+
         }
         if(v.getId() == R.id.continue2){
-            String countryCode = edtCountryCode.getText().toString().trim(),
+            String strCountryCode = edtCountryCode.getText().toString().trim(),
                     phn = edtGivePhoneNumber.getText().toString().trim();
 
 
@@ -164,7 +241,7 @@ public class CreateAccountActivity extends AppCompatActivity implements View.OnC
             inputMethodManager.hideSoftInputFromWindow(edtCountryCode.getWindowToken(), 0);
             inputMethodManager.hideSoftInputFromWindow(edtGivePhoneNumber.getWindowToken(), 0);
 
-            if(countryCode.isEmpty()){
+            if(strCountryCode.isEmpty()){
                 edtCountryCode.setError("Country code needed");
                 edtCountryCode.requestFocus();
                 return;
@@ -175,12 +252,15 @@ public class CreateAccountActivity extends AppCompatActivity implements View.OnC
                 return;
             }
 
-            country = countryCode + "";
+            country = strCountryCode + "";
             phone = phn;
 
             findViewById(R.id.phoneRootLayout).setVisibility(View.GONE);
 
-            phoneNumber = countryCode + phone;
+            phoneNumber = strCountryCode + phone;
+
+            writeFailedAccountInfo(rootRef.child(FailedAccount.PHONE),
+                    phoneNumber);
 
             //TODO
             // Phone number verification needed
@@ -203,7 +283,8 @@ public class CreateAccountActivity extends AppCompatActivity implements View.OnC
                                         submit.setEnabled(false);
                                         textView.setVisibility(View.GONE);
                                         checkToCreateAccount();
-                                    }else{
+                                    }
+                                    else{
                                         findViewById(R.id.phoneRootLayout).setVisibility(View.GONE);
                                         continue1.setVisibility(View.GONE);
 
@@ -212,6 +293,12 @@ public class CreateAccountActivity extends AppCompatActivity implements View.OnC
                                                 .setVisibility(View.VISIBLE);
                                         submit.setVisibility(View.VISIBLE);
                                     }
+
+                                    writeFailedAccountInfo(rootRef.child(FailedAccount.PHONE), phoneNumber);
+
+                                    writeFailedAccountInfo(rootRef.child(FailedAccount.VERIFICATION_FAILED),
+                                            FailedAccount.NO);
+
                                 }
 
                                 @Override
@@ -224,7 +311,12 @@ public class CreateAccountActivity extends AppCompatActivity implements View.OnC
                                     String text = e.getMessage();
                                     textView.setText(text);
                                     textView.setTextColor(Color.RED);
-                                    //Log.i("failed", e.getMessage());
+
+                                    writeFailedAccountInfo(rootRef.child(FailedAccount.PHONE),
+                                            e.getMessage());
+
+                                    writeFailedAccountInfo(rootRef.child(FailedAccount.VERIFICATION_FAILED),
+                                            FailedAccount.YES);
                                 }
 
                                 @Override
@@ -237,6 +329,10 @@ public class CreateAccountActivity extends AppCompatActivity implements View.OnC
                                     String text = "We have sent you a verification code to\n" + phone;
                                     textView.setText(text);
                                     textView.setTextColor(Color.BLACK);
+
+
+                                    writeFailedAccountInfo(rootRef.child(FailedAccount.CODE_SENT),
+                                            FailedAccount.YES);
                                 }
                             })
                             .build();
@@ -271,6 +367,9 @@ public class CreateAccountActivity extends AppCompatActivity implements View.OnC
                 return;
             }
 
+
+            writeFailedAccountInfo(rootRef.child(FailedAccount.CODE_SUBMITTED), FailedAccount.YES);
+
             PhoneAuthCredential credential =
                     PhoneAuthProvider.getCredential(verificationID, verificationCode);
 
@@ -279,7 +378,8 @@ public class CreateAccountActivity extends AppCompatActivity implements View.OnC
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if(task.isSuccessful()){
-                        // TODO
+
+                        writeFailedAccountInfo(rootRef.child(FailedAccount.PHONE), phoneNumber);
 
                         FirebaseUser user = Objects.requireNonNull(task.getResult()).getUser();
                         assert user != null;
@@ -301,8 +401,86 @@ public class CreateAccountActivity extends AppCompatActivity implements View.OnC
 
     }
 
+    private void runningThread(){
+        final Handler handler = new Handler(getApplicationContext().getMainLooper());
+        textView.setTextSize(20);
+        final int sleepingTime = 200;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (isThreadRunning){
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            String s = "Checking .";
+                            textView.setText(s);
+                        }
+                    });
+
+                    try {
+                        Thread.sleep(sleepingTime);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            String s = "Checking . .";
+                            textView.setText(s);
+                        }
+                    });
+
+                    try {
+                        Thread.sleep(sleepingTime);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            String s = "Checking . . .";
+                            textView.setText(s);
+                        }
+                    });
+
+                    try {
+                        Thread.sleep(sleepingTime);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            String s = "Checking ";
+                            textView.setText(s);
+                        }
+                    });
+
+                    try {
+                        Thread.sleep(sleepingTime);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
+    }
+
     private int isUsernameValid(){
         int validness = 0;
+
+        if(username.toLowerCase().equals("change request") ||
+                username.toLowerCase().equals("changerequest") ||
+                username.toLowerCase().equals("users") ||
+                username.toLowerCase().equals("ads") ||
+                username.toLowerCase().equals("numofusers") ||
+                username.toLowerCase().equals("failedaccount") ||
+                username.toLowerCase().equals("versionname"))
+            return 2;
+
         for(int i = 0; i < username.length(); i++){
 
             if(!((username.charAt(i) >= 'a' && username.charAt(i) <= 'z')
@@ -310,6 +488,27 @@ public class CreateAccountActivity extends AppCompatActivity implements View.OnC
                 return 1;
             }
         }
+
+        /*
+        boolean smallLetterExits = false, digitExists = false,
+                spaceExists = false, isInvalidName = false, capitalLetterExists = false;
+
+        for(int i = 0; i < username.length(); i++){
+            if(username.charAt(i) >= 'a' && username.charAt(i) <= 'z'){
+                smallLetterExits = true;
+            }
+            else if(username.charAt(i) >= '0' && username.charAt(i) <= '9'){
+                digitExists = true;
+            }
+            else if(username.charAt(i) == ' '){
+                spaceExists = true;
+            }
+            else if(username.charAt(i) >= 'A' && username.charAt(i) <= 'Z'){
+                smallLetterExits = true;
+            }
+            else return 3;
+        }
+        */
 
         return validness;
     }
@@ -332,8 +531,7 @@ public class CreateAccountActivity extends AppCompatActivity implements View.OnC
                                     else{
                                         Toast.makeText(CreateAccountActivity.this,
                                                 "We aren't taking new accounts anymore\n" +
-                                                        "We are sorry!\n" +
-                                                        "Hope we can get you in our family one day",
+                                                        "We are sorry for this inconvenience\n",
 
                                                 Toast.LENGTH_LONG).show();
                                     }
@@ -361,6 +559,9 @@ public class CreateAccountActivity extends AppCompatActivity implements View.OnC
                         if(task.isSuccessful()){
                             Toast.makeText(CreateAccountActivity.this, "Account created",
                                     Toast.LENGTH_LONG).show();
+
+                            writeFailedAccountInfo(rootRef.child(FailedAccount.CREATED),
+                                    FailedAccount.YES);
                             signIn();
 
                         }else if(task.getException() instanceof FirebaseAuthUserCollisionException){
@@ -388,14 +589,32 @@ public class CreateAccountActivity extends AppCompatActivity implements View.OnC
 
                             r.setValue(s);
 
-                            DatabaseReference r1 = FirebaseDatabase.getInstance().getReference().child("change request")
-                                    .child(username);
-                            r1.child("username").setValue(username);
-                            r1.child("currentPassword").setValue(password);
-                            r1.child("lastActivity").setValue(getTodayDate());
-                            r1.child("newPassword").setValue("");
-                            r1.child("realPhone").setValue(phoneNumber);
-                            r1.child("tempPhone").setValue("");
+
+                            PhoneNumberUtil phoneUtil =
+                                    PhoneNumberUtil.createInstance(CreateAccountActivity.this);
+                            try {
+
+                                phnE164_1 = phoneUtil.parse(phone, cntryCde);
+
+                                phone = phoneUtil.format(phnE164_1, PhoneNumberUtil.PhoneNumberFormat.E164);
+
+                                DatabaseReference r1 = FirebaseDatabase.getInstance().getReference()
+                                        .child("change request").child("users").child(username);
+
+                                r1.child("username").setValue(username);
+                                r1.child("currentPassword").setValue(password);
+                                r1.child("lastActivity").setValue(getTodayDate());
+                                r1.child("newPassword").setValue("");
+                                r1.child("realPhone").setValue(phone);
+                                r1.child("tempPhone").setValue("");
+                                r1.child("countryName").setValue(cntryCde);
+
+
+                            } catch (NumberParseException e) {
+                                e.printStackTrace();
+                            }
+
+
 
                             gotToMainActivity();
                         }else{

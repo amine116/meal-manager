@@ -3,9 +3,62 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16sp"
-    android:orientation="vertical"
-    >
+    android:background="@color/white"
+    android:orientation="vertical">
 
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="50sp"
+        android:gravity="center"
+        android:textSize="20sp"
+        android:textColor="@color/light_green"
+        android:text="@string/select_your_name"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_height="50sp">
+
+        <Button
+            android:layout_width="0sp"
+            android:layout_weight="50"
+            android:text="@string/cancel"
+            android:id="@+id/btnCancelSelection"
+            style="@style/CardView"
+            android:layout_height="match_parent"/>
+
+        <Button
+            android:layout_width="0sp"
+            android:layout_weight="50"
+            android:text="@string/save"
+            android:id="@+id/btnSaveSelection"
+            style="@style/CardView"
+            android:layout_height="match_parent"/>
+
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="2sp"
+        android:background="@color/light_green"
+        android:gravity="center">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="5sp"
+            android:background="@color/white"
+            android:gravity="start"
+            android:id="@+id/layout_selectName">
+
+
+
+        </LinearLayout>
+
+
+    </ScrollView>
 
 </LinearLayout>

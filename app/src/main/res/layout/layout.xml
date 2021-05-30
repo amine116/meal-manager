@@ -2,20 +2,20 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center"
+    android:padding="16sp"
     android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_weight="80"
-        android:layout_height="0sp"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <LinearLayout
             android:id="@+id/nameLayout"
             android:layout_width="match_parent"
-            android:layout_height="0sp"
-            android:orientation="horizontal"
-            android:layout_weight="1">
+            android:layout_height="50sp"
+            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/txtName"
@@ -23,14 +23,17 @@
                 android:layout_height="match_parent"
                 android:layout_weight="30"
                 android:gravity="center"
-                android:text="Name: "/>
+                android:text="@string/name_with_colon"/>
 
             <EditText
                 android:id="@+id/edtName"
-                android:hint="Enter Name"
+                android:hint="@string/enter"
+                android:gravity="center"
+                android:inputType="text"
                 android:layout_width="0sp"
                 android:layout_height="match_parent"
-                android:layout_weight="40"/>
+                android:layout_weight="40"
+                android:autofillHints="" />
 
             <ImageView
                 android:layout_width="0sp"
@@ -38,7 +41,8 @@
                 android:layout_weight="20"
                 android:textAllCaps="false"
                 android:id="@+id/btnLayoutCalc1"
-                android:src="@drawable/calcimagee"/>
+                android:src="@drawable/calcimagee"
+                android:contentDescription="@string/image" />
 
 
         </LinearLayout>
@@ -47,9 +51,8 @@
         <LinearLayout
             android:id="@+id/addPaymentLayout"
             android:layout_width="match_parent"
-            android:layout_height="0sp"
-            android:orientation="horizontal"
-            android:layout_weight="1">
+            android:layout_height="50sp"
+            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/txtAddPayment"
@@ -57,15 +60,17 @@
                 android:layout_height="match_parent"
                 android:layout_weight="30"
                 android:gravity="center"
-                android:text="Payment: "/>
+                android:text="@string/payment_with_colon"/>
 
             <EditText
                 android:id="@+id/edtAddPayment"
                 android:layout_width="0sp"
-                android:hint="Enter"
+                android:hint="@string/enter"
                 android:inputType="number"
+                android:gravity="center"
                 android:layout_height="match_parent"
-                android:layout_weight="40"/>
+                android:layout_weight="40"
+                android:autofillHints="" />
 
             <ImageView
                 android:layout_width="0sp"
@@ -73,7 +78,8 @@
                 android:layout_weight="20"
                 android:textAllCaps="false"
                 android:id="@+id/btnLayoutCalc2"
-                android:src="@drawable/calcimagee"/>
+                android:src="@drawable/calcimagee"
+                android:contentDescription="@string/image" />
 
 
         </LinearLayout>
@@ -82,25 +88,26 @@
         <LinearLayout
             android:id="@+id/addMealLayout"
             android:layout_width="match_parent"
-            android:layout_height="0sp"
-            android:orientation="horizontal"
-            android:layout_weight="1">
+            android:layout_height="50sp"
+            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/txtAddMeal"
                 android:layout_width="0sp"
                 android:layout_height="match_parent"
                 android:layout_weight="30"
-                android:text="Meal: "
+                android:text="@string/meal_with_colon"
                 android:gravity="center"/>
 
             <EditText
                 android:id="@+id/edtAddMeal"
                 android:layout_width="0sp"
                 android:inputType="number"
-                android:hint="Enter"
+                android:gravity="center"
+                android:hint="@string/enter"
                 android:layout_height="match_parent"
-                android:layout_weight="40"/>
+                android:layout_weight="40"
+                android:autofillHints="" />
 
             <ImageView
                 android:layout_width="0sp"
@@ -108,7 +115,8 @@
                 android:layout_weight="20"
                 android:textAllCaps="false"
                 android:id="@+id/btnLayoutCalc3"
-                android:src="@drawable/calcimagee"/>
+                android:src="@drawable/calcimagee"
+                android:contentDescription="@string/image" />
 
 
         </LinearLayout>
@@ -120,23 +128,26 @@
     <LinearLayout
         android:id="@+id/buttonsLayout"
         android:layout_width="match_parent"
-        android:layout_height="0sp"
-        android:orientation="horizontal"
-        android:layout_weight="20">
+        android:layout_height="50sp"
+        android:orientation="horizontal">
 
         <Button
             android:id="@+id/saveTheMember"
             android:layout_width="0sp"
+            android:background="@drawable/shape_button_black_50"
             android:layout_height="match_parent"
             android:layout_weight="50"
-            android:text="Save"/>
+            style="@style/AppTheme.NoActionBar"
+            android:text="@string/save"/>
 
         <Button
+            style="@style/AppTheme.NoActionBar"
             android:id="@+id/cancelSavingTheMember"
             android:layout_width="0sp"
+            android:background="@drawable/shape_button_black_50"
             android:layout_height="match_parent"
             android:layout_weight="50"
-            android:text="Cancel"/>
+            android:text="@string/cancel"/>
 
     </LinearLayout>
 

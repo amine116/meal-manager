@@ -6,71 +6,10 @@
     android:padding="10sp"
     android:gravity="center">
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center">
-
-            <TextView
-                android:id="@+id/wantToLogOut"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:text="@string/do_you_want_to_log_out"
-                android:textSize="20sp"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="20sp"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:textStyle="bold"
-                android:visibility="gone"
-                android:id="@+id/permission_txtConsent"
-                android:textColor="@color/announcement"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="20sp"/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/black_50"
-                android:padding="2dp">
-
-                <EditText
-                    android:id="@+id/permission_edtWriteMove"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="text"
-                    android:gravity="center"
-                    android:visibility="gone"
-                    android:background="@color/white"
-                    android:hint="@string/write_move"
-                    android:autofillHints="" />
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-    </ScrollView>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="20sp"/>
-
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50sp"
+        android:gravity="center"
         android:orientation="horizontal">
 
         <Button
@@ -79,6 +18,7 @@
             style="@style/Theme.AppCompat.DayNight"
             android:layout_height="wrap_content"
             android:layout_weight="50"
+            android:gravity="center"
             android:text="@string/log_out"/>
 
         <Button
@@ -91,5 +31,60 @@
 
     </LinearLayout>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="5dp"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0sp"
+        android:layout_weight="100">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="center">
+
+            <TextView
+                android:id="@+id/wantToLogOut"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/do_you_want_to_log_out"
+                android:textSize="20sp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textStyle="bold"
+                android:visibility="gone"
+                android:id="@+id/permission_txtConsent"
+                android:textColor="@color/announcement"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/black_50"
+                android:id="@+id/permission_writeMoveLayout"
+                android:visibility="gone"
+                android:padding="2dp">
+
+                <EditText
+                    android:id="@+id/permission_edtWriteMove"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:gravity="center"
+                    android:background="@color/white"
+                    android:hint="@string/write_move"
+                    android:autofillHints="" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
 
 </LinearLayout>

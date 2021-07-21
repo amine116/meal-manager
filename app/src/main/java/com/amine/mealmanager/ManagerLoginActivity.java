@@ -6,10 +6,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -23,6 +25,8 @@ public class ManagerLoginActivity extends AppCompatActivity implements View.OnCl
 
     private EditText edtEnterUserName, edtEnterPassword;
     private FirebaseAuth fAuth;
+    private boolean isEyeOn = false;
+    private ImageView imgEye;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,9 +39,12 @@ public class ManagerLoginActivity extends AppCompatActivity implements View.OnCl
     private void initialize(){
         edtEnterPassword = findViewById(R.id.edtEnterPassword);
         edtEnterUserName = findViewById(R.id.edtEnterUserName);
+        imgEye = findViewById(R.id.imgEye);
+
         Button btnLogIn = findViewById(R.id.btnLogIn);
         fAuth = FirebaseAuth.getInstance();
         btnLogIn.setOnClickListener(ManagerLoginActivity.this);
+        imgEye.setOnClickListener(this);
     }
 
     @Override
@@ -122,6 +129,21 @@ public class ManagerLoginActivity extends AppCompatActivity implements View.OnCl
                             }
                         }
                     });
+        }
+        if(v.getId() == R.id.imgEye){
+            EditText edtPass = findViewById(R.id.edtEnterPassword);
+            if(isEyeOn){
+                edtPass.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                imgEye.setImageResource(R.drawable.ic_eye_on);
+                isEyeOn = false;
+            }
+            else{
+                edtPass.setInputType(InputType.TYPE_CLASS_TEXT);
+                imgEye.setImageResource(R.drawable.ic_eye_off);
+                isEyeOn = true;
+            }
+
+            edtPass.setSelection(edtPass.getText().length());
         }
     }
 

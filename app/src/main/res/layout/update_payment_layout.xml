@@ -10,6 +10,66 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0sp"
+            android:layout_height="match_parent"
+            android:layout_weight="50"
+            android:gravity="center"
+            android:text="@string/date"/>
+
+        <EditText
+            android:layout_width="0sp"
+            android:layout_height="match_parent"
+            android:layout_weight="50"
+            android:gravity="center"
+            android:id="@+id/txtUpdatePaymentDate"
+            android:autofillHints=""
+            android:hint="@string/enter"
+            android:inputType="date" />
+
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="10dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:text="@string/names_paid"
+            android:textSize="20sp"/>
+
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0sp"
+        android:layout_weight="80">
+
+        <LinearLayout
+            android:id="@+id/updatePaymentLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="horizontal">
 
         <Button
@@ -32,54 +92,5 @@
 
 
     </LinearLayout>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="10dp"/>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:background="@drawable/rectangular_shape_update_payment">
-
-        <TextView
-            android:layout_width="0sp"
-            android:layout_height="wrap_content"
-            android:layout_weight="50"
-            android:gravity="start"
-            android:textColor="@color/white"
-            android:text="@string/names"
-            android:textSize="20sp"/>
-
-        <TextView
-            android:layout_width="0sp"
-            android:layout_height="wrap_content"
-            android:layout_weight="50"
-            android:gravity="start"
-            android:textColor="@color/white"
-            android:text="@string/enter_payment"
-            android:textSize="20sp"/>
-
-    </LinearLayout>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="10dp"/>
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <LinearLayout
-            android:id="@+id/updatePaymentLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-
-        </LinearLayout>
-
-    </ScrollView>
 
 </LinearLayout>

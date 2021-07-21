@@ -145,4 +145,10 @@ public class EditInfo extends AppCompatActivity implements View.OnClickListener 
             startActivity(intent);
         }
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        startActivity(new Intent(this, MainActivity.class));
+    }
 }

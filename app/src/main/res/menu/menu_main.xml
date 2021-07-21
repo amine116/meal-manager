@@ -2,6 +2,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.amine.mealmanager.MainActivity">
+
+    <item
+        android:id="@+id/menu_newMonth"
+        android:title="@string/new_month"
+        android:icon="@drawable/ic_add"
+        app:showAsAction="ifRoom"/>
+
     <item
         android:id="@+id/lastTimeOfChangingMeal"
         android:orderInCategory="100"

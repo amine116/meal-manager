@@ -36,7 +36,7 @@ public class MaintainTodaysMeal extends AppCompatActivity implements View.OnClic
 
     private ArrayList<Boarder> boarders;
     private ArrayList<TodayMealStatus> mealStatuses, todayMealStatuses;
-    private DatabaseReference rootRef;
+    //private DatabaseReference rootRef;
     private String nameOfManager;
     private int selectedRow = -1;
     private String selectedName = "";
@@ -58,7 +58,7 @@ public class MaintainTodaysMeal extends AppCompatActivity implements View.OnClic
         initialize();
     }
     private void initialize(){
-        rootRef = FirebaseDatabase.getInstance().getReference();
+        //rootRef = MainActivity.rootRef;
         nameOfManager = MainActivity.getManagerName();
         boarders = new ArrayList<>();
         mealStatuses = new ArrayList<>();
@@ -68,8 +68,7 @@ public class MaintainTodaysMeal extends AppCompatActivity implements View.OnClic
     }
 
     private void getLastTimes(final LastTimeCallback lastTimeCallback){
-        DatabaseReference r = rootRef.child(nameOfManager);
-        r.addListenerForSingleValueEvent(new ValueEventListener() {
+        MainActivity.rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 boarders.clear();
@@ -349,10 +348,11 @@ public class MaintainTodaysMeal extends AppCompatActivity implements View.OnClic
             nameView[i].setTextSize(20);
             nameView[i].setTextColor(Color.rgb(144, 232, 220));
 
-            s = "Manage";
+            s = "Manage your meal";
             button[i].setText(s);
             button[i].setBackgroundColor(Color.rgb(74, 72, 72));
-            button[i].setTextColor(Color.WHITE);
+            button[i].setTextColor(getResources().getColor(R.color.pure_yellow));
+            button[i].setAllCaps(false);
 
             s = "Breakfast: ";
             labelB.setText(s);
@@ -437,6 +437,7 @@ public class MaintainTodaysMeal extends AppCompatActivity implements View.OnClic
             pass = findViewById(R.id.edtEnterAnnouncement);
             verify = findViewById(R.id.btnMakeAnnouncement);
             cancel = findViewById(R.id.btnCancelAnnouncement);
+            findViewById(R.id.txtAnnounce_Instruction).setVisibility(View.VISIBLE);
 
             verify.setOnClickListener(this);
             cancel.setOnClickListener(this);
@@ -449,7 +450,7 @@ public class MaintainTodaysMeal extends AppCompatActivity implements View.OnClic
         @Override
         public void onClick(View v) {
             if(v.getId() == R.id.btnMakeAnnouncement){
-                DatabaseReference r = rootRef.child(nameOfManager).child("members")
+                DatabaseReference r = MainActivity.rootRef.child("members")
                         .child(selectedName).child("memberPassword");
                 r.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -462,18 +463,6 @@ public class MaintainTodaysMeal extends AppCompatActivity implements View.OnClic
 
                             ActivateHisMeal activateHisMeal = new ActivateHisMeal(MaintainTodaysMeal.this);
                             activateHisMeal.show();
-
-                            DisplayMetrics displayMetrics = new DisplayMetrics();
-                            getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-                            int displayWidth = displayMetrics.widthPixels;
-                            int displayHeight = displayMetrics.heightPixels;
-                            WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
-                            layoutParams.copyFrom(activateHisMeal.getWindow().getAttributes());
-                            int dialogWindowWidth = (int) (displayWidth * 0.6f);
-                            int dialogWindowHeight = (int) (displayHeight * 0.4f);
-                            layoutParams.width = dialogWindowWidth;
-                            layoutParams.height = dialogWindowHeight;
-                            activateHisMeal.getWindow().setAttributes(layoutParams);
 
                             dismiss();
                         }else{
@@ -653,7 +642,7 @@ public class MaintainTodaysMeal extends AppCompatActivity implements View.OnClic
                         d = Double.parseDouble(dn.getText().toString());
                 TodayMealStatus todayMealStatus = new TodayMealStatus(selectedName, b, l, d,
                         b + l + d);
-                rootRef.child(nameOfManager).child("Today's Meal Status").child(selectedName)
+                MainActivity.rootRef.child("Today's Meal Status").child(selectedName)
                         .child(getTodayDate()).setValue(todayMealStatus);
 
                 readingRef.setValue("");

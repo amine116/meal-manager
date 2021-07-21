@@ -1,8 +1,7 @@
 package com.amine.mealmanager;
 
 public class CooksBill {
-    private String name;
-    String paid;
+    private String name, paid;
 
     public CooksBill(){}
 

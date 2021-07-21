@@ -5,11 +5,12 @@
     android:layout_height="match_parent"
     tools:context=".ActivityAbout"
     android:gravity="center"
-    android:background="#ffffff"
-    android:padding="16sp">
+    android:background="@color/light_green"
+    android:padding="1sp">
 
     <ScrollView
         android:layout_width="match_parent"
+        android:background="@color/white"
         android:layout_height="match_parent">
 
         <LinearLayout

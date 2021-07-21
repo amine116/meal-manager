@@ -13,6 +13,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,6 +38,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.amine.mealmanager.MainActivity.LOGGED_OUT;
 import static com.amine.mealmanager.MainActivity.getManagerName;
 import static com.amine.mealmanager.MainActivity.getTodayDate;
 import static com.amine.mealmanager.MainActivity.rootRef;
@@ -48,8 +50,7 @@ public class ActivityMemberMarketNote extends AppCompatActivity implements View.
     private final int MAX_ITEM = 100;
     private LinearLayout itemListLayout, sLayout, itemLayout;
     private ArrayList<MarketItem> marketItems;
-    private final EditText[] txtItemName = new EditText[MAX_ITEM], txtAmount = new EditText[MAX_ITEM],
-            txtPrice = new EditText[MAX_ITEM];
+    private final EditText[] txtItemName = new EditText[MAX_ITEM], txtPrice = new EditText[MAX_ITEM];
     private LinearLayout.LayoutParams params;
     private String date = "", selectedName = "";
     private ArrayList<String> namesForSpinner, datesForSpinner;
@@ -238,8 +239,6 @@ public class ActivityMemberMarketNote extends AppCompatActivity implements View.
         spinnerDate.setOnItemSelectedListener(this);
         spinnerName.setOnItemSelectedListener(this);
 
-        findViewById(R.id.marketNote_btnAddItem).setOnClickListener(this);
-        findViewById(R.id.marketNote_btnShowItems).setOnClickListener(this);
         findViewById(R.id.marketNote_imgCalc).setOnClickListener(this);
         findViewById(R.id.marketNote_btnSave).setOnClickListener(this);
         marketItems = new ArrayList<>();
@@ -248,93 +247,14 @@ public class ActivityMemberMarketNote extends AppCompatActivity implements View.
         params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 150);
         allItems = new HashMap<>();
 
-        ref = FirebaseDatabase.getInstance().getReference().child(MainActivity.getManagerName())
-                .child("Discussion").child("Public Message");
+        ref = rootRef.child("Discussion").child("Public Message");
         ref.addValueEventListener(this);
     }
 
     @Override
     public void onClick(View v) {
         int id = v.getId();
-        if(id == R.id.marketNote_btnAddItem){
-            findViewById(R.id.marketNote_itemsScroll).setVisibility(View.VISIBLE);
-            findViewById(R.id.marketNote_scrollItems).setVisibility(View.GONE);
-            findViewById(R.id.marketNote_btnShowItems).setVisibility(View.VISIBLE);
 
-            findViewById(R.id.marketNote_edtNameLayout).setVisibility(View.VISIBLE);
-            findViewById(R.id.marketNote_btnSave).setVisibility(View.VISIBLE);
-            txtTotal.setVisibility(View.GONE);
-            txtTotal.setText("");
-
-            spinnerDate.setVisibility(View.GONE);
-            spinnerName.setVisibility(View.GONE);
-
-            setNameSpinner();
-            setDateSpinner("Select Name");
-
-            LinearLayout layout = new LinearLayout(ActivityMemberMarketNote.this),
-                    fakeLayout = new LinearLayout(ActivityMemberMarketNote.this);
-            itemListLayout.addView(layout);
-            itemListLayout.addView(fakeLayout);
-            layout.setLayoutParams(params);
-            fakeLayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                    10));
-
-            Resources res = getResources();
-            Drawable drawable = null;
-            try {
-                drawable = Drawable.createFromXml(res,
-                        res.getXml(R.xml.rectangular_shape));
-            } catch (IOException | XmlPullParserException e) {
-                e.printStackTrace();
-            }
-            layout.setGravity(Gravity.CENTER);
-            if(drawable != null) layout.setBackground(drawable);
-            layout.setOrientation(LinearLayout.HORIZONTAL);
-            layout.setGravity(Gravity.CENTER);
-
-            txtItemName[numberOfItems] = new EditText(ActivityMemberMarketNote.this);
-            txtAmount[numberOfItems] = new EditText(ActivityMemberMarketNote.this);
-            txtPrice[numberOfItems] = new EditText(ActivityMemberMarketNote.this);
-            TextView textView = new TextView(ActivityMemberMarketNote.this),
-                    textView1 = new TextView(ActivityMemberMarketNote.this);
-
-            layout.addView(txtItemName[numberOfItems]);
-            layout.addView(txtAmount[numberOfItems]);
-            layout.addView(txtPrice[numberOfItems]);
-
-            sLayout.addView(textView);
-            sLayout.addView(textView1);
-            textView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                    150));
-            textView.setGravity(Gravity.CENTER);
-            textView.setBackground(drawable);
-            textView1.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 10));
-
-            String s = "Item Name";
-            txtItemName[numberOfItems].setHint(s);
-            s = "Amount\n(unit)";
-            txtAmount[numberOfItems].setHint(s);
-            s = "Total Price";
-            txtPrice[numberOfItems].setHint(s);
-
-            s = (numberOfItems + 1) + ". ";
-            textView.setText(s);
-
-            txtItemName[numberOfItems].setLayoutParams(new LinearLayout.LayoutParams(0,
-                    ViewGroup.LayoutParams.MATCH_PARENT, 40));
-            txtAmount[numberOfItems].setLayoutParams(new LinearLayout.LayoutParams(0,
-                    ViewGroup.LayoutParams.MATCH_PARENT, 30));
-            txtPrice[numberOfItems].setLayoutParams(new LinearLayout.LayoutParams(0,
-                    ViewGroup.LayoutParams.MATCH_PARENT, 30));
-
-            txtAmount[numberOfItems].setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
-            txtPrice[numberOfItems].setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
-
-
-            numberOfItems++;
-
-        }
         if(id == R.id.marketNote_imgCalc){
             CalculatorInterface calc = new CalculatorInterface(this);
             calc.show();
@@ -344,6 +264,8 @@ public class ActivityMemberMarketNote extends AppCompatActivity implements View.
 
         }
         if(id == R.id.marketNote_btnSave){
+            Log.i("test", "testing 0");
+
             EditText edtName = findViewById(R.id.marketNote_edtName);
             final String name = edtName.getText().toString().toLowerCase().trim();
             if(name.isEmpty()){
@@ -353,9 +275,8 @@ public class ActivityMemberMarketNote extends AppCompatActivity implements View.
             }
             for(int i = 0; i < numberOfItems; i++){
                 final String itemName = txtItemName[i].getText().toString().toLowerCase().trim(),
-                        amount = txtAmount[i].getText().toString(),
                         price = txtPrice[i].getText().toString();
-                if(itemName.isEmpty() && amount.isEmpty() && price.isEmpty()) continue;
+                if(itemName.isEmpty() && price.isEmpty()) continue;
 
                 if(itemName.isEmpty()){
                     txtItemName[i].setError("Item Name Required");
@@ -363,11 +284,6 @@ public class ActivityMemberMarketNote extends AppCompatActivity implements View.
                     return;
                 }
 
-                if(amount.isEmpty()){
-                    txtAmount[i].setError("Amount of Item is Required");
-                    txtAmount[i].requestFocus();
-                    return;
-                }
 
                 if(price.isEmpty()){
                     txtPrice[i].setError("Price of Item is Required");
@@ -379,6 +295,8 @@ public class ActivityMemberMarketNote extends AppCompatActivity implements View.
             findViewById(R.id.marketNote_progress).setVisibility(View.VISIBLE);
             findViewById(R.id.marketNote_itemsScroll).setVisibility(View.GONE);
 
+            Log.i("test", "testing 1");
+
             fillMarketItems(name, new ReadCurrent() {
                 @Override
                 public void onCallback() {
@@ -386,15 +304,18 @@ public class ActivityMemberMarketNote extends AppCompatActivity implements View.
                     for(int i = 0; i < numberOfItems; i++){
 
                         final String itemName = txtItemName[i].getText().toString().toLowerCase().trim(),
-                                amount = txtAmount[i].getText().toString(),
                                 price = txtPrice[i].getText().toString();
 
-                        marketItems.add(new MarketItem(itemName, amount, price));
+                        marketItems.add(new MarketItem(itemName, "N/A", price));
 
                         total += Double.parseDouble(price);
                     }
 
+                    Log.i("test", "testing 2");
+
                     saveAllItems(name);
+
+                    Log.i("test", "testing 3");
 
                     itemListLayout.removeAllViews();
                     sLayout.removeAllViews();
@@ -403,29 +324,9 @@ public class ActivityMemberMarketNote extends AppCompatActivity implements View.
                 }
             });
 
-            InputMethodManager inputMethodManager =
-                    (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-            inputMethodManager.hideSoftInputFromWindow(edtName.getWindowToken(), 0);
-
 
         }
-        if(id == R.id.marketNote_btnShowItems){
-            findViewById(R.id.marketNote_itemsScroll).setVisibility(View.GONE);
-            findViewById(R.id.marketNote_scrollItems).setVisibility(View.VISIBLE);
-            findViewById(R.id.marketNote_btnAddItem).setVisibility(View.VISIBLE);
-            findViewById(R.id.marketNote_btnShowItems).setVisibility(View.GONE);
-            findViewById(R.id.marketNote_edtNameLayout).setVisibility(View.GONE);
-            findViewById(R.id.marketNote_btnSave).setVisibility(View.GONE);
-            findViewById(R.id.marketNote_txtTotal).setVisibility(View.VISIBLE);
-            txtTotal.setVisibility(View.VISIBLE);
 
-            spinnerDate.setVisibility(View.VISIBLE);
-            spinnerName.setVisibility(View.VISIBLE);
-
-            itemListLayout.removeAllViews();
-            sLayout.removeAllViews();
-            numberOfItems = 0;
-        }
 
     }
 
@@ -448,6 +349,7 @@ public class ActivityMemberMarketNote extends AppCompatActivity implements View.
     @Override
     public void onDataChange(@NonNull DataSnapshot snapshot) {
 
+        Log.i("test", "testing 4");
 
         findViewById(R.id.marketNote_itemsScroll).setVisibility(View.GONE);
         findViewById(R.id.marketNote_progress).setVisibility(View.VISIBLE);
@@ -477,7 +379,7 @@ public class ActivityMemberMarketNote extends AppCompatActivity implements View.
     }
 
     private void saveAllItems(String name){
-        DatabaseReference r1 = rootRef.child("Discussion").child("Public Message").child(name).child(date);
+        DatabaseReference r1 = ref.child(name).child(date);
 
         if(!namesForSpinner.contains(name)) namesForSpinner.add(name);
         r1.setValue(marketItems);
@@ -501,8 +403,7 @@ public class ActivityMemberMarketNote extends AppCompatActivity implements View.
     }
 
     private void fillMarketItems(String name, final ReadCurrent read){
-        DatabaseReference r = FirebaseDatabase.getInstance().getReference().child(MainActivity.getManagerName())
-                .child("Discussion").child("Public Message").child(name).child(date);
+        DatabaseReference r = ref.child(name).child(date);
         r.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {

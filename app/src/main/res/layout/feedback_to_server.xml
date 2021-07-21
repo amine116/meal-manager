@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="5sp"
+    android:background="@color/white"
+    android:gravity="center">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/we_shall_try_to_update"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height=".5dp"
+        android:background="@color/black_25"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0sp"
+            android:layout_height="match_parent"
+            android:layout_weight="30"
+            android:gravity="center"
+            android:text="@string/username"/>
+
+        <EditText
+            android:id="@+id/edtFeedbackName"
+            android:layout_width="0sp"
+            android:layout_height="match_parent"
+            android:layout_weight="70"
+            android:gravity="center"
+            android:inputType="text"
+            android:hint="@string/optional"
+            android:autofillHints="" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0sp"
+            android:layout_height="match_parent"
+            android:layout_weight="30"
+            android:gravity="center"
+            android:text="@string/email_colon"/>
+
+        <EditText
+            android:id="@+id/edtFeedbackEmail"
+            android:layout_width="0sp"
+            android:layout_height="match_parent"
+            android:layout_weight="70"
+            android:gravity="center"
+            android:inputType="textEmailAddress"
+            android:hint="@string/optional"
+            android:autofillHints="" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0sp"
+            android:layout_height="match_parent"
+            android:layout_weight="30"
+            android:gravity="center"
+            android:text="@string/date"/>
+
+        <EditText
+            android:id="@+id/edtFeedbackDate"
+            android:layout_width="0sp"
+            android:layout_height="match_parent"
+            android:layout_weight="70"
+            android:gravity="center"
+            android:inputType="date"
+            android:hint="@string/enter"
+            android:autofillHints="" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="200sp"
+        android:background="@color/light_green"
+        android:padding="2sp">
+
+        <EditText
+            android:id="@+id/edtFeedbackText"
+            android:layout_width="match_parent"
+            android:inputType="textMultiLine"
+            android:autofillHints=""
+            android:hint="@string/write_your_feedback_below"
+            android:gravity="center"
+            android:background="@color/white"
+            android:layout_height="match_parent" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnFeedbackSend"
+            style="@style/AppTheme"
+            android:layout_width="0sp"
+            android:layout_height="match_parent"
+            android:layout_weight="50"
+            android:text="@string/submit"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/or"/>
+
+        <Button
+            android:id="@+id/btnFeedbackSendEmail"
+            style="@style/AppTheme"
+            android:layout_width="0sp"
+            android:layout_height="match_parent"
+            android:layout_weight="50"
+            android:text="@string/send_email"/>
+
+        <Button
+            android:id="@+id/btnFeedbackCancel"
+            style="@style/AppTheme"
+            android:layout_width="0sp"
+            android:layout_height="match_parent"
+            android:layout_weight="50"
+            android:text="@string/cancel"/>
+
+    </LinearLayout>
+
+</LinearLayout>

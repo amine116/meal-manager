@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -27,6 +28,9 @@ import android.widget.Toast;
 import com.google.firebase.database.DatabaseReference;
 import org.xmlpull.v1.XmlPullParserException;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
 import static com.amine.mealmanager.MainActivity.IS_MANAGER;
 import static com.amine.mealmanager.MainActivity.df;
 import static com.amine.mealmanager.MainActivity.getTodayDate;
@@ -171,6 +175,7 @@ public class BazaarActivity extends AppCompatActivity implements View.OnClickLis
     private class AddMarketHistoryDialog extends Dialog implements View.OnClickListener{
 
         EditText edtName, edtDate, edtAmount;
+        Map<Integer, String> mpAddedNames;
 
         public AddMarketHistoryDialog(@NonNull Context context) {
             super(context);
@@ -232,10 +237,12 @@ public class BazaarActivity extends AppCompatActivity implements View.OnClickLis
             setContentView(R.layout.layout);
             initialize();
         }
+
         private void initialize(){
             TextView nm = findViewById(R.id.txtName);
             TextView am = findViewById(R.id.txtAddMeal);
             TextView dt = findViewById(R.id.txtAddPayment);
+            mpAddedNames = new HashMap<>();
 
             String s = "Marketer Name: ";
             nm.setText(s);
@@ -253,13 +260,64 @@ public class BazaarActivity extends AppCompatActivity implements View.OnClickLis
 
 
             edtDate.setText(getTodayDate());
+            setNameListToFrame();
 
             findViewById(R.id.saveTheMember).setOnClickListener(this);
             findViewById(R.id.cancelSavingTheMember).setOnClickListener(this);
             findViewById(R.id.btnLayoutCalc3).setOnClickListener(this);
             findViewById(R.id.btnLayoutCalc1).setVisibility(View.INVISIBLE);
             findViewById(R.id.btnLayoutCalc2).setVisibility(View.INVISIBLE);
+            findViewById(R.id.bazaar_nameScroll).setVisibility(View.VISIBLE);
 
+        }
+
+        private void setNameListToFrame(){
+
+            Resources res = getResources();
+            Drawable dr = null;
+            try {
+                dr = Drawable.createFromXml(res, res.getXml(R.xml.bazaar_member_list_shape));
+            }catch (Exception e){
+                Toast.makeText(BazaarActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+            LinearLayout bazaar_nameLayout = findViewById(R.id.bazaar_nameLayout);
+            for(int i = 0; i < MainActivity.getBoarders().size(); i++){
+                final CheckBox cb = new CheckBox(BazaarActivity.this);
+                View view = new View(BazaarActivity.this);
+                bazaar_nameLayout.addView(cb);
+                bazaar_nameLayout.addView(view);
+                cb.setText(MainActivity.getBoarders().get(i).getName());
+                if(dr != null) cb.setBackground(dr);
+                cb.setTextColor(getResources().getColor(R.color.white));
+                view.setLayoutParams(new LinearLayout.LayoutParams(10,
+                        ViewGroup.LayoutParams.MATCH_PARENT));
+                final int finalI = i;
+                cb.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(cb.isChecked()){
+                            mpAddedNames.put(finalI, cb.getText().toString());
+                        }
+                        else{
+                            String val = mpAddedNames.get(finalI);
+                            if(val != null) mpAddedNames.remove(finalI);
+                        }
+                        setNames();
+                    }
+                });
+            }
+        }
+
+        private void setNames(){
+            StringBuilder s = new StringBuilder();
+            int index = 0;
+            for(Map.Entry<Integer, String> entry : mpAddedNames.entrySet()){
+                String val = entry.getValue();
+                if(index > 0) s.append(", ");
+                s.append(val);
+                index++;
+            }
+            edtName.setText(s.toString());
         }
     }
 
@@ -340,7 +398,8 @@ public class BazaarActivity extends AppCompatActivity implements View.OnClickLis
         }
         setMarketHistoryToFrame();
         for(int i = 0; i < marketerHistories.size(); i++){
-            DatabaseReference ref = rootRef.child("Marketer History").child(marketerHistories.get(i).getName());
+            DatabaseReference ref = rootRef.child("Marketer History").
+                    child(marketerHistories.get(i).getName());
             ref.setValue(marketerHistories.get(i));
         }
 

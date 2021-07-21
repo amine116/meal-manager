@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0sp"
+        android:layout_weight="100">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="10sp">
+
+            <EditText
+                android:id="@+id/edtName"
+                android:layout_width="match_parent"
+                android:layout_height="50sp"
+                android:textSize="20sp"
+                android:gravity="center"
+                android:hint="@string/enter_your_name"
+                android:autofillHints=""
+                android:inputType="text"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="5dp"/>
+
+
+            <EditText
+                android:id="@+id/edtText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:gravity="center"
+                android:hint="@string/enter_your_text_here"
+                android:autofillHints=""
+                android:inputType="textMultiLine"/>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_height="wrap_content">
+
+        <Button
+            style="@style/AppTheme"
+            android:id="@+id/btnPublish"
+            android:layout_width="0sp"
+            android:layout_weight="50"
+            android:layout_height="match_parent"
+            android:text="@string/publish"/>
+
+        <Button
+            style="@style/AppTheme"
+            android:id="@+id/btnCancel"
+            android:layout_width="0sp"
+            android:layout_weight="50"
+            android:layout_height="match_parent"
+            android:text="@string/cancel"/>
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -7,18 +7,6 @@
     android:padding="10dp"
     tools:context=".BazaarActivity">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_weight="10"
-        android:gravity="center"
-        android:text="@string/bazaar_history"
-        android:background="@drawable/rectangular_shape_cook_bill"
-        android:layout_height="0sp"/>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="10dp"/>
-
     <ScrollView
         android:id="@+id/infoScroll"
         android:layout_width="match_parent"
@@ -43,25 +31,37 @@
         android:layout_width="match_parent"
         android:layout_height="10dp"/>
 
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_weight="10"
-        android:gravity="center"
-        android:background="@drawable/rectangular_shape_cook_bill"
-        android:id="@+id/txtTotalBazaarCost"
-        android:layout_height="0sp"/>
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="10dp"/>
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="0sp"
-        android:id="@+id/btnAddBazaar"
-        android:text="@string/add_bazaar"
-        android:background="@drawable/shape_button_black_50"
-        android:layout_weight="10"/>
+        <TextView
+            android:layout_width="0sp"
+            android:layout_weight="50"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:background="@drawable/rectangular_shape_cook_bill"
+            android:id="@+id/txtTotalBazaarCost"
+            android:layout_height="match_parent"/>
 
+        <TextView
+            android:layout_width="12sp"
+            android:layout_height="match_parent"/>
+
+
+        <Button
+            android:layout_width="70sp"
+            android:layout_height="70sp"
+            android:id="@+id/btnAddBazaar"
+            android:text="@string/add_bazaar"
+            android:textColor="@color/white"
+            android:textAllCaps="false"
+            android:background="@drawable/round_shape"
+            android:drawableBottom="@drawable/ic_add_white" />
+
+
+    </LinearLayout>
 
 </LinearLayout>

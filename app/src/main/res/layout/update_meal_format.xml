@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:background="@color/pure_black"
+    android:padding="2sp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:id="@+id/txtUpdateMealName"
+        android:gravity="start"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="12sp"
+        android:id="@+id/gap1"
+        android:layout_below="@id/txtUpdateMealName"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/gap1"
+        android:id="@+id/layoutParents"
+        android:gravity="center"
+        android:padding="10sp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/pure_black"
+            android:id="@+id/layoutBreakfast"
+            android:gravity="end"
+            android:padding="2sp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:layout_marginTop="15sp"
+                android:minWidth="50sp"
+                android:textColor="@color/white"
+                android:text="@string/breakfast"
+                android:id="@+id/txtBrLabel"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/minus"
+                android:textStyle="bold"
+                android:minWidth="50sp"
+                android:layout_toEndOf="@id/txtBrLabel"
+                android:id="@+id/btnBrUpdateMealMinus"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:gravity="center"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15sp"
+                android:minWidth="50sp"
+                android:layout_toEndOf="@id/btnBrUpdateMealMinus"
+                android:id="@+id/txtBrUpdateNumbOfMeal"
+                android:textColor="@color/white"/>
+
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/plus"
+                android:minWidth="50sp"
+                android:textSize="20sp"
+                android:layout_toEndOf="@id/txtBrUpdateNumbOfMeal"
+                android:id="@+id/btnBrUpdatePlus"/>
+
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height=".1dp"
+            android:background="@color/orange"
+            android:id="@+id/gap2"
+            android:layout_below="@id/layoutBreakfast"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/layoutLunch"
+            android:gravity="end"
+            android:layout_below="@+id/gap2"
+            android:padding="2sp">
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:layout_marginTop="15sp"
+                android:textColor="@color/white"
+                android:text="@string/lunch"
+                android:id="@+id/txtLLabel"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/minus"
+                android:textStyle="bold"
+                android:minWidth="50sp"
+                android:layout_toEndOf="@id/txtLLabel"
+                android:id="@+id/btnLUpdateMealMinus"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:gravity="center"
+                android:layout_height="wrap_content"
+                android:minWidth="50sp"
+                android:layout_marginTop="15sp"
+                android:layout_toEndOf="@+id/btnLUpdateMealMinus"
+                android:id="@+id/txtLUpdateNumbOfMeal"
+                android:textColor="@color/white"/>
+
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/plus"
+                android:minWidth="50sp"
+                android:layout_toEndOf="@+id/txtLUpdateNumbOfMeal"
+                android:textSize="20sp"
+                android:id="@+id/btnLUpdatePlus"/>
+
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height=".1dp"
+            android:background="@color/orange"
+            android:id="@+id/gap3"
+            android:layout_below="@id/layoutLunch"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:layout_below="@id/gap3"
+            android:padding="2sp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:layout_marginTop="15sp"
+                android:textColor="@color/white"
+                android:text="@string/dinner"
+                android:id="@+id/txtDLabel"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/minus"
+                android:textStyle="bold"
+                android:minWidth="50sp"
+                android:layout_toEndOf="@id/txtDLabel"
+                android:id="@+id/btnDUpdateMealMinus"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:gravity="center"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15sp"
+                android:minWidth="50sp"
+                android:layout_toEndOf="@id/btnDUpdateMealMinus"
+                android:id="@+id/txtDUpdateNumbOfMeal"
+                android:textColor="@color/white"/>
+
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/plus"
+                android:textSize="20sp"
+                android:minWidth="50sp"
+                android:layout_toEndOf="@id/txtDUpdateNumbOfMeal"
+                android:id="@+id/btnDUpdatePlus"/>
+
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+
+</RelativeLayout>

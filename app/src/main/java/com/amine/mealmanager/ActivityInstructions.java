@@ -26,15 +26,17 @@ public class ActivityInstructions extends AppCompatActivity implements View.OnCl
 
 
     private void initialize(){
-        TextView t2 = findViewById(R.id.txtSeeVideoTutorial);
+        TextView t2 = findViewById(R.id.txtSeeVideoTutorial),
+                txtGitlabLink = findViewById(R.id.txtGitlabLink);
         t2.setMovementMethod(LinkMovementMethod.getInstance());
-        findViewById(R.id.txtCopyVideoTutorialLink).setOnClickListener(this);
+        txtGitlabLink.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     @Override
     public void onClick(View v) {
         int id = v.getId();
-        if(id == R.id.txtCopyVideoTutorialLink){
+
+        if(id == R.id.txtGitlabLink){
             TextView t = new TextView(this);
             t.setText(R.string.video_tutorial_link_base);
             String s = t.getText().toString();

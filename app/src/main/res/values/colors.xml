@@ -30,6 +30,7 @@
     <color name="pure_green">#008000</color>
     <color name="pure_yellow">#FFFF00</color>
     <color name="light_green">#90ee90</color>
+    <color name="orange">#FFA500</color>
     
     <!-- Combinations -->
     <color name="color_announcement">@color/pure_green</color>
@@ -37,5 +38,7 @@
     <color name="color_mode">@color/pure_green</color>
     <color name="color_label">@color/pure_red</color>
     <color name="color_member_info">@color/pure_green</color>
+    <color name="my_messages">#FFA500</color>
+    <color name="others_messages">#424242</color>
 
 </resources>

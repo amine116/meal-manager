@@ -9,8 +9,8 @@ android {
         applicationId "com.amine.mealmanager"
         minSdkVersion 22
         targetSdkVersion 29
-        versionCode 24
-        versionName "9.25.5"
+        versionCode 29
+        versionName "11.28.7"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

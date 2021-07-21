@@ -4,20 +4,23 @@
     android:layout_height="match_parent"
     android:padding="16sp"
     android:background="@color/white"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:gravity="center">
 
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="50sp"
+        android:layout_height="wrap_content"
         android:gravity="center"
         android:textSize="20sp"
+        android:id="@+id/txtSelectNamePageInstr"
         android:textColor="@color/light_green"
         android:text="@string/select_your_name"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:orientation="horizontal"
+        android:id="@+id/layoutBtnSelectNamePage"
         android:layout_height="50sp">
 
         <Button

@@ -6,6 +6,14 @@
     android:gravity="center"
     android:padding="16sp">
 
+  <TextView
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:id="@+id/txtAnnounce_Instruction"
+      android:visibility="gone"
+      android:gravity="center"
+      android:text="@string/by_default_your_name_is_your_password_until_you_change_it"/>
+
   <LinearLayout
       android:layout_width="match_parent"
       android:background="@color/light_green"

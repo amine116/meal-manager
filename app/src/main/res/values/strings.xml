@@ -26,10 +26,10 @@
     <string name="discussion">Discussion</string>
     <string name="erase">Erase</string>
     <string name="announcement">Announcement:</string>
-    <string name="over_view">Over View</string>
+    <string name="over_view">Overview</string>
     <string name="details">Details</string>
-    <string name="cook_s_bills">Cook\'s Bills</string>
-    <string name="market_history">Bazaar History</string>
+    <string name="cook_s_bills">Chef’s Bill</string>
+    <string name="market_history">Bazaar/Expense History</string>
     <string name="names">Names</string>
     <string name="paid">Paid</string>
     <string name="add_payment">Add Payment</string>
@@ -43,8 +43,8 @@
     <string name="do_you_want_to_log_out">Do you want to Log out?</string>
     <string name="enter_your_announcement">Enter your Announcement</string>
     <string name="make">Make</string>
-    <string name="market_note_member">Bazaar Note</string>
-    <string name="general_note">Public Message</string>
+    <string name="market_note_member">Bazaar report</string>
+    <string name="general_note">Group Message</string>
     <string name="market_note_manager">Bazaar Routine</string>
     <string name="save">Save</string>
     <string name="edit">Edit</string>
@@ -56,11 +56,11 @@
     <string name="your_name">Your Name</string>
     <string name="your_name_l">Your Name:</string>
     <string name="enter">Enter</string>
-    <string name="show_items">Show Items</string>
+    <string name="show_items">View Items</string>
     <string name="short_instruction">Brief Instruction</string>
     <string name="about">About</string>
     <string name="log_out">Log Out</string>
-    <string name="see_member_password">See Member Password</string>
+    <string name="see_member_password">View Member Password</string>
     <string name="change_member_password">Change Member Password</string>
     <string name="manage_today_s_meal">Manage Today\'s Meal</string>
     <string name="update_mpdph">Update MPDPH</string>
@@ -111,7 +111,7 @@
         কোন মেম্বারের মিল/পেমেন্ট ভুলভাবে ইনপুট দিলে option menu —> edit member info তে গিয়ে এডিট করে ঠিক করতে পারবেন।
     </string>
 
-    <string name="see_announcement_history">See Announcement History</string>
+    <string name="see_announcement_history">View previous announcements</string>
     <string name="are_you_manager">Are you a manager?</string>
     <string name="log_in_here">Yes</string>
     <string name="are_you_member">Are you a member?</string>
@@ -133,11 +133,14 @@
 
     <string name="video_tutorial">Video Tutorial</string>
     <string name="instructions">Instructions</string>
-    <string name="copy_link">Copy Link</string>
+    <string name="website_link">
+        <a href="https://amine-tech.gitlab.io/handbook/meal-manager/">
+            View details in English in GitLab</a>
+    </string>
     <string name="rules_of_meal_calculation">Rules Of Meal Calculation</string>
     <string name="manage_today_meal">Manage Today Meal</string>
     <string name="reactivate_meal">Reactivate Meal</string>
-    <string name="market_lists">Market Lists</string>
+    <string name="market_lists">Bazaar routine</string>
     <string name="public_message">Public Message</string>
     <string name="choose_username">Choose Username</string>
     <string name="choose_password">Choose Password</string>
@@ -186,7 +189,7 @@
     <string name="log_in_logo">Log In Logo</string>
     <string name="meal_details">Meal History</string>
     <string name="payment_history">Payment History</string>
-    <string name="update_bill_info">Update Bill Info</string>
+    <string name="update_bill">Update\nBill</string>
     <string name="add_bazaar">Add Bazaar</string>
     <string name="menu">Menu</string>
     <string name="home">Home</string>
@@ -210,13 +213,48 @@
     <string name="payback">Refund</string>
     <string name="enter_amount">Enter amount</string>
     <string name="refund">Refund</string>
-    <string name="pay_cook">Pay cook</string>
+    <string name="pay_cook">Pay chef</string>
     <string name="name_with_colon">Name:</string>
     <string name="payment_with_colon">Payment:</string>
     <string name="meal_with_colon">Meal:</string>
     <string name="bazaar_history">Bazaar History</string>
     <string name="closing_history">Closing history</string>
-    <string name="ok">Ok</string>
-
-
+    <string name="ok">OK</string>
+    <string name="select_any_message_to_see">Select any message to see</string>
+    <string name="create">Create</string>
+    <string name="select_a_name">Select or write name</string>
+    <string name="or">Or</string>
+    <string name="by_default_your_name_is_your_password_until_you_change_it">By default, your name is your password until you change it.</string>
+    <string name="names_paid">Names(Paid)</string>
+    <string name="feedback">Send feedback</string>
+    <string name="optional">Optional</string>
+    <string name="name_colon">Name:</string>
+    <string name="email_colon">Email:</string>
+    <string name="feedback_label">Feedback: </string>
+    <string name="write_your_feedback_below">Write your feedback here</string>
+    <string name="send">Send</string>
+    <string name="send_email">Send Email</string>
+    <string name="new_month">New month</string>
+    <string name="instruction_new_month">
+        By default, আপনাকে কোন মাস অ্যাড করতে হবে না। এক মাসের মিল নরমালি তুলতে পারবেন।
+        যদি কোন কারনে সে মাসের মিলের হিসেব ক্লোজ না করেই নতুন মাসের মিল শুরু করতে হয় তাহলে Drop down মেনু থেকে `New month`
+        এ ক্লিক করে নতুন মাসের হিসেব শুরু করতে পারবেন। এভাবে Default সহ আরো দুইটি অর্থাৎ মোট তিন(৩) টি মাসের মিল একটি অ্যাকাউন্টে তুলতে পারবেন।
+        এরপর একই অ্যাকাউন্টে আবার নতুন মাস চালু করতে আপনার পুর্বের যেকোন মাসের ডাটা ডিলিট করতে হবে।
+        একটি মাসের হিসেব এবং লেনদেন সম্পুর্ন হয়ে গেলে সেই মাসের ডাটা ডিলিট করে দিবেন।
+    </string>
+    <string name="selected_month">Selected month:</string>
+    <string name="default_month">Default</string>
+    <string name="we_shall_try_to_update">
+        We might update this app in future according to your feedback.
+        Please write any problem you face while using it,
+        or you may suggest us anything that needs to be implemented in this app.
+        THANK YOU for choosing us.</string>
+    <string name="instruction_bazaarorexpense_history">
+        বাজার করার পর অবশ্যই ম্যানেজার কে খররচের পরিমান `Bazaar/Expense history` অপশনে গিয়ে উঠাতে হবে।
+        অন্যথায় হিসেব সঠিকভাবে নাও দেখাতে পারে।
+        `Home` পেইজের উপরে সর্বডানে `Navigation bar` এ ক্লিক করে অপশনটি পাওয়া যাবে।
+    </string>
+    <string name="aa">Aa</string>
+    <string name="select_a_month">Select a month</string>
+    <string name="select_month">Select month</string>
 </resources>

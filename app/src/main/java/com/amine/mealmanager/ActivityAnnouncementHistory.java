@@ -35,7 +35,6 @@ public class ActivityAnnouncementHistory extends AppCompatActivity implements Va
     private LinearLayout layout;
     private TextView[] txtCopy, txtText;
     private ArrayList<Announcement> announcements;
-    private DatabaseReference ref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,13 +48,13 @@ public class ActivityAnnouncementHistory extends AppCompatActivity implements Va
     private void initialize(){
         announcements = new ArrayList<>();
         layout = findViewById(R.id.ann_history_Ann_layout);
-        ref = FirebaseDatabase.getInstance().getReference()
-                .child(MainActivity.getManagerName()).child("announcement");
+        DatabaseReference ref = MainActivity.rootRef.child("announcement");
         ref.addValueEventListener(this);
     }
 
     private void setAnnouncementsToFrame(){
         layout.removeAllViews();
+        setNoAnnouncementText();
         Resources res = getResources();
         Drawable drawable = null, drawable1 = null;
         try {
@@ -137,6 +136,18 @@ public class ActivityAnnouncementHistory extends AppCompatActivity implements Va
             vFake.setBackground(drawable1);
 
 
+        }
+    }
+
+    private void setNoAnnouncementText() {
+        TextView tv = findViewById(R.id.txtNoPrevAnnouncement);
+        if(announcements.size() == 0){
+            tv.setVisibility(View.VISIBLE);
+            String s = "Nothing announced previously!";
+            tv.setText(s);
+        }
+        else{
+            tv.setVisibility(View.GONE);
         }
     }
 

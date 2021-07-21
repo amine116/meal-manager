@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".DiscussionActivity"
     android:orientation="vertical"
     android:padding="16sp"
+    android:background="@color/white"
     android:gravity="center">
 
     <LinearLayout
@@ -44,27 +46,26 @@
 
     </LinearLayout>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:background="@color/white"/>
+
     <LinearLayout
         android:id="@+id/discussionCreateLayout"
         android:layout_width="match_parent"
-        android:layout_height="50sp"
+        android:layout_height="60sp"
         android:gravity="center"
         android:orientation="horizontal"
-        android:background="@drawable/custom_rectangle">
-
+        android:background="@drawable/custom_rectangle_discussion_mode">
 
         <Button
             android:id="@+id/btnAddNew"
+            android:text="@string/create"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:background="@drawable/custom_rectangle_buttons"
+            android:drawableBottom="@drawable/ic_add"
             style="@style/CardView"/>
-
-        <TextView
-            android:layout_width="30sp"
-            android:layout_height="match_parent"
-            android:background="#c5f07a"/>
-
 
         <Button
             android:id="@+id/btnEdit"
@@ -72,7 +73,6 @@
             android:layout_height="match_parent"
             android:text="@string/edit"
             style="@style/CardView"
-            android:background="@drawable/custom_rectangle_buttons"
             android:visibility="gone"/>
 
         <Button
@@ -81,21 +81,25 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="@string/save"
-            android:background="@drawable/custom_rectangle_buttons"
             style="@style/CardView"
             android:visibility="gone"/>
 
-
-
     </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="30sp"
+        android:id="@+id/txtSubjectInstr"
+        android:gravity="center"
+        android:text="@string/select_any_message_to_see"
+        app:drawableRightCompat="@drawable/ic_arrow_bellow" />
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0sp"
         android:layout_weight="45"
-
+        android:id="@+id/scrollMarketList"
         android:padding="10sp">
-
 
         <LinearLayout
             android:id="@+id/discussionList"
@@ -112,64 +116,18 @@
     </ScrollView>
 
     <LinearLayout
+        android:id="@+id/discussionTextScroll"
         android:layout_width="match_parent"
         android:layout_height="0sp"
-        android:layout_weight="30"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:background="@drawable/custom_rectangl_discussion_writing_layout">
+        android:background="@color/black_25"
+        android:padding="2sp"
+        android:visibility="gone"
+        android:layout_weight="40">
 
         <ScrollView
-            android:id="@+id/writingLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:padding="10sp">
-
-                <EditText
-                    android:id="@+id/discussionEnterYourName"
-                    android:layout_width="match_parent"
-                    android:layout_height="50sp"
-                    android:background="@drawable/custom_rectangle_edittext"
-                    android:textSize="20sp"
-                    android:gravity="center"
-                    android:hint="@string/enter_your_name"
-                    android:autofillHints=""
-                    android:inputType="text"/>
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="5dp"
-                    android:background="#f5dcbf"/>
-
-
-                <EditText
-                    android:id="@+id/discussionEnterYourTextHere"
-                    android:layout_width="match_parent"
-                    android:layout_height="200sp"
-                    android:background="@drawable/custom_rectangle_edittext"
-                    android:textSize="20sp"
-                    android:gravity="center"
-                    android:hint="@string/enter_your_text_here"
-                    android:autofillHints=""
-                    android:inputType="textMultiLine"/>
-
-            </LinearLayout>
-
-        </ScrollView>
-
-
-        <ScrollView
-            android:id="@+id/discussionTextScroll"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone">
+            android:background="@color/white">
 
             <TextView
                 android:id="@+id/discussionYourTextHere"
@@ -182,20 +140,86 @@
         </ScrollView>
 
 
-
     </LinearLayout>
 
-    <Button
-        android:id="@+id/publish"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0sp"
-        android:layout_weight="5"
-        android:textSize="15sp"
-        android:visibility="gone"
-        android:background="@drawable/custom_rectangle_discussion_mode"
-        android:text="@string/publish"/>
+        android:layout_height="match_parent"
+        android:id="@+id/layout_messaging"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0sp"
+            android:layout_weight="80"
+            android:background="@color/pure_black"
+            android:padding="3sp">
 
 
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:id="@+id/scrollMessage"
+                android:background="@color/pure_black">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:id="@+id/layoutListOfMessaging">
+
+
+
+
+                </LinearLayout>
+
+            </ScrollView>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:padding="2sp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:background="@drawable/others_message_shape">
+
+                <EditText
+                    android:layout_width="0sp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="80"
+                    android:hint="@string/aa"
+                    android:maxHeight="150sp"
+                    android:minHeight="50sp"
+                    android:gravity="center"
+                    android:textColor="@color/white"
+                    android:id="@+id/edtMessage"
+                    android:focusable="true"
+                    android:textColorHint="@color/white"
+                    android:inputType="textMultiLine"
+                    android:autofillHints="" />
+
+                <ImageView
+                    android:id="@+id/imgSendMessage"
+                    android:layout_width="0sp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="20"
+                    android:layout_gravity="center"
+                    android:contentDescription="@string/image"
+                    android:src="@drawable/ic_send_message"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
 
 
 </LinearLayout>

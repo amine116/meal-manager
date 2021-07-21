@@ -46,7 +46,6 @@ public class CookBillActivity extends AppCompatActivity implements View.OnClickL
 
     private ArrayList<CooksBill> cooksBills;
     private LinearLayout rootLayout;
-    private final EditText[] edtCooksBill = new EditText[MAX_BOARDER];
     private static final DecimalFormat df =  new DecimalFormat("0.#");
     private double totalCookBill = 0, paidCookBill = 0;
 
@@ -119,11 +118,8 @@ public class CookBillActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void setCooksBillsToFrame(){
-        final ImageView[] calc = new ImageView[MAX_BOARDER];
         rootLayout.removeAllViews();
-
         totalCookBill = 0;
-
         Resources res = getResources();
         Drawable drawable = null;
         try {
@@ -157,24 +153,10 @@ public class CookBillActivity extends AppCompatActivity implements View.OnClickL
 
             TextView name = new TextView(CookBillActivity.this),
                     paid = new TextView(CookBillActivity.this);
-            if(IS_MANAGER) {
-                edtCooksBill[i] = new EditText(CookBillActivity.this);
-                edtCooksBill[i].setInputType(InputType.TYPE_CLASS_NUMBER);
-                calc[i] = new ImageView(CookBillActivity.this);
-                calc[i].setId(i);
-            }
-            TextView tv = new TextView(CookBillActivity.this);
-
 
             ll.addView(name);
             ll.addView(paid);
-            if(IS_MANAGER)
-                ll.addView(edtCooksBill[i]);
-            if(IS_MANAGER) {
-                ll.addView(calc[i]);
-            }
-            else
-                ll.addView(tv);
+
             ll.setGravity(Gravity.CENTER);
 
 
@@ -198,53 +180,6 @@ public class CookBillActivity extends AppCompatActivity implements View.OnClickL
             paid.setTypeface(Typeface.DEFAULT_BOLD);
             paid.setLayoutParams(paramsDt);
 
-            LinearLayout.LayoutParams paramsAm = new LinearLayout.LayoutParams(
-                    0,
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    30
-            );
-            if(IS_MANAGER){
-                edtCooksBill[i].setHint("Add Payment");
-                edtCooksBill[i].setLayoutParams(paramsAm);
-
-                calc[i].setImageResource(R.drawable.calcimagee);
-                calc[i].setLayoutParams(new LinearLayout.LayoutParams(
-                        100, 100));
-            }
-
-            if(!IS_MANAGER) {
-                tv.setLayoutParams(paramsAm);
-            }
-
-            if(IS_MANAGER){
-                final int finalI = i;
-                calc[i].setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        CalculatorInterface c = new CalculatorInterface(CookBillActivity.this,
-                                calc[finalI].getId(),
-                                new UpdateEditText() {
-                                    @Override
-                                    public void onUpdate(String s, int ID) {
-                                        edtCooksBill[ID].setText(s);
-                                    }
-                                });
-                        c.show();
-                        DisplayMetrics displayMetrics = new DisplayMetrics();
-                        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-                        int displayWidth = displayMetrics.widthPixels;
-                        int displayHeight = displayMetrics.heightPixels;
-                        WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
-                        layoutParams.copyFrom(c.getWindow().getAttributes());
-                        int dialogWindowWidth = (int) (displayWidth * 0.9f);
-                        int dialogWindowHeight = (int) (displayHeight * 0.8f);
-                        layoutParams.width = dialogWindowWidth;
-                        layoutParams.height = dialogWindowHeight;
-                        c.getWindow().setAttributes(layoutParams);
-                    }
-                });
-            }
-
         }
 
         TextView tv = findViewById(R.id.txtCookBillTotalPaid);
@@ -258,18 +193,8 @@ public class CookBillActivity extends AppCompatActivity implements View.OnClickL
     public void onClick(View v) {
         int id = v.getId();
         if(id == R.id.btnUpdateCookBill){
-            totalCookBill = 0;
-            DatabaseReference r = rootRef.child("cooksBill");
-            for(int i = 0; i < cooksBills.size(); i++){
-                String cur = edtCooksBill[i].getText().toString();
-                if(cur.equals("")) cur = "0";
-                String fin = (Double.parseDouble(cooksBills.get(i).getPaid()) +
-                        Double.parseDouble(cur)) + "";
-
-                cooksBills.set(i, new CooksBill(cooksBills.get(i).getName(), fin));
-            }
-            r.setValue(cooksBills);
-            setCooksBillsToFrame();
+            UpdateDialog d = new UpdateDialog(this);
+            d.show();
         }
         else if(id == R.id.btnPayCook){
             RefundDialog r = new RefundDialog(this);
@@ -601,6 +526,172 @@ public class CookBillActivity extends AppCompatActivity implements View.OnClickL
             findViewById(R.id.btnX).setOnClickListener(this);
             findViewById(R.id.btnCalcInterfaceOk).setOnClickListener(this);
             findViewById(R.id.btnCalcInterfaceCancel).setOnClickListener(this);
+
+        }
+    }
+
+    private class UpdateDialog extends Dialog implements View.OnClickListener{
+
+        LinearLayout rootLayout;
+        private final EditText[] edtCooksBill = new EditText[MAX_BOARDER];
+
+        public UpdateDialog(@NonNull Context context) {
+            super(context);
+        }
+
+        @Override
+        public void onClick(View v) {
+            int id = v.getId();
+            if(id == R.id.btnUpdateBill){
+                totalCookBill = 0;
+                DatabaseReference r = rootRef.child("cooksBill");
+                for(int i = 0; i < cooksBills.size(); i++){
+                    String cur = edtCooksBill[i].getText().toString();
+                    if(cur.equals("")) cur = "0";
+                    String fin = (Double.parseDouble(cooksBills.get(i).getPaid()) +
+                            Double.parseDouble(cur)) + "";
+
+                    cooksBills.set(i, new CooksBill(cooksBills.get(i).getName(), fin));
+                }
+                r.setValue(cooksBills);
+                setCooksBillsToFrame();
+                dismiss();
+            }
+            else if(id == R.id.btnCancelUpdate){
+                dismiss();
+            }
+        }
+
+        @Override
+        protected void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.cook_bill_update);
+            initialize();
+        }
+
+        private void initialize(){
+            rootLayout = findViewById(R.id.rootLayout);
+            findViewById(R.id.btnUpdateBill).setOnClickListener(this);
+            findViewById(R.id.btnCancelUpdate).setOnClickListener(this);
+            setInfoToDialog();
+        }
+
+        private void setInfoToDialog(){
+            final ImageView[] calc = new ImageView[MAX_BOARDER];
+            rootLayout.removeAllViews();
+
+            Resources res = getResources();
+            Drawable drawable = null;
+            try {
+                drawable = Drawable.createFromXml(res,
+                        res.getXml(R.xml.rectangular_shape_cook_bill));
+            }
+            catch (IOException | XmlPullParserException e) {
+                e.printStackTrace();
+            }
+
+            for(int i = 0; i < cooksBills.size(); i++) {
+
+                LinearLayout ll = new LinearLayout(CookBillActivity.this),
+                        fake = new LinearLayout(CookBillActivity.this);
+                rootLayout.addView(ll);
+                rootLayout.addView(fake);
+
+                ll.setOrientation(LinearLayout.HORIZONTAL);
+                LinearLayout.LayoutParams paramsLl = new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, 150),
+                        paramsFake =
+                                new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 10);
+                ll.setLayoutParams(paramsLl);
+                fake.setLayoutParams(paramsFake);
+
+                if(drawable != null) ll.setBackground(drawable);
+
+                fake.setBackgroundColor(Color.WHITE);
+
+                TextView name = new TextView(CookBillActivity.this);
+                if(IS_MANAGER) {
+                    edtCooksBill[i] = new EditText(CookBillActivity.this);
+                    edtCooksBill[i].setInputType(InputType.TYPE_CLASS_NUMBER);
+                    calc[i] = new ImageView(CookBillActivity.this);
+                    calc[i].setId(i);
+                }
+                TextView tv = new TextView(CookBillActivity.this),
+                        gap = new TextView(CookBillActivity.this);
+
+
+                ll.addView(name);
+                ll.addView(gap);
+
+                gap.setLayoutParams(new LinearLayout.LayoutParams(
+                        30, ViewGroup.LayoutParams.MATCH_PARENT));
+
+                if(IS_MANAGER)
+                    ll.addView(edtCooksBill[i]);
+                if(IS_MANAGER) {
+                    ll.addView(calc[i]);
+                }
+                else
+                    ll.addView(tv);
+                ll.setGravity(Gravity.CENTER);
+
+
+                LinearLayout.LayoutParams paramsNm = new LinearLayout.LayoutParams(
+                        0,
+                        ViewGroup.LayoutParams.MATCH_PARENT, 30);
+
+                name.setLayoutParams(paramsNm);
+                String s = (i + 1) + ". " + cooksBills.get(i).getName() +
+                        "(" + df.format(Double.parseDouble(cooksBills.get(i).getPaid())) + ")";
+                name.setText(s);
+                name.setGravity(Gravity.CENTER);
+                name.setTypeface(Typeface.DEFAULT_BOLD);
+
+                LinearLayout.LayoutParams paramsAm = new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                if(IS_MANAGER){
+                    edtCooksBill[i].setHint("Enter payment");
+                    edtCooksBill[i].setLayoutParams(paramsAm);
+
+                    calc[i].setImageResource(R.drawable.calcimagee);
+                    calc[i].setLayoutParams(new LinearLayout.LayoutParams(
+                            100, 100));
+                }
+
+                if(!IS_MANAGER) {
+                    tv.setLayoutParams(paramsAm);
+                }
+
+                if(IS_MANAGER){
+                    final int finalI = i;
+                    calc[i].setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            CalculatorInterface c = new CalculatorInterface(CookBillActivity.this,
+                                    calc[finalI].getId(),
+                                    new UpdateEditText() {
+                                        @Override
+                                        public void onUpdate(String s, int ID) {
+                                            edtCooksBill[ID].setText(s);
+                                        }
+                                    });
+                            c.show();
+                            DisplayMetrics displayMetrics = new DisplayMetrics();
+                            getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+                            int displayWidth = displayMetrics.widthPixels;
+                            int displayHeight = displayMetrics.heightPixels;
+                            WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
+                            layoutParams.copyFrom(c.getWindow().getAttributes());
+                            int dialogWindowWidth = (int) (displayWidth * 0.9f);
+                            int dialogWindowHeight = (int) (displayHeight * 0.8f);
+                            layoutParams.width = dialogWindowWidth;
+                            layoutParams.height = dialogWindowHeight;
+                            c.getWindow().setAttributes(layoutParams);
+                        }
+                    });
+                }
+
+            }
 
         }
     }

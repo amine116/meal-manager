@@ -315,8 +315,6 @@ public class EditInterfaceActivity extends AppCompatActivity implements View.OnC
 
     private void recalculate(){
 
-        Log.i("test", mealRate + "");
-
         for(int i = 0; i < boarders.size(); i++){
             double paid = boarders.get(i).getPaidMoney(),
                     meal = boarders.get(i).getMeals(),

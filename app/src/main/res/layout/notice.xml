@@ -7,16 +7,19 @@
     android:background="@color/white"
     android:padding="10sp">
 
-    <TextView
+    <ScrollView
         android:layout_width="wrap_content"
-        android:gravity="center"
-        android:id="@+id/txtNotice"
-        android:textColor="@color/announcement"
-        android:layout_height="wrap_content"/>
+        android:layout_height="0sp"
+        android:layout_weight="80">
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="20sp"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:gravity="center"
+            android:id="@+id/txtNotice"
+            android:textColor="@color/announcement"
+            android:layout_height="wrap_content"/>
+
+    </ScrollView>
 
     <TextView
         android:layout_width="50sp"

@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/white"
     android:gravity="center_horizontal">
 
     <LinearLayout
@@ -61,23 +62,22 @@
                 android:id="@+id/layout_goOverView">
 
                 <TextView
-                    android:layout_width="0sp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:padding="16dp"
-                    android:layout_marginStart="16dp"
-                    android:text="@string/over_view"/>
-
+                    android:layout_width="30sp"
+                    android:layout_height="match_parent"/>
 
                 <ImageView
-                    android:layout_width="0sp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="48dp"
-                    android:src="@drawable/overview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/overview_blackwhite"
                     android:contentDescription="@string/home"/>
 
-
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:padding="16dp"
+                    android:gravity="center"
+                    android:layout_marginStart="16dp"
+                    android:text="@string/over_view"/>
 
             </LinearLayout>
 
@@ -89,22 +89,23 @@
                 android:id="@+id/layout_goDetails">
 
                 <TextView
-                    android:layout_width="0sp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:padding="16dp"
-                    android:layout_marginStart="16dp"
-                    android:text="@string/details"/>
-
+                    android:layout_width="30sp"
+                    android:layout_height="match_parent"/>
 
                 <ImageView
-                    android:layout_width="0sp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="48dp"
-                    android:src="@drawable/viewdetails"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/details_blackwhite"
                     android:contentDescription="@string/home"/>
 
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:padding="16dp"
+                    android:gravity="center"
+                    android:layout_marginStart="16dp"
+                    android:text="@string/details"/>
 
 
             </LinearLayout>
@@ -117,22 +118,23 @@
                 android:id="@+id/layout_goCookBill">
 
                 <TextView
-                    android:layout_width="0sp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:padding="16dp"
-                    android:layout_marginStart="16dp"
-                    android:text="@string/cook_s_bills"/>
-
+                    android:layout_width="30sp"
+                    android:layout_height="match_parent"/>
 
                 <ImageView
-                    android:layout_width="0sp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="48dp"
-                    android:src="@drawable/cookbill"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/chef_blackwhite"
                     android:contentDescription="@string/home"/>
 
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:padding="16dp"
+                    android:gravity="center"
+                    android:layout_marginStart="16dp"
+                    android:text="@string/cook_s_bills"/>
 
 
             </LinearLayout>
@@ -145,22 +147,22 @@
                 android:id="@+id/layout_goBazaarList">
 
                 <TextView
-                    android:layout_width="0sp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
+                    android:layout_width="30sp"
+                    android:layout_height="match_parent"/>
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/expense_blackwhite"
+                    android:contentDescription="@string/home"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
                     android:padding="16dp"
                     android:layout_marginStart="16dp"
                     android:text="@string/market_history"/>
-
-
-                <ImageView
-                    android:layout_width="0sp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="48dp"
-                    android:src="@drawable/bazaar"
-                    android:contentDescription="@string/home"/>
-
 
 
             </LinearLayout>
@@ -173,22 +175,23 @@
                 android:id="@+id/updateData">
 
                 <TextView
-                    android:layout_width="0sp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:padding="16dp"
-                    android:layout_marginStart="16dp"
-                    android:text="@string/update_meal"/>
-
+                    android:layout_width="30sp"
+                    android:layout_height="match_parent"/>
 
                 <ImageView
-                    android:layout_width="0sp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="48dp"
-                    android:src="@drawable/ic_update_meal_png"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_update_meal_blackwhite"
                     android:contentDescription="@string/home"/>
 
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:padding="16dp"
+                    android:gravity="center"
+                    android:layout_marginStart="16dp"
+                    android:text="@string/update_meal"/>
 
 
             </LinearLayout>
@@ -201,22 +204,23 @@
                 android:id="@+id/updatePayment">
 
                 <TextView
-                    android:layout_width="0sp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:padding="16dp"
-                    android:layout_marginStart="16dp"
-                    android:text="@string/update_payment"/>
-
+                    android:layout_width="30sp"
+                    android:layout_height="match_parent"/>
 
                 <ImageView
-                    android:layout_width="0sp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="48dp"
-                    android:src="@drawable/ic_update_payments"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/pay_blackwhite"
                     android:contentDescription="@string/home"/>
 
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:padding="16dp"
+                    android:gravity="center"
+                    android:layout_marginStart="16dp"
+                    android:text="@string/update_payment"/>
 
 
             </LinearLayout>
@@ -229,23 +233,22 @@
                 android:id="@+id/layout_goToPayBack">
 
                 <TextView
-                    android:layout_width="0sp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
+                    android:layout_width="30sp"
+                    android:layout_height="match_parent"/>
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/refund_blackwhite"
+                    android:contentDescription="@string/home"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
                     android:padding="16dp"
                     android:layout_marginStart="16dp"
                     android:text="@string/payback"/>
-
-
-                <ImageView
-                    android:layout_width="0sp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="48dp"
-                    android:src="@drawable/refund"
-                    android:contentDescription="@string/home"/>
-
-
 
             </LinearLayout>
 
@@ -257,22 +260,23 @@
                 android:id="@+id/btnDiscussion">
 
                 <TextView
-                    android:layout_width="0sp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
+                    android:layout_width="30sp"
+                    android:layout_height="match_parent"/>
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/discussion_blackwhite"
+                    android:contentDescription="@string/home"/>
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
                     android:padding="16dp"
                     android:layout_marginStart="16dp"
                     android:text="@string/discussion"/>
-
-
-                <ImageView
-                    android:layout_width="0sp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="48dp"
-                    android:src="@drawable/ic_discussion"
-                    android:contentDescription="@string/home"/>
-
 
 
             </LinearLayout>
@@ -285,22 +289,51 @@
                 android:id="@+id/eraseAll">
 
                 <TextView
-                    android:layout_width="0sp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
+                    android:layout_width="30sp"
+                    android:layout_height="match_parent"/>
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_erase"
+                    android:contentDescription="@string/home"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
                     android:padding="16dp"
                     android:layout_marginStart="16dp"
                     android:text="@string/erase"/>
 
 
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:id="@+id/navLayoutFeedback">
+
+                <TextView
+                    android:layout_width="30sp"
+                    android:layout_height="match_parent"/>
+
                 <ImageView
-                    android:layout_width="0sp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="48dp"
-                    android:src="@drawable/ic_erase"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/feedback_blackwhite"
                     android:contentDescription="@string/home"/>
 
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:padding="16dp"
+                    android:gravity="center"
+                    android:layout_marginStart="16dp"
+                    android:text="@string/feedback"/>
 
 
             </LinearLayout>

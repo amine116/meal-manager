@@ -9,12 +9,14 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.telephony.TelephonyManager;
+import android.text.InputType;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -51,19 +53,15 @@ public class CreateAccountActivity extends AppCompatActivity implements View.OnC
     private TextView textView;
     private Button continue1, continue2, submit;
     private FirebaseAuth fAuth;
+    private ImageView imgEye;
 
     private static final String INFO_FILE = "Evidence.txt";
-    private String username = "";
-    private String password = "";
-    private String phoneNumber = "";
-    private String verificationCode = "";
-    private String verificationID = "";
-    private String country = "";
-    private String phone = "", cntryCde;
+    private String username = "", password = "", phoneNumber = "", verificationCode = "",
+            verificationID = "", country = "", phone = "", cntryCde;
     private Phonenumber.PhoneNumber phnE164_1, phnE164_2;
     private final DatabaseReference rootRef = FailedAccount.ROOT_REF.push();
 
-    private boolean isThreadRunning = false;
+    private boolean isThreadRunning = false, isEyeOn = false;
 
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallback;
 
@@ -105,6 +103,7 @@ public class CreateAccountActivity extends AppCompatActivity implements View.OnC
         edtChoosePassword = findViewById(R.id.edtChoosePassword);
         edtConfirmPassword = findViewById(R.id.edtConfirmPassword);
         edtGivePhoneNumber = findViewById(R.id.edtGivePhoneNumber);
+        imgEye = findViewById(R.id.imgEye);
         edtVerify = findViewById(R.id.edtVerifyNumber);
         edtCountryCode = findViewById(R.id.edtCountryCode);
         textView = findViewById(R.id.textView);
@@ -116,6 +115,7 @@ public class CreateAccountActivity extends AppCompatActivity implements View.OnC
         continue1.setOnClickListener(CreateAccountActivity.this);
         continue2.setOnClickListener(CreateAccountActivity.this);
         submit.setOnClickListener(CreateAccountActivity.this);
+        imgEye.setOnClickListener(this);
     }
 
     @Override
@@ -235,9 +235,8 @@ public class CreateAccountActivity extends AppCompatActivity implements View.OnC
             String strCountryCode = edtCountryCode.getText().toString().trim(),
                     phn = edtGivePhoneNumber.getText().toString().trim();
 
-
-
-            InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            InputMethodManager inputMethodManager =
+                    (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
             inputMethodManager.hideSoftInputFromWindow(edtCountryCode.getWindowToken(), 0);
             inputMethodManager.hideSoftInputFromWindow(edtGivePhoneNumber.getWindowToken(), 0);
 
@@ -398,6 +397,22 @@ public class CreateAccountActivity extends AppCompatActivity implements View.OnC
 
         }
 
+        if(v.getId() == R.id.imgEye){
+            EditText edtPass = findViewById(R.id.edtChoosePassword),
+                    edtConfPass = findViewById(R.id.edtConfirmPassword);
+            if(isEyeOn){
+                edtPass.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                edtConfPass.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                imgEye.setImageResource(R.drawable.ic_eye_on);
+                isEyeOn = false;
+            }
+            else{
+                edtPass.setInputType(InputType.TYPE_CLASS_TEXT);
+                imgEye.setImageResource(R.drawable.ic_eye_off);
+                edtConfPass.setInputType(InputType.TYPE_CLASS_TEXT);
+                isEyeOn = true;
+            }
+        }
 
     }
 
@@ -478,7 +493,10 @@ public class CreateAccountActivity extends AppCompatActivity implements View.OnC
                 username.toLowerCase().equals("ads") ||
                 username.toLowerCase().equals("numofusers") ||
                 username.toLowerCase().equals("failedaccount") ||
-                username.toLowerCase().equals("versionname"))
+                username.toLowerCase().equals("versionname") ||
+                username.toLowerCase().equals("phone") || username.toLowerCase().equals("member-suggestions") ||
+                username.toLowerCase().equals("feedback-user-manager") ||
+                username.toLowerCase().equals("version-details"))
             return 2;
 
         for(int i = 0; i < username.length(); i++){
@@ -569,7 +587,8 @@ public class CreateAccountActivity extends AppCompatActivity implements View.OnC
                             edtChooseUserName.requestFocus();
                         }else{
                             Toast.makeText(CreateAccountActivity.this,
-                                    Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_LONG).show();
+                                    Objects.requireNonNull(task.getException()).getMessage(),
+                                    Toast.LENGTH_LONG).show();
                         }
                     }
                 });
@@ -613,8 +632,6 @@ public class CreateAccountActivity extends AppCompatActivity implements View.OnC
                             } catch (NumberParseException e) {
                                 e.printStackTrace();
                             }
-
-
 
                             gotToMainActivity();
                         }else{

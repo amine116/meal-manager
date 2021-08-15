@@ -30,6 +30,7 @@ public class ActivityInstructions extends AppCompatActivity implements View.OnCl
                 txtGitlabLink = findViewById(R.id.txtGitlabLink);
         t2.setMovementMethod(LinkMovementMethod.getInstance());
         txtGitlabLink.setMovementMethod(LinkMovementMethod.getInstance());
+        //Just for nothing bro :3 :v
     }
 
     @Override

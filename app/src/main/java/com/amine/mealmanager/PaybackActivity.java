@@ -341,16 +341,15 @@ public class PaybackActivity extends AppCompatActivity {
     private void makeVisible(){
         isAnimationAlive = false;
         findViewById(R.id.payback_progress).setVisibility(View.GONE);
-        findViewById(R.id.payback_scroll).setVisibility(View.VISIBLE);
-        findViewById(R.id.layout_totalDueOve).setVisibility(View.VISIBLE);
+        findViewById(R.id.layout_payback_info).setVisibility(View.VISIBLE);
+        //findViewById(R.id.layout_totalDueOve).setVisibility(View.VISIBLE);
     }
 
     private void makeInvisible(){
         isAnimationAlive = true;
         findViewById(R.id.payback_progress).setVisibility(View.VISIBLE);
         animate();
-        findViewById(R.id.payback_scroll).setVisibility(View.GONE);
-        findViewById(R.id.layout_totalDueOve).setVisibility(View.GONE);
+        findViewById(R.id.layout_payback_info).setVisibility(View.GONE);
     }
 
     private void animate(){

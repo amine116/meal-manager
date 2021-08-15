@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.InputType;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -39,6 +40,7 @@ import java.util.ArrayList;
 import static com.amine.mealmanager.MainActivity.IS_MANAGER;
 import static com.amine.mealmanager.MainActivity.MAX_BOARDER;
 import static com.amine.mealmanager.MainActivity.getTodayDate;
+import static com.amine.mealmanager.MainActivity.isAnimationAlive;
 import static com.amine.mealmanager.MainActivity.readFromDatabase;
 import static com.amine.mealmanager.MainActivity.rootRef;
 
@@ -88,14 +90,15 @@ public class CookBillActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void makeInvisible(){
-
-        findViewById(R.id.progress_cookBill).setVisibility(View.VISIBLE);
+        isAnimationAlive = true;
+        findViewById(R.id.chef_progress).setVisibility(View.VISIBLE);
+        animate();
         findViewById(R.id.billInfoLayout).setVisibility(View.GONE);
 
     }
     private void makeVisible(){
-
-        findViewById(R.id.progress_cookBill).setVisibility(View.GONE);
+        isAnimationAlive = false;
+        findViewById(R.id.chef_progress).setVisibility(View.GONE);
         findViewById(R.id.billInfoLayout).setVisibility(View.VISIBLE);
     }
 
@@ -182,9 +185,12 @@ public class CookBillActivity extends AppCompatActivity implements View.OnClickL
 
         }
 
-        TextView tv = findViewById(R.id.txtCookBillTotalPaid);
-        String s = "Cash: " + df.format(totalCookBill);
-        tv.setText(s);
+        TextView txtCash = findViewById(R.id.txtCookBillTotalPaid),
+                txtTotal = findViewById(R.id.txtTotalChefBillPaid);
+        String s = "Cash: " + df.format(totalCookBill - paidCookBill);
+        txtCash.setText(s);
+        s = "Total: " + df.format(totalCookBill);
+        txtTotal.setText(s);
 
 
     }
@@ -694,5 +700,260 @@ public class CookBillActivity extends AppCompatActivity implements View.OnClickL
             }
 
         }
+    }
+
+    private void animate(){
+        final Handler handler = new Handler(getApplicationContext().getMainLooper());
+        final ImageView imgAnimate = findViewById(R.id.chef_progress);
+        final int sleepTime = 50;
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (isAnimationAlive){
+
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            /*
+                            imgAnimate.setImageBitmap(decodeSampledBitmapFromResource(getResources(),
+                                            R.drawable.i1, imageWidthInPixel, imageHeightInPixels));
+                            Log.i("test", "Image: 1");*/
+
+                            imgAnimate.setImageResource(R.drawable.i1);
+                        }
+                    });
+
+                    try {
+                        Thread.sleep(sleepTime);
+                    } catch (InterruptedException e) {
+                        Toast.makeText(CookBillActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            /*imgAnimate.setImageBitmap(decodeSampledBitmapFromResource(getResources(),
+                                    R.drawable.i2, imageWidthInPixel, imageHeightInPixels));
+                           // Log.i("test", "Image: 2");*/
+                            imgAnimate.setImageResource(R.drawable.i2);
+                        }
+                    });
+
+                    try {
+                        Thread.sleep(sleepTime);
+                    } catch (InterruptedException e) {
+                        Toast.makeText(CookBillActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+
+
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            /*imgAnimate.setImageBitmap(decodeSampledBitmapFromResource(getResources(),
+                                    R.drawable.i3, imageWidthInPixel, imageHeightInPixels));
+                            //Log.i("test", "Image: 3");*/
+                            imgAnimate.setImageResource(R.drawable.i3);
+                        }
+                    });
+
+                    try {
+                        Thread.sleep(sleepTime);
+                    } catch (InterruptedException e) {
+                        Toast.makeText(CookBillActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+
+
+
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            /*imgAnimate.setImageBitmap(decodeSampledBitmapFromResource(getResources(),
+                                    R.drawable.i4, imageWidthInPixel, imageHeightInPixels));
+                            //Log.i("test", "Image: 4");*/
+                            imgAnimate.setImageResource(R.drawable.i4);
+                        }
+                    });
+
+                    try {
+                        Thread.sleep(sleepTime);
+                    } catch (InterruptedException e) {
+                        Toast.makeText(CookBillActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+
+
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            /*imgAnimate.setImageBitmap(decodeSampledBitmapFromResource(getResources(),
+                                    R.drawable.i5, imageWidthInPixel, imageHeightInPixels));
+                            //Log.i("test", "Image: 5");*/
+                            imgAnimate.setImageResource(R.drawable.i5);
+                        }
+                    });
+
+                    try {
+                        Thread.sleep(sleepTime);
+                    } catch (InterruptedException e) {
+                        Toast.makeText(CookBillActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+
+
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            /*imgAnimate.setImageBitmap(decodeSampledBitmapFromResource(getResources(),
+                                    R.drawable.i6, imageWidthInPixel, imageHeightInPixels));
+                            //Log.i("test", "Image: 6");*/
+                            imgAnimate.setImageResource(R.drawable.i6);
+                        }
+                    });
+
+                    try {
+                        Thread.sleep(sleepTime);
+                    } catch (InterruptedException e) {
+                        Toast.makeText(CookBillActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+
+
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            /*imgAnimate.setImageBitmap(decodeSampledBitmapFromResource(getResources(),
+                                    R.drawable.i7, imageWidthInPixel, imageHeightInPixels));
+                            //Log.i("test", "Image: 7");*/
+                            imgAnimate.setImageResource(R.drawable.i7);
+                        }
+                    });
+
+                    try {
+                        Thread.sleep(sleepTime);
+                    } catch (InterruptedException e) {
+                        Toast.makeText(CookBillActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+
+
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            /*imgAnimate.setImageBitmap(decodeSampledBitmapFromResource(getResources(),
+                                    R.drawable.i8, imageWidthInPixel, imageHeightInPixels));
+                            //Log.i("test", "Image: 8");*/
+                            imgAnimate.setImageResource(R.drawable.i8);
+                        }
+                    });
+
+                    try {
+                        Thread.sleep(sleepTime);
+                    } catch (InterruptedException e) {
+                        Toast.makeText(CookBillActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+
+
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            /*imgAnimate.setImageBitmap(decodeSampledBitmapFromResource(getResources(),
+                                    R.drawable.i9, imageWidthInPixel, imageHeightInPixels));
+                            //Log.i("test", "Image: 9");*/
+                            imgAnimate.setImageResource(R.drawable.i9);
+                        }
+                    });
+
+                    try {
+                        Thread.sleep(sleepTime);
+                    } catch (InterruptedException e) {
+                        Toast.makeText(CookBillActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+
+
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            /*imgAnimate.setImageBitmap(decodeSampledBitmapFromResource(getResources(),
+                                    R.drawable.i10, imageWidthInPixel, imageHeightInPixels));
+                            //Log.i("test", "Image: 10");*/
+                            imgAnimate.setImageResource(R.drawable.i10);
+                        }
+                    });
+
+                    try {
+                        Thread.sleep(sleepTime);
+                    } catch (InterruptedException e) {
+                        Toast.makeText(CookBillActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+
+
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            /*imgAnimate.setImageBitmap(decodeSampledBitmapFromResource(getResources(),
+                                    R.drawable.i11, imageWidthInPixel, imageHeightInPixels));
+                            //Log.i("test", "Image: 11");*/
+                            imgAnimate.setImageResource(R.drawable.i11);
+                        }
+                    });
+
+                    try {
+                        Thread.sleep(sleepTime);
+                    } catch (InterruptedException e) {
+                        Toast.makeText(CookBillActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+
+
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            /*imgAnimate.setImageBitmap(decodeSampledBitmapFromResource(getResources(),
+                                    R.drawable.i12, imageWidthInPixel, imageHeightInPixels));
+                            //Log.i("test", "Image: 12");*/
+                            imgAnimate.setImageResource(R.drawable.i12);
+                        }
+                    });
+
+                    try {
+                        Thread.sleep(sleepTime);
+                    } catch (InterruptedException e) {
+                        Toast.makeText(CookBillActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+
+
+
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            /*imgAnimate.setImageBitmap(decodeSampledBitmapFromResource(getResources(),
+                                    R.drawable.i13, imageWidthInPixel, imageHeightInPixels));
+                            //Log.i("test", "Image: 13");*/
+                            imgAnimate.setImageResource(R.drawable.i13);
+                        }
+                    });
+
+                    try {
+                        Thread.sleep(sleepTime);
+                    } catch (InterruptedException e) {
+                        Toast.makeText(CookBillActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+
+
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            /*imgAnimate.setImageBitmap(decodeSampledBitmapFromResource(getResources(),
+                                    R.drawable.i14, imageWidthInPixel, imageHeightInPixels));
+                           // Log.i("test", "Image: 14");*/
+                            imgAnimate.setImageResource(R.drawable.i14);
+                        }
+                    });
+
+                    try {
+                        Thread.sleep(sleepTime);
+                    } catch (InterruptedException e) {
+                        Toast.makeText(CookBillActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                }
+            }
+        }).start();
     }
 }

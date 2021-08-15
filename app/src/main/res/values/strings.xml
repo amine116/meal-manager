@@ -257,4 +257,6 @@
     <string name="aa">Aa</string>
     <string name="select_a_month">Select a month</string>
     <string name="select_month">Select month</string>
+    <string name="please_try_to_use_sim_slot_1">
+        NB: Please try to use the Phone number that is placed in slot 1</string>
 </resources>

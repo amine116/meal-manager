@@ -101,7 +101,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static DatabaseReference rootRef, lastUpdateRef, lastChangingTimeRef, marketHistoryRef,
             mealPeriodRef, mealStatusRef, postRef, todayMealStatusRef, cookBillRef, membersRef,
             readingRef, monthRef;
-    private static String lastUpdate = "", nameOfManager = "", announcement = "", strMonth = "";
+    private static String lastUpdate = "", nameOfManager = "", announcement = "",
+            strMonth = "", curProfileName = "";
     private String updatableMealString = "", newVersionName = "";
     private static final String INFO_FILE = "Info.txt", MEMBER_NAME_FILE = "Member Name.txt",
             FILE_MONTH = "selected month";
@@ -774,6 +775,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             enableNavItems();
                             setMemberApproval();
 
+                            if(isAddingBoarder && !curProfileName.equals("")){
+                                saveSelectedName(curProfileName);
+                            }
+
                             showNotice(new Wait() {
                                 @Override
                                 public void onCallback() {
@@ -1060,7 +1065,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 double bMeal = 0, bPaid = 0, bCost = 0, bDue = 0, bOve = 0, cBill = 0,
                         due = bDue, ove = bOve, sbMeal = 0, sbPaid = 0;
 
-                if(bI != -1){
+
+                if(bI != -1 && bI < boarders.size()){
                     bMeal = boarders.get(bI).getMeals();
                     bPaid = boarders.get(bI).getPaidMoney();
                     bCost = boarders.get(bI).getMeals() * mealRate;
@@ -1073,10 +1079,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     sbPaid = 0;
                 }
 
-                if(cbI != -1){
+                if(cbI != -1 && cbI < cooksBills.size()){
                     cBill = Double.parseDouble(cooksBills.get(cbI).getPaid());
                 }
-                if(sbI != -1){
+                if(sbI != -1 && sbI < stoppedBoarders.size()){
 
                     Boarder boarder = stoppedBoarders.get(sbI);
 
@@ -1252,6 +1258,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public void onClick(View v) {
                         saveSelectedName(txtName.getText().toString());
+                        dismiss();
                     }
                 });
             }
@@ -1290,44 +1297,44 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         @Override
                         public void onClick(View v) {
                             saveSelectedName(txtName.getText().toString());
+                            dismiss();
                         }
                     });
                 }
             }
         }
 
-        private void saveSelectedName(String name){
+    }
 
-            selectedBoarderIndex = -1;
-            selectedStoppedBoarderIndex = -1;
-            selectedCookBillIndex = -1;
+    private void saveSelectedName(String name){
+
+        selectedBoarderIndex = -1;
+        selectedStoppedBoarderIndex = -1;
+        selectedCookBillIndex = -1;
 
 
-            for(int i = 0; i < boarders.size(); i++){
-                if(boarders.get(i).getName().equals(name)){
-                    selectedBoarderIndex = i;
-                    break;
-                }
+        for(int i = 0; i < boarders.size(); i++){
+            if(boarders.get(i).getName().equals(name)){
+                selectedBoarderIndex = i;
+                break;
             }
-
-            for(int i = 0; i < stoppedBoarders.size(); i++){
-                if(stoppedBoarders.get(i).getName().equals(name)){
-                    selectedStoppedBoarderIndex = i;
-                    break;
-                }
-            }
-
-            for(int i = 0; i < cooksBills.size(); i++){
-                if(cooksBills.get(i).getName().equals(name)){
-                    selectedCookBillIndex = i;
-                    break;
-                }
-            }
-
-            saveSelectedIndexes();
-
-            dismiss();
         }
+
+        for(int i = 0; i < stoppedBoarders.size(); i++){
+            if(stoppedBoarders.get(i).getName().equals(name)){
+                selectedStoppedBoarderIndex = i;
+                break;
+            }
+        }
+
+        for(int i = 0; i < cooksBills.size(); i++){
+            if(cooksBills.get(i).getName().equals(name)){
+                selectedCookBillIndex = i;
+                break;
+            }
+        }
+
+        saveSelectedIndexes();
     }
 
     private void saveSelectedIndexes() {
@@ -3100,20 +3107,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private class UpdateMealDialog extends Dialog implements View.OnClickListener{
 
-//        final TextView[] textViewsB = new TextView[MAX_BOARDER];
-//        final TextView[] textViewsL = new TextView[MAX_BOARDER];
-//        final TextView[] textViewsD = new TextView[MAX_BOARDER];
-//        final Button[] minusB = new Button[MAX_BOARDER];
-//        final Button[] minusL = new Button[MAX_BOARDER];
-//        final Button[] minusD = new Button[MAX_BOARDER];
-//        final Button[] plusB = new Button[MAX_BOARDER];
-//        final Button[] plusL = new Button[MAX_BOARDER];
-//        final Button[] plusD = new Button[MAX_BOARDER];
-
         private final double[] mealB = new double[boarders.size() + 1],
                 mealL = new double[boarders.size() + 1], mealD = new double[boarders.size() + 1];
 
-        //LinearLayout updateDataLayout;
         EditText edtCustomDate;
         boolean mealStatusThreadAlive = true;
         int tbg = 0, tlg = 0, tdg = 0;
@@ -3128,10 +3124,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             setContentView(R.layout.update_layout);
-            initializeTest();
+            initialize();
         }
 
-        private void initializeTest(){
+        private void initialize(){
 
             edtCustomDate = findViewById(R.id.edtCustomDate);
             edtCustomDate.setText(getTodayDate());
@@ -5240,6 +5236,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 r2.child("Dinner").setValue(true);
             }
 
+            curProfileName = getProfileName(selectedBoarderIndex, selectedStoppedBoarderIndex,
+                    selectedCookBillIndex);
 
             isAddingBoarder = true;
             readingRef.setValue("");

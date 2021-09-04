@@ -20,7 +20,7 @@
             android:layout_width="match_parent"
             android:gravity="center"
             android:background="@color/white"
-            android:textColor="@color/pure_red"
+            android:textColor="@color/orange"
             android:layout_height="match_parent"
             android:textSize="15sp"/>
 

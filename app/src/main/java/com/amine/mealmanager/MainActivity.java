@@ -1515,11 +1515,40 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    private void disableView(int second, final View view){
+        final int sec = second*1000;
+        view.setEnabled(false);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(sec);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            view.setEnabled(true);
+                        }
+                    });
+                } catch (InterruptedException e) {
+                    Toast.makeText(MainActivity.this, e.getMessage(),
+                            Toast.LENGTH_LONG).show();
+                }
+            }
+        }).start();
+    }
+
     @Override
     public void onClick(View v) {
 
+        int viewDisabledTime = 2;
+
         if(v.getId() == R.id.addBoarder ||
             v.getId() == R.id.addBoarder2){
+
+            if(v.getId() == R.id.addBoarder2)
+                disableView(viewDisabledTime, findViewById(R.id.addBoarder2));
+            else if(v.getId() == R.id.addBoarder)
+                disableView(viewDisabledTime, findViewById(R.id.addBoarder));
 
             if(boarders.size() + 1 == MAX_BOARDER){
 
@@ -1537,6 +1566,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         if(v.getId() == R.id.updateData){
 
+            disableView(viewDisabledTime, findViewById(R.id.updateData));
+
             if(stoppedBoarders.size() == 0 && boarders.size() == 0){
                 Toast.makeText(this, "You need to add " +
                         "members to use this feature", Toast.LENGTH_SHORT).show();
@@ -1552,6 +1583,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             startActivity(intent);
         }
         if(v.getId() == R.id.updatePayment){
+
+            disableView(viewDisabledTime, findViewById(R.id.updatePayment));
+
             if(stoppedBoarders.size() == 0 && boarders.size() == 0){
                 Toast.makeText(this, "You need to add " +
                         "members to use this feature", Toast.LENGTH_SHORT).show();
@@ -3421,7 +3455,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             };
         }
-
         @Override
         public void onClick(View v) {
             if(v.getId() == R.id.btnSaveUpdate){
@@ -3488,543 +3521,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 calculator.getWindow().setAttributes(layoutParams);
             }
         }
-
-        /*
-        private void initialize(){
-            edtCustomDate = findViewById(R.id.edtCustomDate);
-            edtCustomDate.setText(getTodayDate());
-            updateDataLayout = findViewById(R.id.updateDataLayout);
-            updateDataLayout.setPadding(10, 10, 10, 0);
-            findViewById(R.id.btnSaveUpdate).setOnClickListener(this);
-            findViewById(R.id.btnCancelUpdate).setOnClickListener(this);
-            findViewById(R.id.btnUpdateMealCalc).setOnClickListener(this);
-            findViewById(R.id.rbBreakFirstDecide).setVisibility(View.GONE);
-            findViewById(R.id.rbLunchDecide).setVisibility(View.GONE);
-            findViewById(R.id.rbDinnerDecide).setVisibility(View.GONE);
-            findViewById(R.id.btnExtraMoneyLayout).setVisibility(View.GONE);
-            findViewById(R.id.checkboxLayout).setVisibility(View.GONE);
-
-            Resources res = getResources();
-            Drawable drawable = null;
-            try {
-                drawable = Drawable.createFromXml(res,
-                        res.getXml(R.xml.rectangular_shape_updates));
-            }
-            catch (IOException | XmlPullParserException e) {
-                e.printStackTrace();
-            }
-
-            for(int i = 0; i < boarders.size(); i++){
-                final LinearLayout ll = new LinearLayout(MainActivity.this),
-                        ll2 = new LinearLayout(MainActivity.this),
-                        fake = new LinearLayout(MainActivity.this),
-                        baseLL = new LinearLayout(MainActivity.this);
-                updateDataLayout.addView(baseLL);
-                updateDataLayout.addView(fake);
-
-                baseLL.setOrientation(LinearLayout.VERTICAL);
-                ll.setOrientation(LinearLayout.HORIZONTAL);
-                ll2.setOrientation(LinearLayout.HORIZONTAL);
-
-                baseLL.addView(ll);
-                baseLL.addView(ll2);
-
-                if(drawable != null){
-                    baseLL.setBackground(drawable);
-                }
-
-                baseLL.setLayoutParams(new LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-
-                ll.setLayoutParams(new LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-                ll.setPadding(10, 10, 10, 10);
-                ll2.setLayoutParams(new LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-                ll2.setPadding(10, 10, 10, 10);
-
-                fake.setLayoutParams(new LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT, 15));
-                fake.setBackgroundColor(Color.WHITE);
-
-                final TextView nameView = new TextView(MainActivity.this),
-                        typeLabelB = new TextView(MainActivity.this),
-                        typeLabelL = new TextView(MainActivity.this),
-                        typeLabelD = new TextView(MainActivity.this);
-                minusB[i] = new Button(MainActivity.this);
-                minusL[i] = new Button(MainActivity.this);
-                minusD[i] = new Button(MainActivity.this);
-
-                textViewsB[i] = new TextView(MainActivity.this);
-                textViewsL[i] = new TextView(MainActivity.this);
-                textViewsD[i] = new TextView(MainActivity.this);
-
-
-
-                plusB[i] = new Button(MainActivity.this);
-                plusL[i] = new Button(MainActivity.this);
-                plusD[i] = new Button(MainActivity.this);
-
-
-                LinearLayout bL = new LinearLayout(MainActivity.this),
-                        lL = new LinearLayout(MainActivity.this),
-                        dL = new LinearLayout(MainActivity.this),
-                        bL1 = new LinearLayout(MainActivity.this),
-                        lL1 = new LinearLayout(MainActivity.this),
-                        dL1 = new LinearLayout(MainActivity.this);
-
-                bL.setPadding(4, 4, 4, 4); lL.setPadding(4, 4, 4, 4);
-                dL.setPadding(4, 4, 4, 4);
-                bL.setBackgroundColor(getResources().getColor(R.color.light_green));
-                lL.setBackgroundColor(getResources().getColor(R.color.light_green));
-                dL.setBackgroundColor(getResources().getColor(R.color.light_green));
-
-                bL.addView(bL1); lL.addView(lL1); dL.addView(dL1);
-
-                bL1.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.MATCH_PARENT));
-                lL1.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.MATCH_PARENT));
-                dL1.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.MATCH_PARENT));
-
-                bL1.setBackgroundColor(getResources().getColor(R.color.pure_black));
-                lL1.setBackgroundColor(getResources().getColor(R.color.pure_black));
-                dL1.setBackgroundColor(getResources().getColor(R.color.pure_black));
-
-
-                bL1.addView(typeLabelB); bL1.addView(minusB[i]);
-                bL1.addView(textViewsB[i]); bL1.addView(plusB[i]);
-
-                lL1.addView(typeLabelL);lL1.addView(minusL[i]);
-                lL1.addView(textViewsL[i]);lL1.addView(plusL[i]);
-
-                dL1.addView(typeLabelD);dL1.addView(minusD[i]);
-                dL1.addView(textViewsD[i]);dL1.addView(plusD[i]);
-
-                typeLabelB.setLayoutParams(new LinearLayout.LayoutParams(0,
-                        ViewGroup.LayoutParams.MATCH_PARENT, 30));
-                minusB[i].setLayoutParams(new LinearLayout.LayoutParams(0,
-                        ViewGroup.LayoutParams.WRAP_CONTENT, 18));
-                textViewsB[i].setLayoutParams(new LinearLayout.LayoutParams(0,
-                        ViewGroup.LayoutParams.WRAP_CONTENT, 18));
-                plusB[i].setLayoutParams(new LinearLayout.LayoutParams(0,
-                        ViewGroup.LayoutParams.WRAP_CONTENT, 18));
-
-                typeLabelL.setLayoutParams(new LinearLayout.LayoutParams(0,
-                        ViewGroup.LayoutParams.MATCH_PARENT, 30));
-                minusL[i].setLayoutParams(new LinearLayout.LayoutParams(0,
-                        ViewGroup.LayoutParams.WRAP_CONTENT, 18));
-                textViewsL[i].setLayoutParams(new LinearLayout.LayoutParams(0,
-                        ViewGroup.LayoutParams.WRAP_CONTENT, 18));
-                plusL[i].setLayoutParams(new LinearLayout.LayoutParams(0,
-                        ViewGroup.LayoutParams.WRAP_CONTENT, 18));
-
-                typeLabelD.setLayoutParams(new LinearLayout.LayoutParams(0,
-                        ViewGroup.LayoutParams.MATCH_PARENT, 30));
-                minusD[i].setLayoutParams(new LinearLayout.LayoutParams(0,
-                        ViewGroup.LayoutParams.WRAP_CONTENT, 18));
-                textViewsD[i].setLayoutParams(new LinearLayout.LayoutParams(0,
-                        ViewGroup.LayoutParams.WRAP_CONTENT, 18));
-                plusD[i].setLayoutParams(new LinearLayout.LayoutParams(0,
-                        ViewGroup.LayoutParams.WRAP_CONTENT, 18));
-
-
-
-                ll.addView(nameView); ll.addView(bL); ll2.addView(lL); ll2.addView(dL);
-
-                bL.setLayoutParams(new LinearLayout.LayoutParams(0,
-                        ViewGroup.LayoutParams.MATCH_PARENT, 50));
-                lL.setLayoutParams(new LinearLayout.LayoutParams(0,
-                        ViewGroup.LayoutParams.MATCH_PARENT, 50));
-                dL.setLayoutParams(new LinearLayout.LayoutParams(0,
-                        ViewGroup.LayoutParams.MATCH_PARENT, 50));
-
-
-                nameView.setLayoutParams(new LinearLayout.LayoutParams(0,
-                        ViewGroup.LayoutParams.MATCH_PARENT, 50));
-                nameView.setTextColor(Color.WHITE);
-
-
-                nameView.setGravity(Gravity.CENTER);
-                typeLabelB.setGravity(Gravity.END);
-                typeLabelL.setGravity(Gravity.END);
-                typeLabelD.setGravity(Gravity.END);
-                textViewsB[i].setGravity(Gravity.CENTER);
-                textViewsL[i].setGravity(Gravity.CENTER);
-                textViewsD[i].setGravity(Gravity.CENTER);
-                textViewsB[i].setBackgroundColor(Color.WHITE);
-                textViewsL[i].setBackgroundColor(Color.WHITE);
-                textViewsD[i].setBackgroundColor(Color.WHITE);
-                textViewsB[i].setTextColor(Color.BLACK);
-                textViewsL[i].setTextColor(Color.BLACK);
-                textViewsD[i].setTextColor(Color.BLACK);
-
-
-                String s = (i + 1) + ". " + boarders.get(i).getName() + ": ";
-                nameView.setText(s);
-                nameView.setTextSize(20);
-                changedNames[i] = s;
-                normalNames[i] = s;
-
-                s = "                Breakfast:";
-                typeLabelB.setText(s);
-                s = "                Lunch:";
-                typeLabelL.setText(s);
-                s = "                Dinner:";
-                typeLabelD.setText(s);
-
-                typeLabelB.setTextColor(Color.WHITE);
-                typeLabelL.setTextColor(Color.WHITE);
-                typeLabelD.setTextColor(Color.WHITE);
-
-                minusB[i].setText("-");
-                minusL[i].setText("-");
-                minusD[i].setText("-");
-
-                plusB[i].setText("+");
-                plusL[i].setText("+");
-                plusD[i].setText("+");
-
-                if(isBreakfastOn) textViewsB[i].setText(df.format(mealStatuses.get(i).getBreakFirst()));
-                else textViewsB[i].setText(df.format(0.0));
-                if(isLunchOn) textViewsL[i].setText(df.format(mealStatuses.get(i).getLunch()));
-                else textViewsL[i].setText(df.format(0.0));
-                if(isDinnerOn) textViewsD[i].setText(df.format(mealStatuses.get(i).getDinner()));
-                else textViewsD[i].setText(df.format(0.0));
-
-
-                final int finalI = i;
-                minusB[i].setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if(isBreakfastOn){
-                            double prev = Double.parseDouble(textViewsB[finalI].getText().toString());
-                            if(prev > 0) {
-                                double d = prev - 0.5;
-                                textViewsB[finalI].setText(df.format(d));
-                                countUpdatableMeal();
-
-                                TodayMealStatus t = mealStatuses.get(finalI);
-                                if(isAllMealEqual(t, d,
-                                        Double.parseDouble(textViewsL[finalI].getText().toString()),
-                                        Double.parseDouble(textViewsD[finalI].getText().toString()))){
-                                    nameView.setText(normalNames[finalI]);
-                                    nameView.setTextColor(Color.WHITE);
-                                }
-                                else{
-                                    nameView.setText(changedNames[finalI]);
-                                    nameView.setTextColor(Color.rgb(168, 109, 162));
-                                }
-                            }
-                        }else{
-                            Toast.makeText(MainActivity.this, "Breakfast Meal Off!", Toast.LENGTH_LONG)
-                                    .show();
-                        }
-                    }
-                });
-
-                minusL[i].setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if(isLunchOn){
-                            double prev = Double.parseDouble(textViewsL[finalI].getText().toString());
-                            if(prev > 0){
-                                double d = prev - 0.5;
-                                textViewsL[finalI].setText(df.format(d));
-
-                                countUpdatableMeal();
-                                TodayMealStatus t = mealStatuses.get(finalI);
-                                if(isAllMealEqual(t,
-                                        Double.parseDouble(textViewsB[finalI].getText().toString()), d,
-                                        Double.parseDouble(textViewsD[finalI].getText().toString()))){
-                                    nameView.setText(normalNames[finalI]);
-                                    nameView.setTextColor(Color.WHITE);
-                                }
-                                else{
-                                    nameView.setText(changedNames[finalI]);
-                                    nameView.setTextColor(Color.rgb(168, 109, 162));
-                                }
-                            }
-                        }else{
-                            Toast.makeText(MainActivity.this, "Lunch Meal Off!", Toast.LENGTH_LONG)
-                                    .show();
-                        }
-                    }
-                });
-
-                minusD[i].setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if(isDinnerOn){
-                            double prev = Double.parseDouble(textViewsD[finalI].getText().toString());
-                            if(prev > 0){
-                                double d = prev - 0.5;
-                                textViewsD[finalI].setText(df.format(d));
-                                countUpdatableMeal();
-
-                                TodayMealStatus t = mealStatuses.get(finalI);
-                                if(isAllMealEqual(t,
-                                        Double.parseDouble(textViewsB[finalI].getText().toString()),
-                                        Double.parseDouble(textViewsL[finalI].getText().toString()), d)){
-                                    nameView.setText(normalNames[finalI]);
-                                    nameView.setTextColor(Color.WHITE);
-                                }
-                                else{
-                                    nameView.setText(changedNames[finalI]);
-                                    nameView.setTextColor(Color.rgb(168, 109, 162));
-                                }
-                            }
-                        }else{
-                            Toast.makeText(MainActivity.this, "Dinner Meal Off!", Toast.LENGTH_LONG)
-                                    .show();
-                        }
-                    }
-                });
-
-
-                plusB[i].setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if(isBreakfastOn){
-                            double prev = Double.parseDouble(textViewsB[finalI].getText().toString()),
-                                    d = prev + 0.5;
-                            textViewsB[finalI].setText(df.format(d));
-                            countUpdatableMeal();
-
-                            TodayMealStatus t = mealStatuses.get(finalI);
-                            if(isAllMealEqual(t, d,
-                                    Double.parseDouble(textViewsL[finalI].getText().toString()),
-                                    Double.parseDouble(textViewsD[finalI].getText().toString()))){
-                                nameView.setText(normalNames[finalI]);
-                                nameView.setTextColor(Color.WHITE);
-                            }
-                            else{
-                                nameView.setText(changedNames[finalI]);
-                                nameView.setTextColor(Color.rgb(168, 109, 162));
-                            }
-                        }else{
-                            Toast.makeText(MainActivity.this, "Breakfast Meal Off!", Toast.LENGTH_LONG)
-                                    .show();
-                        }
-                    }
-                });
-
-
-                plusL[i].setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if(isLunchOn){
-                            double prev = Double.parseDouble(textViewsL[finalI].getText().toString()),
-                                    d = prev + 0.5;
-
-                            textViewsL[finalI].setText(df.format(d));
-                            countUpdatableMeal();
-
-                            TodayMealStatus t = mealStatuses.get(finalI);
-
-                            if(isAllMealEqual(t,
-                                    Double.parseDouble(textViewsB[finalI].getText().toString()), d,
-                                    Double.parseDouble(textViewsD[finalI].getText().toString()))){
-                                nameView.setText(normalNames[finalI]);
-                                nameView.setTextColor(Color.WHITE);
-                            }
-                            else{
-                                nameView.setText(changedNames[finalI]);
-                                nameView.setTextColor(Color.rgb(168, 109, 162));
-                            }
-                        }else{
-                            Toast.makeText(MainActivity.this, "Lunch Meal Off!", Toast.LENGTH_LONG)
-                                    .show();
-                        }
-                    }
-                });
-
-                plusD[i].setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if(isDinnerOn){
-                            double prev = Double.parseDouble(textViewsD[finalI].getText().toString()),
-                                    d = prev + 0.5;
-                            textViewsD[finalI].setText(df.format(d));
-                            countUpdatableMeal();
-
-                            TodayMealStatus t = mealStatuses.get(finalI);
-                            if(isAllMealEqual(t,
-                                    Double.parseDouble(textViewsB[finalI].getText().toString()),
-                                    Double.parseDouble(textViewsL[finalI].getText().toString()), d)){
-                                nameView.setText(normalNames[finalI]);
-                                nameView.setTextColor(Color.WHITE);
-                            }
-                            else{
-                                nameView.setText(changedNames[finalI]);
-                                nameView.setTextColor(Color.rgb(168, 109, 162));
-                            }
-
-
-
-                        }else{
-                            Toast.makeText(MainActivity.this, "Dinner Meal Off!", Toast.LENGTH_LONG)
-                                    .show();
-                        }
-                    }
-                });
-
-                double tb = mealStatuses.get(i).getBreakFirst(), tl = mealStatuses.get(i).getLunch(),
-                        td = mealStatuses.get(i).getDinner();
-
-                tbg += tb; tlg += tl; tdg += td;
-
-                for(int j = 0; j < todayMealStatuses.size(); j++){
-                    if(mealStatuses.get(i).getName().equals(todayMealStatuses.get(j).getName())){
-                        if(mealStatuses.get(i).getBreakFirst() != todayMealStatuses.get(j).getBreakFirst() ||
-                                mealStatuses.get(i).getLunch() != todayMealStatuses.get(j).getLunch() ||
-                                mealStatuses.get(i).getDinner() != todayMealStatuses.get(j).getDinner()){
-
-                            boolean isMealChanged = false;
-
-                            final int finalJ = j;
-                            if(mealStatuses.get(i).getBreakFirst() != todayMealStatuses.get(j).getBreakFirst()){
-                                tb = todayMealStatuses.get(j).getBreakFirst();
-                                isMealChanged = true;
-                                final Handler handler = new Handler(getApplicationContext().getMainLooper());
-                                new Thread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        while (mealStatusThreadAlive){
-                                            handler.post(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    textViewsB[finalI].setBackgroundColor(Color.rgb(168, 109, 162));
-                                                }
-                                            });
-                                            try {
-                                                Thread.sleep(100);
-                                            } catch (InterruptedException e) {
-                                                e.printStackTrace();
-                                            }
-                                            handler.post(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    textViewsB[finalI].setBackgroundColor(Color.rgb(179, 162, 177));
-                                                }
-                                            });
-                                            try {
-                                                Thread.sleep(100);
-                                            } catch (InterruptedException e) {
-                                                e.printStackTrace();
-                                            }
-                                        }
-                                    }
-                                }).start();
-
-                            }
-
-                            if(mealStatuses.get(i).getLunch() != todayMealStatuses.get(j).getLunch()){
-                                tl = todayMealStatuses.get(j).getLunch();
-
-                                isMealChanged = true;
-                                final Handler handler = new Handler(getApplicationContext().getMainLooper());
-                                new Thread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        while (mealStatusThreadAlive){
-                                            handler.post(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    textViewsL[finalI].setBackgroundColor(Color.rgb(168, 109, 162));
-                                                }
-                                            });
-                                            try {
-                                                Thread.sleep(100);
-                                            } catch (InterruptedException e) {
-                                                e.printStackTrace();
-                                            }
-                                            handler.post(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    textViewsL[finalI].setBackgroundColor(Color.rgb(179, 162, 177));
-                                                }
-                                            });
-                                            try {
-                                                Thread.sleep(100);
-                                            } catch (InterruptedException e) {
-                                                e.printStackTrace();
-                                            }
-                                        }
-                                    }
-                                }).start();
-
-                            }
-
-                            if(mealStatuses.get(i).getDinner() != todayMealStatuses.get(j).getDinner()){
-                                td = todayMealStatuses.get(j).getDinner();
-
-                                isMealChanged = true;
-                                final Handler handler = new Handler(getApplicationContext().getMainLooper());
-                                new Thread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        while (mealStatusThreadAlive){
-                                            handler.post(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    textViewsD[finalI].setBackgroundColor(Color.rgb(168, 109, 162));
-                                                }
-                                            });
-                                            try {
-                                                Thread.sleep(100);
-                                            } catch (InterruptedException e) {
-                                                e.printStackTrace();
-                                            }
-                                            handler.post(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    textViewsD[finalI].setBackgroundColor(Color.rgb(179, 162, 177));
-                                                }
-                                            });
-                                            try {
-                                                Thread.sleep(100);
-                                            } catch (InterruptedException e) {
-                                                e.printStackTrace();
-                                            }
-                                        }
-                                    }
-                                }).start();
-                                textViewsD[finalI].setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        String s = df.format(todayMealStatuses.get(finalJ).getDinner());
-                                        Toast.makeText(MainActivity.this, s, Toast.LENGTH_LONG).show();
-                                    }
-                                });
-                            }
-
-
-
-                            if(isMealChanged){
-                                String ss = nameView.getText() + "\n" + "(" + df.format(tb) + " + " +
-                                        df.format(tl) + " + " + df.format(td) + ")";
-                                nameView.setText(ss);
-                                nameView.setTextColor(Color.rgb(168, 109, 162));
-                                changedNames[i] = ss;
-                            }
-                            break;
-                        }
-                    }
-                }
-
-            }
-
-            String s = "Regular meals: " + df.format(tbg) + " + " + df.format(tlg) + " + " +
-                    df.format(tdg) + " = " + df.format((tbg + tlg + tdg)) + "\n" +
-                    updatableMealString + "\n** " + closedMemberString();
-
-            TextView tv = findViewById(R.id.updateNameLabel);
-            tv.setText(s);
-        }
-
-         */
 
         private String closedMemberString() {
             if (todayMealStatuses.size() > 0) {
@@ -5439,6 +4935,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(boarders == null) boarders = new ArrayList<>();
+                if(stoppedBoarders == null) stoppedBoarders = new ArrayList<>();
+                if(marketerHistories == null) marketerHistories = new ArrayList<>();
+                if(mealStatuses == null) mealStatuses = new ArrayList<>();
+                if(marketerHistories == null) marketerHistories = new ArrayList<>();
+                if(todayMealStatuses == null) todayMealStatuses = new ArrayList<>();
+                if(paybacks == null) paybacks = new HashMap<>();
+                if(cooksBills == null) cooksBills = new ArrayList<>();
+                if(memSug == null) memSug = new ArrayList<>();
                 boarders.clear();
                 stoppedBoarders.clear();
                 marketerHistories.clear();

@@ -24,6 +24,8 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import static com.amine.mealmanager.MainActivity.df;
+import static com.amine.mealmanager.MainActivity.getDateFormatSugg;
 import static com.amine.mealmanager.MainActivity.isDateFormatCorrect;
 
 public class EditInterfaceActivity extends AppCompatActivity implements View.OnClickListener {
@@ -105,6 +107,7 @@ public class EditInterfaceActivity extends AppCompatActivity implements View.OnC
 
             editableDate[i] = new EditText(this);
             editableMOrP[i] = new EditText(this);
+            editableMOrP[i].setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
 
             ll.setPadding(4, 4, 4,4);
             ll.addView(llForEdtD);
@@ -128,13 +131,13 @@ public class EditInterfaceActivity extends AppCompatActivity implements View.OnC
 
             editableMOrP[i].setLayoutParams(new LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-            editableMOrP[i].setInputType(InputType.TYPE_CLASS_NUMBER);
             editableDate[i].setLayoutParams(new LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             editableDate[i].setGravity(Gravity.CENTER);
             editableMOrP[i].setGravity(Gravity.CENTER);
             editableDate[i].setText(boarders.get(index).getMealD().get(i).getDate());
-            editableMOrP[i].setText(boarders.get(index).getMealD().get(i).getMeal());
+            editableMOrP[i].setText(
+                    df.format(Double.parseDouble(boarders.get(index).getMealD().get(i).getMeal())));
         }
 
     }
@@ -170,6 +173,7 @@ public class EditInterfaceActivity extends AppCompatActivity implements View.OnC
 
             editableDate[i] = new EditText(this);
             editableMOrP[i] = new EditText(this);
+            editableMOrP[i].setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
 
             ll.setPadding(4, 4, 4,4);
             ll.addView(llForEdtD);
@@ -191,7 +195,6 @@ public class EditInterfaceActivity extends AppCompatActivity implements View.OnC
 
             editableMOrP[i].setLayoutParams(new LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-            editableMOrP[i].setInputType(InputType.TYPE_CLASS_NUMBER);
             editableDate[i].setLayoutParams(new LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             editableDate[i].setGravity(Gravity.CENTER);
@@ -201,7 +204,8 @@ public class EditInterfaceActivity extends AppCompatActivity implements View.OnC
             editableMOrP[i].setTextColor(Color.WHITE);
 
             editableDate[i].setText(boarders.get(index).getPaymentD().get(i).getDate());
-            editableMOrP[i].setText(boarders.get(index).getPaymentD().get(i).getMeal());
+            editableMOrP[i].setText(df.format(
+                    Double.parseDouble(boarders.get(index).getPaymentD().get(i).getMeal())));
         }
 
     }
@@ -253,20 +257,24 @@ public class EditInterfaceActivity extends AppCompatActivity implements View.OnC
         int id = v.getId();
         if(id == R.id.editInterface_btnSave){
 
-            int ind = -1;
+            int wrongDateInd = -1, wrongNumbInd = -1;
             for(int i = 0; i < mxSize; i++){
                 if(!isDateFormatCorrect(editableDate[i].getText().toString())){
-                    ind = i;
+                    wrongDateInd = i;
                     break;
                 }
+                if(!isNumeric(editableMOrP[i].getText().toString())){
+                    wrongNumbInd = i;
+                }
             }
-            if(ind == -1){
+            if(wrongDateInd == -1 && wrongNumbInd == -1){
                 ArrayList<MealOrPaymentDetails> mop = new ArrayList<>();
                 double total = 0;
                 for(int i = 0; i < mxSize; i++){
                     mop.add(new MealOrPaymentDetails(
                             editableDate[i].getText().toString(), editableMOrP[i].getText().toString()));
                     total += Double.parseDouble(editableMOrP[i].getText().toString());
+
                 }
                 if(type != null && type.equals("MEAL")){
                     boarders.get(index).setMealD(mop);
@@ -283,27 +291,14 @@ public class EditInterfaceActivity extends AppCompatActivity implements View.OnC
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
             }
-            else{
-                if(ind == 0) {
-                    Toast.makeText(this, "Change " + (ind + 1) + "st date format to" +
-                                    "\n15-05-2020(DD-MM-YYYY)",
-                            Toast.LENGTH_LONG).show();
-                }
-                else if(ind == 1) {
-                    Toast.makeText(this, "Change " + (ind + 1) + "nd date format to" +
-                                    "\n15-05-2020(DD-MM-YYYY)",
-                            Toast.LENGTH_LONG).show();
-                }
-                else if(ind == 2) {
-                    Toast.makeText(this, "Change " + (ind + 1) + "rd date format to" +
-                                    "\n15-05-2020(DD-MM-YYYY)",
-                            Toast.LENGTH_LONG).show();
-                }
-                else{
-                    Toast.makeText(this, "Change " + (ind + 1) + "th date format to" +
-                                    "\n15-05-2020(DD-MM-YYYY)",
-                            Toast.LENGTH_LONG).show();
-                }
+            if(wrongDateInd > -1){
+                editableDate[wrongDateInd].setError(getDateFormatSugg());
+                editableDate[wrongDateInd].requestFocus();
+
+            }
+            if(wrongNumbInd > -1){
+                editableMOrP[wrongNumbInd].setError("It is not a number");
+                editableMOrP[wrongNumbInd].requestFocus();
             }
         }
         else if(id == R.id.editInterface_btnCancel){
@@ -311,6 +306,17 @@ public class EditInterfaceActivity extends AppCompatActivity implements View.OnC
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
         }
+    }
+
+    private boolean isNumeric(String s){
+        if(s.isEmpty()) return false;
+        try {
+            double d = Double.parseDouble(s);
+        } catch (Exception e) {
+            return false;
+        }
+
+        return true;
     }
 
     private void recalculate(){

@@ -6,102 +6,113 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="5dp"
+    android:gravity="center"
     tools:context=".ActivityOverView">
 
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imgAnimate"
+        android:visibility="gone"
+        android:scaleType="fitCenter"
+        android:contentDescription="@string/image"/>
+
     <LinearLayout
-        android:id="@+id/labelLayout"
         android:layout_width="match_parent"
-        android:layout_height="50sp"
-        android:orientation="horizontal"
-        android:layout_gravity="center_horizontal"
-        android:background="@drawable/rectangle_shape_label">
-
-        <TextView
-            android:id="@+id/nameLabel"
-            android:layout_width="0sp"
-            android:layout_height="match_parent"
-            android:layout_weight="20"
-            android:text="@string/names"
-            android:textStyle="bold"
-            android:gravity="center"
-            android:textColor="#ffffff"/>
-
-        <TextView
-            android:id="@+id/paidLabel"
-            android:layout_width="0sp"
-            android:layout_height="match_parent"
-            android:layout_weight="15"
-            android:text="@string/paid"
-            android:gravity="center"
-            android:textStyle="bold"
-            android:textColor="#ffffff"/>
-
-
-        <TextView
-            android:id="@+id/addPaymentLabel"
-            android:layout_width="0sp"
-            android:layout_height="match_parent"
-            android:layout_weight="15"
-            android:text="@string/add_payment"
-            android:visibility="gone"
-            android:gravity="center"
-            android:textStyle="bold"
-            android:textColor="#ffffff"/>
-
-
-
-        <TextView
-            android:id="@+id/mealLabel"
-            android:layout_width="0sp"
-            android:layout_height="match_parent"
-            android:layout_weight="10"
-            android:text="@string/meal"
-            android:gravity="center"
-            android:textStyle="bold"
-            android:textColor="#ffffff"/>
-
-
-
-        <TextView
-            android:id="@+id/dueLabel"
-            android:layout_width="0sp"
-            android:layout_height="match_parent"
-            android:layout_weight="15"
-            android:text="@string/due"
-            android:gravity="center"
-            android:textStyle="bold"
-            android:textColor="#ffffff"/>
-
-        <TextView
-            android:id="@+id/overHeadLabel"
-            android:layout_width="0sp"
-            android:layout_height="match_parent"
-            android:layout_weight="15"
-            android:text="@string/over_head"
-            android:gravity="center"
-            android:textStyle="bold"
-            android:textColor="#ffffff"/>
-
-
-
-    </LinearLayout>
-
-    <ScrollView
-        android:id="@+id/infoScroll"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:id="@+id/infoLayout">
 
         <LinearLayout
-            android:id="@+id/rootLayout"
+            android:id="@+id/labelLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center">
+            android:layout_height="50sp"
+            android:orientation="horizontal"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/rectangle_shape_label">
 
+            <TextView
+                android:id="@+id/nameLabel"
+                android:layout_width="0sp"
+                android:layout_height="match_parent"
+                android:layout_weight="20"
+                android:text="@string/names"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:textColor="#ffffff"/>
+
+            <TextView
+                android:id="@+id/paidLabel"
+                android:layout_width="0sp"
+                android:layout_height="match_parent"
+                android:layout_weight="15"
+                android:text="@string/paid"
+                android:gravity="center"
+                android:textStyle="bold"
+                android:textColor="#ffffff"/>
+
+            <TextView
+                android:id="@+id/addPaymentLabel"
+                android:layout_width="0sp"
+                android:layout_height="match_parent"
+                android:layout_weight="15"
+                android:text="@string/add_payment"
+                android:visibility="gone"
+                android:gravity="center"
+                android:textStyle="bold"
+                android:textColor="#ffffff"/>
+
+            <TextView
+                android:id="@+id/mealLabel"
+                android:layout_width="0sp"
+                android:layout_height="match_parent"
+                android:layout_weight="10"
+                android:text="@string/meal"
+                android:gravity="center"
+                android:textStyle="bold"
+                android:textColor="#ffffff"/>
+
+            <TextView
+                android:id="@+id/dueLabel"
+                android:layout_width="0sp"
+                android:layout_height="match_parent"
+                android:layout_weight="15"
+                android:text="@string/due"
+                android:gravity="center"
+                android:textStyle="bold"
+                android:textColor="#ffffff"/>
+
+            <TextView
+                android:id="@+id/overHeadLabel"
+                android:layout_width="0sp"
+                android:layout_height="match_parent"
+                android:layout_weight="15"
+                android:text="@string/over_head"
+                android:gravity="center"
+                android:textStyle="bold"
+                android:textColor="#ffffff"/>
 
         </LinearLayout>
 
+        <ScrollView
+            android:id="@+id/infoScroll"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-    </ScrollView>
+            <LinearLayout
+                android:id="@+id/rootLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center">
+
+
+            </LinearLayout>
+
+
+        </ScrollView>
+
+
+    </LinearLayout>
 
 </LinearLayout>
